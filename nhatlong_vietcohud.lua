@@ -6,8 +6,9 @@ local MarketPlaceService = game:GetService("MarketplaceService")
 
 -- Configuration
 local VALID_KEY = "nhatlongfree"
-local SCRIPT_2_URL = "https://raw.githubusercontent.com/longkawoa/Script-roblox-/refs/heads/main/README.md"
+local SCRIPT_2_URL = "https://raw.githubusercontent.com/longkawoa/Script-roblox-/refs/heads/main/vietcohud-nokey-novip"
 local AVATAR_ID = "rbxassetid://4500383345"
+local NOTE_IMAGE_ID = "rbxassetid://3197615623"
 
 -- Game Verification Data
 local TargetGameNames = {
@@ -45,12 +46,13 @@ else
     ScreenGui.Parent = CoreGui
 end
 
--- Main Frame
+-- Main Frame (Đã đổi thành màu đen)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 420, 0, 320)
-MainFrame.Position = UDim2.new(0.5, -210, 0.5, -160)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+-- Size & Position ban đầu để làm animation mở menu
+MainFrame.Size = UDim2.new(0, 0, 0, 0)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Đen tuyền
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
 MainFrame.Parent = ScreenGui
@@ -59,18 +61,26 @@ local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 10)
 MainCorner.Parent = MainFrame
 
--- Rainbow UIStroke (Border)
+-- Hiệu ứng Animation mở Menu đẹp mắt
+local openTween = TweenService:Create(MainFrame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 420, 0, 320),
+    Position = UDim2.new(0.5, -210, 0.5, -160)
+})
+openTween:Play()
+
+-- Viền màu xanh da trời bóng (Glowing Sky Blue Border)
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Thickness = 3
+UIStroke.Color = Color3.fromRGB(0, 191, 255) -- Xanh da trời
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStroke.Parent = MainFrame
 
--- Rainbow Animation
+-- Animation nhấp nháy cho viền bóng
 task.spawn(function()
-    local hue = 0
     while task.wait() do
-        hue = (hue + 0.005) % 1
-        UIStroke.Color = Color3.fromHSV(hue, 0.8, 1)
+        local tickTime = tick() * 3
+        UIStroke.Transparency = 0.1 + math.abs(math.sin(tickTime)) * 0.4
+        UIStroke.Thickness = 2 + math.abs(math.sin(tickTime)) * 2
     end
 end)
 
@@ -114,11 +124,20 @@ AvatarImage.Size = UDim2.new(0, 60, 0, 60)
 AvatarImage.Position = UDim2.new(0, 15, 0, 15)
 AvatarImage.Image = AVATAR_ID
 AvatarImage.BackgroundTransparency = 1
+AvatarImage.AnchorPoint = Vector2.new(0.5, 0.5) -- Chuẩn bị tâm để xoay
+AvatarImage.Position = UDim2.new(0, 45, 0, 45) 
 AvatarImage.Parent = MainFrame
 
 local AvatarCorner = Instance.new("UICorner")
-AvatarCorner.CornerRadius = UDim.new(0, 8)
+AvatarCorner.CornerRadius = UDim.new(1, 0) -- Tròn xoe để xoay đẹp hơn
 AvatarCorner.Parent = AvatarImage
+
+-- Animation Avatar xoay đẹp mắt
+task.spawn(function()
+    while task.wait() do
+        AvatarImage.Rotation = AvatarImage.Rotation + 1.5
+    end
+end)
 
 -- Game Display Container
 local GameInfoContainer = Instance.new("Frame")
@@ -185,7 +204,7 @@ ConfirmButton.Size = UDim2.new(0, 180, 0, 35)
 ConfirmButton.Position = UDim2.new(0.5, -90, 0, 175)
 ConfirmButton.Text = "CONFIRM"
 ConfirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ConfirmButton.BackgroundColor3 = Color3.fromRGB(50, 120, 240)
+ConfirmButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255) -- Đổi tone xanh cho hợp
 ConfirmButton.Font = Enum.Font.SourceSansBold
 ConfirmButton.TextSize = 15
 ConfirmButton.Parent = MainFrame
@@ -197,21 +216,30 @@ ButtonCorner.Parent = ConfirmButton
 -- Notification Label
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(1, -20, 0, 25)
-StatusLabel.Position = UDim2.new(0, 10, 0, 220)
+StatusLabel.Position = UDim2.new(0, 10, 0, 215)
 StatusLabel.Text = ""
 StatusLabel.TextSize = 13
-StatusLabel.Font = Enum.Font.SourceSansItalic
+StatusLabel.Font = Enum.Font.SourceSansBold
 StatusLabel.BackgroundTransparency = 1
 StatusLabel.Parent = MainFrame
 
--- Note Label (ShiftLock Notice)
+-- Note Image & Text
+local NoteImage = Instance.new("ImageLabel")
+NoteImage.Size = UDim2.new(0, 35, 0, 35)
+NoteImage.Position = UDim2.new(0, 15, 1, -45)
+NoteImage.Image = NOTE_IMAGE_ID
+NoteImage.BackgroundTransparency = 1
+NoteImage.Parent = MainFrame
+
 local NoteLabel = Instance.new("TextLabel")
-NoteLabel.Size = UDim2.new(1, -20, 0, 30)
-NoteLabel.Position = UDim2.new(0, 10, 1, -35)
-NoteLabel.Text = "Note: Please turn off Shift Lock to use GUI properly."
+NoteLabel.Size = UDim2.new(1, -70, 0, 45)
+NoteLabel.Position = UDim2.new(0, 60, 1, -50)
+NoteLabel.Text = "ghi chú: hãy tắt shitlock để dùng script\nxl vì scritp có khá nhiều lỗi nhưng tui sẽ update để fix"
 NoteLabel.TextColor3 = Color3.fromRGB(255, 200, 80)
 NoteLabel.TextSize = 12
 NoteLabel.Font = Enum.Font.SourceSans
+NoteLabel.TextXAlignment = Enum.TextXAlignment.Left
+NoteLabel.TextWrapped = true
 NoteLabel.BackgroundTransparency = 1
 NoteLabel.Parent = MainFrame
 
@@ -223,11 +251,11 @@ end
 
 -- Button Animation & Click Logic
 ConfirmButton.MouseEnter:Connect(function()
-    TweenService:Create(ConfirmButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 140, 255)}):Play()
+    TweenService:Create(ConfirmButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 191, 255)}):Play()
 end)
 
 ConfirmButton.MouseLeave:Connect(function()
-    TweenService:Create(ConfirmButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 120, 240)}):Play()
+    TweenService:Create(ConfirmButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 150, 255)}):Play()
 end)
 
 ConfirmButton.MouseButton1Click:Connect(function()
@@ -239,9 +267,17 @@ ConfirmButton.MouseButton1Click:Connect(function()
     end
     
     if inputKey == VALID_KEY then
-        setStatus("Success! Key verified. Loading Script 2...", Color3.fromRGB(0, 255, 120))
+        setStatus("thành công đang loading script vietco hud", Color3.fromRGB(0, 255, 120))
         task.wait(1.5)
         
+        -- Cấp hiệu ứng đóng nhẹ nhàng
+        local closeTween = TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0)
+        })
+        closeTween:Play()
+        closeTween.Completed:Wait()
+
         -- Close Main GUI
         ScreenGui:Destroy()
         
