@@ -1,75 +1,89 @@
 -- ====================================================
--- UI 1: WELCOME SCREEN (MENU UI 1)
+-- UI 1: WELCOME SCREEN (NEON MODERN LOADING UI)
 -- ====================================================
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 
--- Tạo ScreenGui riêng cho UI 1
+-- Dọn dẹp Gui cũ nếu tái khởi chạy
+if CoreGui:FindFirstChild("Welcome_UI1") then CoreGui.Welcome_UI1:Destroy() end
+if CoreGui:FindFirstChild("MakeScript_NhatLong") then CoreGui.MakeScript_NhatLong:Destroy() end
+
 local WelcomeGui = Instance.new("ScreenGui")
 WelcomeGui.Name = "Welcome_UI1"
 WelcomeGui.Parent = CoreGui
 WelcomeGui.ResetOnSpawn = false
 
--- Khung hình vuông ở chính giữa màn hình
+-- Khung hình vuông chính giữa
 local WelcomeFrame = Instance.new("Frame")
 WelcomeFrame.Name = "WelcomeFrame"
-WelcomeFrame.Size = UDim2.new(0, 220, 0, 220) -- Hình vuông
+WelcomeFrame.Size = UDim2.new(0, 230, 0, 230)
 WelcomeFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-WelcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Chính giữa màn hình
-WelcomeFrame.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
+WelcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+WelcomeFrame.BackgroundColor3 = Color3.fromRGB(15, 17, 23)
 WelcomeFrame.BorderSizePixel = 0
 WelcomeFrame.Active = true
 WelcomeFrame.Draggable = true
 WelcomeFrame.Parent = WelcomeGui
 
 local WelcomeCorner = Instance.new("UICorner")
-WelcomeCorner.CornerRadius = UDim.new(0, 12)
+WelcomeCorner.CornerRadius = UDim.new(0, 16)
 WelcomeCorner.Parent = WelcomeFrame
 
 local WelcomeStroke = Instance.new("UIStroke")
 WelcomeStroke.Color = Color3.fromRGB(0, 255, 170)
-WelcomeStroke.Thickness = 1.2
-WelcomeStroke.Transparency = 0.5
+WelcomeStroke.Thickness = 1.5
+WelcomeStroke.Transparency = 0.3
 WelcomeStroke.Parent = WelcomeFrame
 
--- Vị trí trên góc trái: Tên GUI 1 ("welcome")
+-- Corner Subtitle
 local CornerTitle = Instance.new("TextLabel")
 CornerTitle.Size = UDim2.new(0, 100, 0, 20)
-CornerTitle.Position = UDim2.new(0, 10, 0, 8)
+CornerTitle.Position = UDim2.new(0, 14, 0, 10)
 CornerTitle.BackgroundTransparency = 1
-CornerTitle.Text = "welcome"
-CornerTitle.TextColor3 = Color3.fromRGB(150, 155, 170)
-CornerTitle.TextSize = 11
-CornerTitle.Font = Enum.Font.GothamMedium
+CornerTitle.Text = "SYSTEM INITIALIZING"
+CornerTitle.TextColor3 = Color3.fromRGB(120, 130, 155)
+CornerTitle.TextSize = 9
+CornerTitle.Font = Enum.Font.GothamBold
 CornerTitle.TextXAlignment = Enum.TextXAlignment.Left
 CornerTitle.Parent = WelcomeFrame
 
--- Ở giữa UI: Tên ("dox v2")
+-- Main Title
 local MainTitle = Instance.new("TextLabel")
 MainTitle.Size = UDim2.new(1, -20, 0, 40)
-MainTitle.Position = UDim2.new(0, 10, 0.4, -20)
+MainTitle.Position = UDim2.new(0, 10, 0.38, -20)
 MainTitle.BackgroundTransparency = 1
 MainTitle.Text = "dox v2"
 MainTitle.TextColor3 = Color3.fromRGB(0, 255, 170)
-MainTitle.TextSize = 22
+MainTitle.TextSize = 26
 MainTitle.Font = Enum.Font.GothamBold
-MainTitle.TextXAlignment = Enum.TextXAlignment.Center -- Sửa lỗi Enum.TextAlignment -> Enum.TextXAlignment
+MainTitle.TextXAlignment = Enum.TextXAlignment.Center
 MainTitle.Parent = WelcomeFrame
 
--- Ở dưới: Thanh đầy (Loading Bar Background)
+local SubTitle = Instance.new("TextLabel")
+SubTitle.Size = UDim2.new(1, -20, 0, 20)
+SubTitle.Position = UDim2.new(0, 10, 0.52, 0)
+SubTitle.BackgroundTransparency = 1
+SubTitle.Text = "Universal Game Scanner"
+SubTitle.TextColor3 = Color3.fromRGB(180, 190, 210)
+SubTitle.TextSize = 11
+SubTitle.Font = Enum.Font.GothamMedium
+SubTitle.TextXAlignment = Enum.TextXAlignment.Center
+SubTitle.Parent = WelcomeFrame
+
+-- Loading Bar Background
 local LoadingBg = Instance.new("Frame")
-LoadingBg.Size = UDim2.new(0.85, 0, 0, 8)
+LoadingBg.Size = UDim2.new(0.85, 0, 0, 6)
 LoadingBg.Position = UDim2.new(0.075, 0, 0.8, 0)
-LoadingBg.BackgroundColor3 = Color3.fromRGB(12, 14, 18)
+LoadingBg.BackgroundColor3 = Color3.fromRGB(25, 28, 38)
 LoadingBg.BorderSizePixel = 0
-LoadingBg.ClipsDescendants = true -- Thêm thuộc tính này để không bị đè viền góc
+LoadingBg.ClipsDescendants = true
 LoadingBg.Parent = WelcomeFrame
 
 local LoadingBgCorner = Instance.new("UICorner")
 LoadingBgCorner.CornerRadius = UDim.new(1, 0)
 LoadingBgCorner.Parent = LoadingBg
 
--- Thanh Fill màu xanh chạy đầy
+-- Loading Bar Fill
 local LoadingFill = Instance.new("Frame")
 LoadingFill.Size = UDim2.new(0, 0, 1, 0)
 LoadingFill.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
@@ -80,8 +94,9 @@ local LoadingFillCorner = Instance.new("UICorner")
 LoadingFillCorner.CornerRadius = UDim.new(1, 0)
 LoadingFillCorner.Parent = LoadingFill
 
+
 -- ====================================================
--- MAIN SCRIPT (DOX V2 BY NHATLONG)
+-- MAIN SCRIPT (DOX V2 BY NHATLONG - UPDATED UI)
 -- ====================================================
 local function LoadMainScript()
     -- Services
@@ -89,7 +104,6 @@ local function LoadMainScript()
     local UserInputService = game:GetService("UserInputService")
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
     local Lighting = game:GetService("Lighting")
-    local Workspace = game:GetService("Workspace")
 
     local LocalPlayer = Players.LocalPlayer
     local Mouse = LocalPlayer:GetMouse()
@@ -103,12 +117,12 @@ local function LoadMainScript()
     local PreviewModelTab1 = nil
     local PreviewModelTab2 = nil
 
-    -- 3D Camera Controls State (Tab 1)
+    -- 3D Camera State (Tab 1)
     local cam1AngleX, cam1AngleY, cam1Dist = 45, 20, 10
     local cam1TargetCenter = Vector3.zero
     local isDraggingTab1 = false
 
-    -- 3D Camera Controls State (Tab 2)
+    -- 3D Camera State (Tab 2)
     local cam2AngleX, cam2AngleY, cam2Dist = 45, 20, 10
     local cam2TargetCenter = Vector3.zero
     local isDraggingTab2 = false
@@ -124,33 +138,33 @@ local function LoadMainScript()
     -- Main Window
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 420, 0, 300)
-    MainFrame.Position = UDim2.new(0.5, -210, 0.3, 0)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
+    MainFrame.Size = UDim2.new(0, 440, 0, 310)
+    MainFrame.Position = UDim2.new(0.5, -220, 0.3, 0)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 17, 23)
     MainFrame.BorderSizePixel = 0
     MainFrame.Active = true
     MainFrame.Draggable = true
     MainFrame.Parent = ScreenGui
 
     local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 12)
+    MainCorner.CornerRadius = UDim.new(0, 14)
     MainCorner.Parent = MainFrame
 
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Color = Color3.fromRGB(0, 255, 170)
     MainStroke.Thickness = 1.2
-    MainStroke.Transparency = 0.6
+    MainStroke.Transparency = 0.5
     MainStroke.Parent = MainFrame
 
     -- Header Bar
     local Header = Instance.new("Frame")
-    Header.Size = UDim2.new(1, 0, 0, 36)
-    Header.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    Header.Size = UDim2.new(1, 0, 0, 38)
+    Header.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
     Header.BorderSizePixel = 0
     Header.Parent = MainFrame
 
     local HeaderCorner = Instance.new("UICorner")
-    HeaderCorner.CornerRadius = UDim.new(0, 12)
+    HeaderCorner.CornerRadius = UDim.new(0, 14)
     HeaderCorner.Parent = Header
 
     -- Title Container
@@ -180,7 +194,7 @@ local function LoadMainScript()
     TitleSub.AutomaticSize = Enum.AutomaticSize.X
     TitleSub.BackgroundTransparency = 1
     TitleSub.Text = "(by nhatlong)"
-    TitleSub.TextColor3 = Color3.fromRGB(150, 155, 170)
+    TitleSub.TextColor3 = Color3.fromRGB(140, 148, 170)
     TitleSub.TextSize = 12
     TitleSub.Font = Enum.Font.GothamMedium
     TitleSub.Parent = TitleContainer
@@ -188,8 +202,8 @@ local function LoadMainScript()
     -- Header Controls
     local ToggleBtn = Instance.new("TextButton")
     ToggleBtn.Size = UDim2.new(0, 26, 0, 26)
-    ToggleBtn.Position = UDim2.new(1, -32, 0, 5)
-    ToggleBtn.BackgroundColor3 = Color3.fromRGB(40, 44, 55)
+    ToggleBtn.Position = UDim2.new(1, -32, 0, 6)
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
     ToggleBtn.Text = "-"
     ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     ToggleBtn.TextSize = 16
@@ -201,12 +215,12 @@ local function LoadMainScript()
     ToggleCorner.Parent = ToggleBtn
 
     local PowerBtn = Instance.new("TextButton")
-    PowerBtn.Size = UDim2.new(0, 26, 0, 26)
-    PowerBtn.Position = UDim2.new(0, 6, 0, 5)
-    PowerBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 120)
+    PowerBtn.Size = UDim2.new(0, 28, 0, 26)
+    PowerBtn.Position = UDim2.new(0, 6, 0, 6)
+    PowerBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 130)
     PowerBtn.Text = "ON"
-    PowerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    PowerBtn.TextSize = 10
+    PowerBtn.TextColor3 = Color3.fromRGB(15, 17, 23)
+    PowerBtn.TextSize = 11
     PowerBtn.Font = Enum.Font.GothamBold
     PowerBtn.Parent = Header
 
@@ -216,9 +230,9 @@ local function LoadMainScript()
 
     -- TAB BAR
     local TabBar = Instance.new("Frame")
-    TabBar.Size = UDim2.new(1, -20, 0, 28)
-    TabBar.Position = UDim2.new(0, 10, 0, 42)
-    TabBar.BackgroundColor3 = Color3.fromRGB(15, 17, 22)
+    TabBar.Size = UDim2.new(1, -20, 0, 30)
+    TabBar.Position = UDim2.new(0, 10, 0, 44)
+    TabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
     TabBar.BorderSizePixel = 0
     TabBar.Parent = MainFrame
 
@@ -233,7 +247,7 @@ local function LoadMainScript()
 
     local Tab1Btn = Instance.new("TextButton")
     Tab1Btn.Size = UDim2.new(0.333, 0, 1, 0)
-    Tab1Btn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    Tab1Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
     Tab1Btn.Text = "🔍 Inspector"
     Tab1Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
     Tab1Btn.Font = Enum.Font.GothamBold
@@ -247,8 +261,8 @@ local function LoadMainScript()
     local Tab2Btn = Instance.new("TextButton")
     Tab2Btn.Size = UDim2.new(0.333, 0, 1, 0)
     Tab2Btn.BackgroundTransparency = 1
-    Tab2Btn.Text = "🌐 World"
-    Tab2Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+    Tab2Btn.Text = "🌐 All Game Scan"
+    Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
     Tab2Btn.Font = Enum.Font.GothamBold
     Tab2Btn.TextSize = 11
     Tab2Btn.Parent = TabBar
@@ -260,8 +274,8 @@ local function LoadMainScript()
     local Tab3Btn = Instance.new("TextButton")
     Tab3Btn.Size = UDim2.new(0.334, 0, 1, 0)
     Tab3Btn.BackgroundTransparency = 1
-    Tab3Btn.Text = "📜 Script"
-    Tab3Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+    Tab3Btn.Text = "📜 Executor"
+    Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
     Tab3Btn.Font = Enum.Font.GothamBold
     Tab3Btn.TextSize = 11
     Tab3Btn.Parent = TabBar
@@ -274,15 +288,15 @@ local function LoadMainScript()
     -- TAB 1 CONTENT
     ----------------------------------------------------
     local Tab1Content = Instance.new("Frame")
-    Tab1Content.Size = UDim2.new(1, -20, 1, -80)
-    Tab1Content.Position = UDim2.new(0, 10, 0, 75)
+    Tab1Content.Size = UDim2.new(1, -20, 1, -85)
+    Tab1Content.Position = UDim2.new(0, 10, 0, 80)
     Tab1Content.BackgroundTransparency = 1
     Tab1Content.Parent = MainFrame
 
     local ScrollFrame1 = Instance.new("ScrollingFrame")
-    ScrollFrame1.Size = UDim2.new(0, 230, 0, 135)
+    ScrollFrame1.Size = UDim2.new(0, 245, 0, 140)
     ScrollFrame1.Position = UDim2.new(0, 0, 0, 0)
-    ScrollFrame1.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    ScrollFrame1.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
     ScrollFrame1.BorderSizePixel = 0
     ScrollFrame1.AutomaticCanvasSize = Enum.AutomaticSize.Y
     ScrollFrame1.ScrollBarThickness = 3
@@ -313,13 +327,13 @@ local function LoadMainScript()
     InfoPadding.Parent = InfoBox
 
     local CopyBtn1 = Instance.new("TextButton")
-    CopyBtn1.Size = UDim2.new(0, 230, 0, 34)
-    CopyBtn1.Position = UDim2.new(0, 0, 0, 142)
-    CopyBtn1.BackgroundColor3 = Color3.fromRGB(35, 130, 85)
-    CopyBtn1.Text = "📋 Copy Info"
+    CopyBtn1.Size = UDim2.new(0, 245, 0, 34)
+    CopyBtn1.Position = UDim2.new(0, 0, 0, 146)
+    CopyBtn1.BackgroundColor3 = Color3.fromRGB(30, 140, 90)
+    CopyBtn1.Text = "📋 Copy Thông Tin"
     CopyBtn1.TextColor3 = Color3.fromRGB(255, 255, 255)
     CopyBtn1.Font = Enum.Font.GothamBold
-    CopyBtn1.TextSize = 12
+    CopyBtn1.TextSize = 11
     CopyBtn1.Parent = Tab1Content
 
     local Copy1Corner = Instance.new("UICorner")
@@ -327,13 +341,13 @@ local function LoadMainScript()
     Copy1Corner.Parent = CopyBtn1
 
     local TweenBtn1 = Instance.new("TextButton")
-    TweenBtn1.Size = UDim2.new(0, 230, 0, 34)
-    TweenBtn1.Position = UDim2.new(0, 0, 0, 181)
-    TweenBtn1.BackgroundColor3 = Color3.fromRGB(0, 122, 220)
-    TweenBtn1.Text = "🚀 Tween To Target"
+    TweenBtn1.Size = UDim2.new(0, 245, 0, 34)
+    TweenBtn1.Position = UDim2.new(0, 0, 0, 185)
+    TweenBtn1.BackgroundColor3 = Color3.fromRGB(0, 130, 230)
+    TweenBtn1.Text = "🚀 Tween Đến Vị Trí"
     TweenBtn1.TextColor3 = Color3.fromRGB(255, 255, 255)
     TweenBtn1.Font = Enum.Font.GothamBold
-    TweenBtn1.TextSize = 12
+    TweenBtn1.TextSize = 11
     TweenBtn1.Parent = Tab1Content
 
     local Tween1Corner = Instance.new("UICorner")
@@ -342,9 +356,9 @@ local function LoadMainScript()
 
     -- Viewport 3D (Tab 1)
     local Viewport1 = Instance.new("ViewportFrame")
-    Viewport1.Size = UDim2.new(0, 162, 0, 215)
-    Viewport1.Position = UDim2.new(1, -162, 0, 0)
-    Viewport1.BackgroundColor3 = Color3.fromRGB(15, 17, 22)
+    Viewport1.Size = UDim2.new(0, 165, 0, 219)
+    Viewport1.Position = UDim2.new(1, -165, 0, 0)
+    Viewport1.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
     Viewport1.BorderSizePixel = 0
     Viewport1.Active = true
     Viewport1.Parent = Tab1Content
@@ -358,20 +372,20 @@ local function LoadMainScript()
     Camera1.Parent = Viewport1
 
     ----------------------------------------------------
-    -- TAB 2 CONTENT (WORLD TAB)
+    -- TAB 2 CONTENT (UNIVERSAL ALL GAME SCANNER)
     ----------------------------------------------------
     local Tab2Content = Instance.new("Frame")
-    Tab2Content.Size = UDim2.new(1, -20, 1, -80)
-    Tab2Content.Position = UDim2.new(0, 10, 0, 75)
+    Tab2Content.Size = UDim2.new(1, -20, 1, -85)
+    Tab2Content.Position = UDim2.new(0, 10, 0, 80)
     Tab2Content.BackgroundTransparency = 1
     Tab2Content.Visible = false
     Tab2Content.Parent = MainFrame
 
     -- Group List Scroll
     local GroupScroll = Instance.new("ScrollingFrame")
-    GroupScroll.Size = UDim2.new(0, 125, 0, 180)
+    GroupScroll.Size = UDim2.new(0, 140, 0, 182)
     GroupScroll.Position = UDim2.new(0, 0, 0, 0)
-    GroupScroll.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    GroupScroll.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
     GroupScroll.BorderSizePixel = 0
     GroupScroll.ScrollBarThickness = 3
     GroupScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -383,28 +397,28 @@ local function LoadMainScript()
 
     local GroupListLayout = Instance.new("UIListLayout")
     GroupListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    GroupListLayout.Padding = UDim.new(0, 3)
+    GroupListLayout.Padding = UDim.new(0, 4)
     GroupListLayout.Parent = GroupScroll
 
     local RefreshBtn = Instance.new("TextButton")
-    RefreshBtn.Size = UDim2.new(0, 125, 0, 30)
-    RefreshBtn.Position = UDim2.new(0, 0, 0, 185)
-    RefreshBtn.BackgroundColor3 = Color3.fromRGB(45, 90, 180)
-    RefreshBtn.Text = "🔄 Scan World"
+    RefreshBtn.Size = UDim2.new(0, 140, 0, 32)
+    RefreshBtn.Position = UDim2.new(0, 0, 0, 187)
+    RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 95, 200)
+    RefreshBtn.Text = "🔄 Quét Tập Tin Game"
     RefreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     RefreshBtn.Font = Enum.Font.GothamBold
-    RefreshBtn.TextSize = 11
+    RefreshBtn.TextSize = 10
     RefreshBtn.Parent = Tab2Content
 
     local RefreshCorner = Instance.new("UICorner")
     RefreshCorner.CornerRadius = UDim.new(0, 8)
     RefreshCorner.Parent = RefreshBtn
 
-    -- World Info Center Box
+    -- World Info Box
     local WorldInfoBox = Instance.new("TextBox")
-    WorldInfoBox.Size = UDim2.new(0, 135, 0, 145)
-    WorldInfoBox.Position = UDim2.new(0, 132, 0, 0)
-    WorldInfoBox.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    WorldInfoBox.Size = UDim2.new(0, 140, 0, 146)
+    WorldInfoBox.Position = UDim2.new(0, 146, 0, 0)
+    WorldInfoBox.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
     WorldInfoBox.BorderSizePixel = 0
     WorldInfoBox.TextColor3 = Color3.fromRGB(220, 225, 235)
     WorldInfoBox.TextSize = 10
@@ -414,7 +428,7 @@ local function LoadMainScript()
     WorldInfoBox.TextWrapped = true
     WorldInfoBox.ClearTextOnFocus = false
     WorldInfoBox.TextEditable = false
-    WorldInfoBox.Text = "Chọn danh mục bên trái..."
+    WorldInfoBox.Text = "Chọn danh mục tập tin bên trái..."
     WorldInfoBox.Parent = Tab2Content
 
     local WorldInfoCorner = Instance.new("UICorner")
@@ -427,13 +441,13 @@ local function LoadMainScript()
     WorldInfoPadding.Parent = WorldInfoBox
 
     local WorldCopyBtn = Instance.new("TextButton")
-    WorldCopyBtn.Size = UDim2.new(0, 135, 0, 32)
-    WorldCopyBtn.Position = UDim2.new(0, 132, 0, 150)
-    WorldCopyBtn.BackgroundColor3 = Color3.fromRGB(35, 130, 85)
-    WorldCopyBtn.Text = "📋 Copy Info"
+    WorldCopyBtn.Size = UDim2.new(0, 140, 0, 33)
+    WorldCopyBtn.Position = UDim2.new(0, 146, 0, 150)
+    WorldCopyBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 90)
+    WorldCopyBtn.Text = "📋 Copy Thông Tin"
     WorldCopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     WorldCopyBtn.Font = Enum.Font.GothamBold
-    WorldCopyBtn.TextSize = 11
+    WorldCopyBtn.TextSize = 10
     WorldCopyBtn.Parent = Tab2Content
 
     local WorldCopyCorner = Instance.new("UICorner")
@@ -441,13 +455,13 @@ local function LoadMainScript()
     WorldCopyCorner.Parent = WorldCopyBtn
 
     local WorldTweenBtn = Instance.new("TextButton")
-    WorldTweenBtn.Size = UDim2.new(0, 135, 0, 30)
-    WorldTweenBtn.Position = UDim2.new(0, 132, 0, 185)
-    WorldTweenBtn.BackgroundColor3 = Color3.fromRGB(0, 122, 220)
-    WorldTweenBtn.Text = "🚀 Tween To"
+    WorldTweenBtn.Size = UDim2.new(0, 140, 0, 32)
+    WorldTweenBtn.Position = UDim2.new(0, 146, 0, 187)
+    WorldTweenBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 230)
+    WorldTweenBtn.Text = "🚀 Tween Đến"
     WorldTweenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     WorldTweenBtn.Font = Enum.Font.GothamBold
-    WorldTweenBtn.TextSize = 11
+    WorldTweenBtn.TextSize = 10
     WorldTweenBtn.Parent = Tab2Content
 
     local WorldTweenCorner = Instance.new("UICorner")
@@ -456,9 +470,9 @@ local function LoadMainScript()
 
     -- Viewport 3D (Tab 2 World)
     local Viewport2 = Instance.new("ViewportFrame")
-    Viewport2.Size = UDim2.new(0, 125, 0, 215)
-    Viewport2.Position = UDim2.new(1, -125, 0, 0)
-    Viewport2.BackgroundColor3 = Color3.fromRGB(15, 17, 22)
+    Viewport2.Size = UDim2.new(0, 124, 0, 219)
+    Viewport2.Position = UDim2.new(1, -124, 0, 0)
+    Viewport2.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
     Viewport2.BorderSizePixel = 0
     Viewport2.Active = true
     Viewport2.Parent = Tab2Content
@@ -472,11 +486,11 @@ local function LoadMainScript()
     Camera2.Parent = Viewport2
 
     ----------------------------------------------------
-    -- TAB 3 CONTENT (SCRIPT EXECUTER TAB)
+    -- TAB 3 CONTENT (SCRIPT EXECUTERS)
     ----------------------------------------------------
     local Tab3Content = Instance.new("Frame")
-    Tab3Content.Size = UDim2.new(1, -20, 1, -80)
-    Tab3Content.Position = UDim2.new(0, 10, 0, 75)
+    Tab3Content.Size = UDim2.new(1, -20, 1, -85)
+    Tab3Content.Position = UDim2.new(0, 10, 0, 80)
     Tab3Content.BackgroundTransparency = 1
     Tab3Content.Visible = false
     Tab3Content.Parent = MainFrame
@@ -484,17 +498,17 @@ local function LoadMainScript()
     local Tab3Layout = Instance.new("UIListLayout")
     Tab3Layout.FillDirection = Enum.FillDirection.Vertical
     Tab3Layout.SortOrder = Enum.SortOrder.LayoutOrder
-    Tab3Layout.Padding = UDim.new(0, 10)
+    Tab3Layout.Padding = UDim.new(0, 12)
     Tab3Layout.Parent = Tab3Content
 
-    -- Remote Spy
+    -- Remote Spy Button
     local RemoteSpyBtn = Instance.new("TextButton")
-    RemoteSpyBtn.Size = UDim2.new(1, 0, 0, 45)
-    RemoteSpyBtn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
-    RemoteSpyBtn.Text = "📡 Remote Spy"
+    RemoteSpyBtn.Size = UDim2.new(1, 0, 0, 48)
+    RemoteSpyBtn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
+    RemoteSpyBtn.Text = "📡 Remote Spy (Soi Event & Function Game)"
     RemoteSpyBtn.TextColor3 = Color3.fromRGB(0, 255, 170)
     RemoteSpyBtn.Font = Enum.Font.GothamBold
-    RemoteSpyBtn.TextSize = 14
+    RemoteSpyBtn.TextSize = 13
     RemoteSpyBtn.Parent = Tab3Content
 
     local RemoteSpyCorner = Instance.new("UICorner")
@@ -504,7 +518,7 @@ local function LoadMainScript()
     local RemoteSpyStroke = Instance.new("UIStroke")
     RemoteSpyStroke.Color = Color3.fromRGB(0, 255, 170)
     RemoteSpyStroke.Thickness = 1
-    RemoteSpyStroke.Transparency = 0.7
+    RemoteSpyStroke.Transparency = 0.6
     RemoteSpyStroke.Parent = RemoteSpyBtn
 
     RemoteSpyBtn.MouseButton1Click:Connect(function()
@@ -513,14 +527,14 @@ local function LoadMainScript()
         end)
     end)
 
-    -- Dex++
+    -- Dex Explorer Button
     local DexBtn = Instance.new("TextButton")
-    DexBtn.Size = UDim2.new(1, 0, 0, 45)
-    DexBtn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
-    DexBtn.Text = "🔍 Dex++"
-    DexBtn.TextColor3 = Color3.fromRGB(0, 170, 255)
+    DexBtn.Size = UDim2.new(1, 0, 0, 48)
+    DexBtn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
+    DexBtn.Text = "🔍 Dark Dex Explorer (Xem Cấu Trúc Script)"
+    DexBtn.TextColor3 = Color3.fromRGB(0, 180, 255)
     DexBtn.Font = Enum.Font.GothamBold
-    DexBtn.TextSize = 14
+    DexBtn.TextSize = 13
     DexBtn.Parent = Tab3Content
 
     local DexCorner = Instance.new("UICorner")
@@ -528,9 +542,9 @@ local function LoadMainScript()
     DexCorner.Parent = DexBtn
 
     local DexStroke = Instance.new("UIStroke")
-    DexStroke.Color = Color3.fromRGB(0, 170, 255)
+    DexStroke.Color = Color3.fromRGB(0, 180, 255)
     DexStroke.Thickness = 1
-    DexStroke.Transparency = 0.7
+    DexStroke.Transparency = 0.6
     DexStroke.Parent = DexBtn
 
     DexBtn.MouseButton1Click:Connect(function()
@@ -549,17 +563,17 @@ local function LoadMainScript()
         if PreviewModelTab2 then PreviewModelTab2:Destroy() PreviewModelTab2 = nil end
     end
 
-    -- Tab Switch Logic
+    -- Tab Switching Logic
     Tab1Btn.MouseButton1Click:Connect(function()
-        Tab1Btn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+        Tab1Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
         Tab1Btn.BackgroundTransparency = 0
         Tab1Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
         
         Tab2Btn.BackgroundTransparency = 1
-        Tab2Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab3Btn.BackgroundTransparency = 1
-        Tab3Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab1Content.Visible = true
         Tab2Content.Visible = false
@@ -567,15 +581,15 @@ local function LoadMainScript()
     end)
 
     Tab2Btn.MouseButton1Click:Connect(function()
-        Tab2Btn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+        Tab2Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
         Tab2Btn.BackgroundTransparency = 0
         Tab2Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
         
         Tab1Btn.BackgroundTransparency = 1
-        Tab1Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab1Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab3Btn.BackgroundTransparency = 1
-        Tab3Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab1Content.Visible = false
         Tab2Content.Visible = true
@@ -583,22 +597,22 @@ local function LoadMainScript()
     end)
 
     Tab3Btn.MouseButton1Click:Connect(function()
-        Tab3Btn.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+        Tab3Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
         Tab3Btn.BackgroundTransparency = 0
         Tab3Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
         
         Tab1Btn.BackgroundTransparency = 1
-        Tab1Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab1Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab2Btn.BackgroundTransparency = 1
-        Tab2Btn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
         
         Tab1Content.Visible = false
         Tab2Content.Visible = false
         Tab3Content.Visible = true
     end)
 
-    -- Menu Minimize/Maximize
+    -- Minimize Window
     local isMinimized = false
     ToggleBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
@@ -606,15 +620,15 @@ local function LoadMainScript()
         Tab2Content.Visible = (not isMinimized) and (Tab2Btn.BackgroundTransparency == 0)
         Tab3Content.Visible = (not isMinimized) and (Tab3Btn.BackgroundTransparency == 0)
         TabBar.Visible = not isMinimized
-        MainFrame.Size = isMinimized and UDim2.new(0, 420, 0, 36) or UDim2.new(0, 420, 0, 300)
+        MainFrame.Size = isMinimized and UDim2.new(0, 440, 0, 38) or UDim2.new(0, 440, 0, 310)
         ToggleBtn.Text = isMinimized and "+" or "-"
     end)
 
-    -- Power Toggle
+    -- Toggle Power
     PowerBtn.MouseButton1Click:Connect(function()
         scriptEnabled = not scriptEnabled
         PowerBtn.Text = scriptEnabled and "ON" or "OFF"
-        PowerBtn.BackgroundColor3 = scriptEnabled and Color3.fromRGB(0, 200, 120) or Color3.fromRGB(220, 50, 60)
+        PowerBtn.BackgroundColor3 = scriptEnabled and Color3.fromRGB(0, 220, 130) or Color3.fromRGB(230, 50, 60)
         
         if not scriptEnabled then
             ClearEffects()
@@ -628,7 +642,6 @@ local function LoadMainScript()
     -- ESP Highlight
     local function HighlightObject(target, targetType)
         if CurrentHighlight then CurrentHighlight:Destroy() end
-        
         if not (target:IsA("Model") or target:IsA("BasePart")) then return end
 
         local highlight = Instance.new("Highlight")
@@ -636,20 +649,20 @@ local function LoadMainScript()
         
         if string.find(targetType, "Player") then
             highlight.FillColor = Color3.fromRGB(255, 60, 60)
-        elseif string.find(targetType, "NPC") or string.find(targetType, "Enemies") then
+        elseif string.find(targetType, "NPC") or string.find(targetType, "Quái") or string.find(targetType, "Enemies") then
             highlight.FillColor = Color3.fromRGB(255, 190, 0)
         else
             highlight.FillColor = Color3.fromRGB(0, 255, 170)
         end
 
-        highlight.FillTransparency = 0.5
+        highlight.FillTransparency = 0.4
         highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
         highlight.Adornee = target
         highlight.Parent = target
         CurrentHighlight = highlight
     end
 
-    -- Camera 3D Orbit Render Functions
+    -- Camera Orbit Updates
     local function UpdateCamera1()
         if not PreviewModelTab1 then return end
         local radX, radY = math.rad(cam1AngleX), math.rad(cam1AngleY)
@@ -668,9 +681,7 @@ local function LoadMainScript()
         Camera2.CFrame = CFrame.new(cam2TargetCenter + Vector3.new(x, y, z), cam2TargetCenter)
     end
 
-    ----------------------------------------------------
-    -- SMART 3D PREVIEW
-    ----------------------------------------------------
+    -- 3D Preview Engine
     local function Render3DPreview(target, tabIndex)
         pcall(function()
             if tabIndex == 1 and PreviewModelTab1 then PreviewModelTab1:Destroy() PreviewModelTab1 = nil end
@@ -690,7 +701,6 @@ local function LoadMainScript()
             end
 
             local maxDim = math.max(size.X, size.Y, size.Z)
-            
             local wrapper = Instance.new("Model")
             local previewObj
 
@@ -782,7 +792,7 @@ local function LoadMainScript()
     end)
 
     ----------------------------------------------------
-    -- DYNAMIC WORLD SCANNER
+    -- UNIVERSAL ALL-GAME SCANNER ENGINE (TAB 2)
     ----------------------------------------------------
     local worldCategories = {}
     local RenderItemList
@@ -828,20 +838,21 @@ local function LoadMainScript()
 
         local rootNameLower = string.lower(rootAncestor.Name)
 
-        if string.find(rootNameLower, "island") or string.find(rootNameLower, "map") or string.find(rootNameLower, "dao") or string.find(rootNameLower, "location") then
-            return "Đảo / Map", "🏝️"
-        elseif string.find(rootNameLower, "enemy") or string.find(rootNameLower, "enemies") or string.find(rootNameLower, "mob") or string.find(rootNameLower, "boss") then
+        -- Quét thông minh hỗ trợ tất cả Game Roblox (Blox Fruits, MM2, Pet Sim, King Legacy,...)
+        if string.find(rootNameLower, "island") or string.find(rootNameLower, "map") or string.find(rootNameLower, "dao") or string.find(rootNameLower, "location") or string.find(rootNameLower, "world") then
+            return "Đảo / Bản đồ", "🏝️"
+        elseif string.find(rootNameLower, "enemy") or string.find(rootNameLower, "enemies") or string.find(rootNameLower, "mob") or string.find(rootNameLower, "boss") or string.find(rootNameLower, "monster") then
             return "Quái / Enemies", "⚔️"
-        elseif string.find(rootNameLower, "npc") or string.find(rootNameLower, "quest") then
-            return "NPCs", "🤖"
-        elseif string.find(rootNameLower, "chest") or string.find(rootNameLower, "box") then
+        elseif string.find(rootNameLower, "npc") or string.find(rootNameLower, "quest") or string.find(rootNameLower, "dialogue") then
+            return "NPCs / Giao tiếp", "🤖"
+        elseif string.find(rootNameLower, "chest") or string.find(rootNameLower, "box") or string.find(rootNameLower, "crate") or string.find(rootNameLower, "loot") then
             return "Rương / Chests", "🎁"
-        elseif string.find(rootNameLower, "fruit") or string.find(rootNameLower, "item") or string.find(rootNameLower, "drop") then
-            return "Trái / Items", "🍎"
-        elseif string.find(rootNameLower, "tree") or string.find(rootNameLower, "cay") or string.find(rootNameLower, "foliage") then
-            return "Cây / Thực vật", "🌲"
+        elseif string.find(rootNameLower, "fruit") or string.find(rootNameLower, "item") or string.find(rootNameLower, "drop") or string.find(rootNameLower, "weapon") or string.find(rootNameLower, "coin") then
+            return "Vật phẩm / Items", "🍎"
+        elseif string.find(rootNameLower, "tree") or string.find(rootNameLower, "foliage") or string.find(rootNameLower, "prop") then
+            return "Cảnh quan / Props", "🌲"
         elseif obj:IsA("Model") and obj:FindFirstChildOfClass("Humanoid") then
-            return "NPCs & Mobs", "👾"
+            return "Nhân vật / Mobs", "👾"
         elseif rootAncestor:IsA("Folder") or rootAncestor:IsA("Model") then
             return rootAncestor.Name, "📁"
         end
@@ -856,9 +867,9 @@ local function LoadMainScript()
 
         local backBtn = Instance.new("TextButton")
         backBtn.Size = UDim2.new(1, -4, 0, 24)
-        backBtn.BackgroundColor3 = Color3.fromRGB(80, 40, 45)
+        backBtn.BackgroundColor3 = Color3.fromRGB(75, 35, 45)
         backBtn.Text = " ⬅ Trở về danh mục"
-        backBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+        backBtn.TextColor3 = Color3.fromRGB(255, 190, 190)
         backBtn.Font = Enum.Font.GothamBold
         backBtn.TextSize = 10
         backBtn.TextXAlignment = Enum.TextXAlignment.Left
@@ -877,7 +888,7 @@ local function LoadMainScript()
             local isSubCategory = IsCategoryContainer(item)
             local itemBtn = Instance.new("TextButton")
             itemBtn.Size = UDim2.new(1, -4, 0, 24)
-            itemBtn.BackgroundColor3 = isSubCategory and Color3.fromRGB(45, 55, 75) or Color3.fromRGB(32, 48, 60)
+            itemBtn.BackgroundColor3 = isSubCategory and Color3.fromRGB(38, 48, 68) or Color3.fromRGB(28, 38, 52)
             
             local prefix = isSubCategory and "📁 " or string.format("#%d: ", idx)
             itemBtn.Text = string.format(" %s%s", prefix, item.Name)
@@ -923,7 +934,7 @@ local function LoadMainScript()
     end
 
     local function ScanWorldObjects()
-        RefreshBtn.Text = "⏳ Loading..."
+        RefreshBtn.Text = "⏳ Đang quét Game..."
         RefreshBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 30)
 
         for _, child in pairs(GroupScroll:GetChildren()) do
@@ -971,7 +982,7 @@ local function LoadMainScript()
                 if #catData.Items > 0 then
                     local btn = Instance.new("TextButton")
                     btn.Size = UDim2.new(1, -4, 0, 26)
-                    btn.BackgroundColor3 = Color3.fromRGB(38, 42, 54)
+                    btn.BackgroundColor3 = Color3.fromRGB(32, 36, 48)
                     btn.Text = string.format(" %s %s (%d)", catData.Icon, catName, #catData.Items)
                     btn.TextColor3 = Color3.fromRGB(220, 225, 235)
                     btn.Font = Enum.Font.GothamBold
@@ -992,8 +1003,8 @@ local function LoadMainScript()
                 end
             end
 
-            RefreshBtn.Text = "🔄 Scan World"
-            RefreshBtn.BackgroundColor3 = Color3.fromRGB(45, 90, 180)
+            RefreshBtn.Text = "🔄 Quét Tập Tin Game"
+            RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 95, 200)
         end)
     end
 
@@ -1042,7 +1053,7 @@ local function LoadMainScript()
     TweenBtn1.MouseButton1Click:Connect(DoTween)
     WorldTweenBtn.MouseButton1Click:Connect(DoTween)
 
-    -- Raycast Target Picker
+    -- Raycast Click Picker (Tab 1 Inspector)
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed or not scriptEnabled then return end
         
@@ -1086,16 +1097,16 @@ local function LoadMainScript()
         end
     end)
 
-    -- Scan Ban Đầu
+    -- Quét khởi tạo ban đầu
     ScanWorldObjects()
 end
 
--- Hiệu ứng chạy thanh đầy (2.5 giây) -> Đóng UI 1 -> Mở Main Script
+-- Chạy thanh tiến trình màn hình Welcome (2.5s) -> Mở Main UI
 local fillTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 local fillTween = TweenService:Create(LoadingFill, fillTweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
 
 fillTween:Play()
 fillTween.Completed:Connect(function()
-    WelcomeGui:Destroy() -- Đóng UI 1
-    LoadMainScript()    -- Mở script dox v2 by nhatlong
+    WelcomeGui:Destroy()
+    LoadMainScript()
 end)
