@@ -1,0 +1,331 @@
+-- Services
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+-- System State
+local scriptEnabled = true
+local currentTargetPos = nil
+local CurrentHighlight = nil
+local PreviewModel = nil
+
+-- ScreenGui Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MakeScript_NhatLong"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+-- Main Window (Chiều cao đã thu gọn xuống 260px)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 380, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -190, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainUICorner = Instance.new("UICorner")
+MainUICorner.CornerRadius = UDim.new(0, 10)
+MainUICorner.Parent = MainFrame
+
+-- Header Bar
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 35)
+Header.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 10)
+HeaderCorner.Parent = Header
+
+-- Title Container (Góc trên ở giữa)
+local TitleContainer = Instance.new("Frame")
+TitleContainer.Size = UDim2.new(1, -70, 1, 0)
+TitleContainer.Position = UDim2.new(0, 35, 0, 0)
+TitleContainer.BackgroundTransparency = 1
+TitleContainer.Parent = Header
+
+local UIListLayoutHeader = Instance.new("UIListLayout")
+UIListLayoutHeader.FillDirection = Enum.FillDirection.Horizontal
+UIListLayoutHeader.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayoutHeader.VerticalAlignment = Enum.VerticalAlignment.Center
+UIListLayoutHeader.Padding = UDim.new(0, 5)
+UIListLayoutHeader.Parent = TitleContainer
+
+-- Tên chính: dox+
+local TitleMain = Instance.new("TextLabel")
+TitleMain.Size = UDim2.new(0, 0, 1, 0)
+TitleMain.AutomaticSize = Enum.AutomaticSize.X
+TitleMain.BackgroundTransparency = 1
+TitleMain.Text = "dox+"
+TitleMain.TextColor3 = Color3.fromRGB(0, 255, 170)
+TitleMain.TextSize = 16
+TitleMain.Font = Enum.Font.SourceSansBold
+TitleMain.Parent = TitleContainer
+
+-- Ghi chú nhỏ mờ: (by nhatlong)
+local TitleSub = Instance.new("TextLabel")
+TitleSub.Size = UDim2.new(0, 0, 1, 0)
+TitleSub.AutomaticSize = Enum.AutomaticSize.X
+TitleSub.BackgroundTransparency = 1
+TitleSub.Text = "(by nhatlong)"
+TitleSub.TextColor3 = Color3.fromRGB(140, 140, 150)
+TitleSub.TextSize = 11
+TitleSub.Font = Enum.Font.SourceSansItalic
+TitleSub.Parent = TitleContainer
+
+-- Nút Thu/Phóng
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(0, 25, 0, 25)
+ToggleBtn.Position = UDim2.new(1, -30, 0, 5)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+ToggleBtn.Text = "-"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.TextSize = 16
+ToggleBtn.Font = Enum.Font.SourceSansBold
+ToggleBtn.Parent = Header
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 5)
+BtnCorner.Parent = ToggleBtn
+
+-- Nút Bật/Tắt Script
+local PowerBtn = Instance.new("TextButton")
+PowerBtn.Size = UDim2.new(0, 25, 0, 25)
+PowerBtn.Position = UDim2.new(0, 5, 0, 5)
+PowerBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+PowerBtn.Text = "ON"
+PowerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+PowerBtn.TextSize = 10
+PowerBtn.Font = Enum.Font.SourceSansBold
+PowerBtn.Parent = Header
+
+local PowerCorner = Instance.new("UICorner")
+PowerCorner.CornerRadius = UDim.new(0, 5)
+PowerCorner.Parent = PowerBtn
+
+-- Content Container
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -45)
+Content.Position = UDim2.new(0, 10, 0, 40)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
+
+-- Scrolling Frame cho Thông tin (Nửa Bên Trái)
+local ScrollFrame = Instance.new("ScrollingFrame")
+ScrollFrame.Size = UDim2.new(0, 210, 0, 130)
+ScrollFrame.Position = UDim2.new(0, 0, 0, 0)
+ScrollFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ScrollFrame.ScrollBarThickness = 4
+ScrollFrame.Parent = Content
+
+local ScrollCorner = Instance.new("UICorner")
+ScrollCorner.CornerRadius = UDim.new(0, 6)
+ScrollCorner.Parent = ScrollFrame
+
+-- TextBox Thông Tin (Cho phép chọn/sao chép trực tiếp từng dòng)
+local InfoBox = Instance.new("TextBox")
+InfoBox.Size = UDim2.new(1, -10, 0, 0)
+InfoBox.AutomaticSize = Enum.AutomaticSize.Y
+InfoBox.BackgroundTransparency = 1
+InfoBox.TextColor3 = Color3.fromRGB(220, 220, 220)
+InfoBox.TextSize = 11
+InfoBox.Font = Enum.Font.Code
+InfoBox.TextXAlignment = Enum.TextXAlignment.Left
+InfoBox.TextYAlignment = Enum.TextYAlignment.Top
+InfoBox.TextWrapped = true
+InfoBox.ClearTextOnFocus = false
+InfoBox.TextEditable = false -- Chỉ cho phép xem/sao chép
+InfoBox.Text = "Chạm vào vật thể để xem thông tin...\n\n• Tên: N/A\n• Code Path: N/A\n• Raw Vector3: N/A"
+InfoBox.Parent = ScrollFrame
+
+local InfoPadding = Instance.new("UIPadding")
+InfoPadding.PaddingTop = UDim.new(0, 6)
+InfoPadding.PaddingLeft = UDim.new(0, 6)
+InfoPadding.Parent = InfoBox
+
+-- Nút Copy Toàn Bộ Thông Tin
+local CopyBtn = Instance.new("TextButton")
+CopyBtn.Size = UDim2.new(0, 210, 0, 30)
+CopyBtn.Position = UDim2.new(0, 0, 0, 135)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(45, 120, 80)
+CopyBtn.Text = "📋 Copy Info (Sao chép)"
+CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyBtn.Font = Enum.Font.SourceSansBold
+CopyBtn.TextSize = 13
+CopyBtn.Parent = Content
+
+local CopyCorner = Instance.new("UICorner")
+CopyCorner.CornerRadius = UDim.new(0, 6)
+CopyCorner.Parent = CopyBtn
+
+-- Nút Tween Bay Đến
+local TweenBtn = Instance.new("TextButton")
+TweenBtn.Size = UDim2.new(0, 210, 0, 35)
+TweenBtn.Position = UDim2.new(0, 0, 0, 170)
+TweenBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 220)
+TweenBtn.Text = "🚀 Tween To Object"
+TweenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TweenBtn.Font = Enum.Font.SourceSansBold
+TweenBtn.TextSize = 13
+TweenBtn.Parent = Content
+
+local TweenBtnCorner = Instance.new("UICorner")
+TweenBtnCorner.CornerRadius = UDim.new(0, 6)
+TweenBtnCorner.Parent = TweenBtn
+
+-- ViewportFrame 3D (Đã chuyển sang góc BÊN PHẢI Menu)
+local Viewport = Instance.new("ViewportFrame")
+Viewport.Size = UDim2.new(0, 140, 0, 205)
+Viewport.Position = UDim2.new(1, -140, 0, 0)
+Viewport.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+Viewport.BorderSizePixel = 0
+Viewport.Parent = Content
+
+local ViewportCorner = Instance.new("UICorner")
+ViewportCorner.CornerRadius = UDim.new(0, 6)
+ViewportCorner.Parent = Viewport
+
+local ViewportCamera = Instance.new("Camera")
+Viewport.CurrentCamera = ViewportCamera
+ViewportCamera.Parent = Viewport
+
+-- Functions Logic
+local function ClearEffects()
+    if CurrentHighlight then CurrentHighlight:Destroy() CurrentHighlight = nil end
+    if PreviewModel then PreviewModel:Destroy() PreviewModel = nil end
+end
+
+-- Thu / Phóng Menu
+local isMinimized = false
+ToggleBtn.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    Content.Visible = not isMinimized
+    MainFrame.Size = isMinimized and UDim2.new(0, 380, 0, 35) or UDim2.new(0, 380, 0, 260)
+    ToggleBtn.Text = isMinimized and "+" or "-"
+end)
+
+-- Bật / Tắt Script
+PowerBtn.MouseButton1Click:Connect(function()
+    scriptEnabled = not scriptEnabled
+    PowerBtn.Text = scriptEnabled and "ON" or "OFF"
+    PowerBtn.BackgroundColor3 = scriptEnabled and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(200, 50, 50)
+    
+    if not scriptEnabled then
+        ClearEffects()
+        InfoBox.Text = "Script đang TẮT."
+        currentTargetPos = nil
+    else
+        InfoBox.Text = "Chạm vào vật thể để xem thông tin..."
+    end
+end)
+
+-- Tạo ESP Box
+local function HighlightObject(target)
+    ClearEffects()
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ScriptTarget_ESP"
+    highlight.FillColor = Color3.fromRGB(0, 255, 170)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.OutlineTransparency = 0
+    highlight.Adornee = target
+    highlight.Parent = target
+    CurrentHighlight = highlight
+end
+
+-- Render Mô hình 3D góc bên phải
+local function Update3DPreview(target)
+    local clone = target:Clone()
+    for _, v in pairs(clone:GetDescendants()) do
+        if v:IsA("LuaSourceContainer") then v:Destroy() end
+    end
+
+    local wrapper = Instance.new("Model")
+    wrapper.Parent = Viewport
+    clone.Parent = wrapper
+
+    local cf, size = wrapper:GetBoundingBox()
+    if size.Magnitude == 0 then
+        size = Vector3.new(2, 2, 2)
+        cf = target:IsA("BasePart") and target.CFrame or CFrame.new()
+    end
+
+    local maxDim = math.max(size.X, size.Y, size.Z)
+    local distance = maxDim * 1.8
+    
+    ViewportCamera.CFrame = CFrame.new(cf.Position + Vector3.new(distance, distance * 0.5, distance), cf.Position)
+    PreviewModel = wrapper
+end
+
+-- Sao chép thông tin trực tiếp
+CopyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(InfoBox.Text)
+        local oldText = CopyBtn.Text
+        CopyBtn.Text = "✅ Đã sao chép!"
+        task.delay(1.5, function()
+            CopyBtn.Text = oldText
+        end)
+    else
+        InfoBox:CaptureFocus() -- Tự động focus text nếu Executor không hỗ trợ setclipboard
+    end
+end)
+
+-- Tween Bay Đến Vật Thể
+TweenBtn.MouseButton1Click:Connect(function()
+    if not currentTargetPos then return end
+    local character = LocalPlayer.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+    local hrp = character.HumanoidRootPart
+    local distance = (hrp.Position - currentTargetPos).Magnitude
+    local speed = 120
+    local tweenTime = distance / speed
+
+    local tweenInfo = TweenInfo.new(math.clamp(tweenTime, 0.5, 10), Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(currentTargetPos + Vector3.new(0, 3, 0))})
+    
+    tween:Play()
+end)
+
+-- Bắt sự kiện chạm / click vật thể
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed or not scriptEnabled then return end
+    
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        local target = Mouse.Target
+        if target then
+            local parentModel = target:FindFirstAncestorOfClass("Model")
+            local finalTarget = (parentModel and parentModel ~= workspace) and parentModel or target
+            
+            local cf = target:IsA("BasePart") and target.CFrame or (finalTarget:IsA("Model") and finalTarget:GetPivot() or CFrame.new())
+            currentTargetPos = cf.Position
+            
+            local rawVec3 = string.format("%.2f, %.2f, %.2f", currentTargetPos.X, currentTargetPos.Y, currentTargetPos.Z)
+            local rawCFrame = tostring(cf)
+
+            -- Cập nhật Textbox hiển thị
+            InfoBox.Text = string.format(
+                "• Tên: %s\n\n• Code Path:\n%s\n\n• Vector3:\n%s\n\n• CFrame:\n%s",
+                finalTarget.Name,
+                finalTarget:GetFullName(),
+                rawVec3,
+                rawCFrame
+            )
+            
+            HighlightObject(finalTarget)
+            pcall(function() Update3DPreview(finalTarget) end)
+        end
+    end
+end)
