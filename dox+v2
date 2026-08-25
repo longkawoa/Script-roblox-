@@ -1,1112 +1,662 @@
--- ====================================================
--- UI 1: WELCOME SCREEN (NEON MODERN LOADING UI)
--- ====================================================
-local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
-
--- Dọn dẹp Gui cũ nếu tái khởi chạy
-if CoreGui:FindFirstChild("Welcome_UI1") then CoreGui.Welcome_UI1:Destroy() end
-if CoreGui:FindFirstChild("MakeScript_NhatLong") then CoreGui.MakeScript_NhatLong:Destroy() end
-
-local WelcomeGui = Instance.new("ScreenGui")
-WelcomeGui.Name = "Welcome_UI1"
-WelcomeGui.Parent = CoreGui
-WelcomeGui.ResetOnSpawn = false
-
--- Khung hình vuông chính giữa
-local WelcomeFrame = Instance.new("Frame")
-WelcomeFrame.Name = "WelcomeFrame"
-WelcomeFrame.Size = UDim2.new(0, 230, 0, 230)
-WelcomeFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-WelcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-WelcomeFrame.BackgroundColor3 = Color3.fromRGB(15, 17, 23)
-WelcomeFrame.BorderSizePixel = 0
-WelcomeFrame.Active = true
-WelcomeFrame.Draggable = true
-WelcomeFrame.Parent = WelcomeGui
-
-local WelcomeCorner = Instance.new("UICorner")
-WelcomeCorner.CornerRadius = UDim.new(0, 16)
-WelcomeCorner.Parent = WelcomeFrame
-
-local WelcomeStroke = Instance.new("UIStroke")
-WelcomeStroke.Color = Color3.fromRGB(0, 255, 170)
-WelcomeStroke.Thickness = 1.5
-WelcomeStroke.Transparency = 0.3
-WelcomeStroke.Parent = WelcomeFrame
-
--- Corner Subtitle
-local CornerTitle = Instance.new("TextLabel")
-CornerTitle.Size = UDim2.new(0, 100, 0, 20)
-CornerTitle.Position = UDim2.new(0, 14, 0, 10)
-CornerTitle.BackgroundTransparency = 1
-CornerTitle.Text = "SYSTEM INITIALIZING"
-CornerTitle.TextColor3 = Color3.fromRGB(120, 130, 155)
-CornerTitle.TextSize = 9
-CornerTitle.Font = Enum.Font.GothamBold
-CornerTitle.TextXAlignment = Enum.TextXAlignment.Left
-CornerTitle.Parent = WelcomeFrame
-
--- Main Title
-local MainTitle = Instance.new("TextLabel")
-MainTitle.Size = UDim2.new(1, -20, 0, 40)
-MainTitle.Position = UDim2.new(0, 10, 0.38, -20)
-MainTitle.BackgroundTransparency = 1
-MainTitle.Text = "dox v2"
-MainTitle.TextColor3 = Color3.fromRGB(0, 255, 170)
-MainTitle.TextSize = 26
-MainTitle.Font = Enum.Font.GothamBold
-MainTitle.TextXAlignment = Enum.TextXAlignment.Center
-MainTitle.Parent = WelcomeFrame
-
-local SubTitle = Instance.new("TextLabel")
-SubTitle.Size = UDim2.new(1, -20, 0, 20)
-SubTitle.Position = UDim2.new(0, 10, 0.52, 0)
-SubTitle.BackgroundTransparency = 1
-SubTitle.Text = "Universal Game Scanner"
-SubTitle.TextColor3 = Color3.fromRGB(180, 190, 210)
-SubTitle.TextSize = 11
-SubTitle.Font = Enum.Font.GothamMedium
-SubTitle.TextXAlignment = Enum.TextXAlignment.Center
-SubTitle.Parent = WelcomeFrame
-
--- Loading Bar Background
-local LoadingBg = Instance.new("Frame")
-LoadingBg.Size = UDim2.new(0.85, 0, 0, 6)
-LoadingBg.Position = UDim2.new(0.075, 0, 0.8, 0)
-LoadingBg.BackgroundColor3 = Color3.fromRGB(25, 28, 38)
-LoadingBg.BorderSizePixel = 0
-LoadingBg.ClipsDescendants = true
-LoadingBg.Parent = WelcomeFrame
-
-local LoadingBgCorner = Instance.new("UICorner")
-LoadingBgCorner.CornerRadius = UDim.new(1, 0)
-LoadingBgCorner.Parent = LoadingBg
-
--- Loading Bar Fill
-local LoadingFill = Instance.new("Frame")
-LoadingFill.Size = UDim2.new(0, 0, 1, 0)
-LoadingFill.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
-LoadingFill.BorderSizePixel = 0
-LoadingFill.Parent = LoadingBg
-
-local LoadingFillCorner = Instance.new("UICorner")
-LoadingFillCorner.CornerRadius = UDim.new(1, 0)
-LoadingFillCorner.Parent = LoadingFill
-
-
--- ====================================================
--- MAIN SCRIPT (DOX V2 BY NHATLONG - UPDATED UI)
--- ====================================================
-local function LoadMainScript()
-    -- Services
-    local Players = game:GetService("Players")
-    local UserInputService = game:GetService("UserInputService")
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local Lighting = game:GetService("Lighting")
-
-    local LocalPlayer = Players.LocalPlayer
-    local Mouse = LocalPlayer:GetMouse()
-
-    -- System State
-    local scriptEnabled = true
-    local currentTargetPos = nil
-    local CurrentHighlight = nil
-
-    -- Viewport Preview Models
-    local PreviewModelTab1 = nil
-    local PreviewModelTab2 = nil
-
-    -- 3D Camera State (Tab 1)
-    local cam1AngleX, cam1AngleY, cam1Dist = 45, 20, 10
-    local cam1TargetCenter = Vector3.zero
-    local isDraggingTab1 = false
-
-    -- 3D Camera State (Tab 2)
-    local cam2AngleX, cam2AngleY, cam2Dist = 45, 20, 10
-    local cam2TargetCenter = Vector3.zero
-    local isDraggingTab2 = false
-
-    local lastInputPos = Vector2.zero
-
-    -- ScreenGui Setup
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "MakeScript_NhatLong"
-    ScreenGui.Parent = CoreGui
-    ScreenGui.ResetOnSpawn = false
-
-    -- Main Window
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 440, 0, 310)
-    MainFrame.Position = UDim2.new(0.5, -220, 0.3, 0)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 17, 23)
-    MainFrame.BorderSizePixel = 0
-    MainFrame.Active = true
-    MainFrame.Draggable = true
-    MainFrame.Parent = ScreenGui
-
-    local MainCorner = Instance.new("UICorner")
-    MainCorner.CornerRadius = UDim.new(0, 14)
-    MainCorner.Parent = MainFrame
-
-    local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Color3.fromRGB(0, 255, 170)
-    MainStroke.Thickness = 1.2
-    MainStroke.Transparency = 0.5
-    MainStroke.Parent = MainFrame
-
-    -- Header Bar
-    local Header = Instance.new("Frame")
-    Header.Size = UDim2.new(1, 0, 0, 38)
-    Header.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    Header.BorderSizePixel = 0
-    Header.Parent = MainFrame
-
-    local HeaderCorner = Instance.new("UICorner")
-    HeaderCorner.CornerRadius = UDim.new(0, 14)
-    HeaderCorner.Parent = Header
-
-    -- Title Container
-    local TitleContainer = Instance.new("Frame")
-    TitleContainer.Size = UDim2.new(1, -80, 1, 0)
-    TitleContainer.Position = UDim2.new(0, 40, 0, 0)
-    TitleContainer.BackgroundTransparency = 1
-    TitleContainer.Parent = Header
-
-    local UIListLayoutHeader = Instance.new("UIListLayout")
-    UIListLayoutHeader.FillDirection = Enum.FillDirection.Horizontal
-    UIListLayoutHeader.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    UIListLayoutHeader.VerticalAlignment = Enum.VerticalAlignment.Center
-    UIListLayoutHeader.Padding = UDim.new(0, 6)
-    UIListLayoutHeader.Parent = TitleContainer
-
-    local TitleMain = Instance.new("TextLabel")
-    TitleMain.AutomaticSize = Enum.AutomaticSize.X
-    TitleMain.BackgroundTransparency = 1
-    TitleMain.Text = "dox v2"
-    TitleMain.TextColor3 = Color3.fromRGB(0, 255, 170)
-    TitleMain.TextSize = 16
-    TitleMain.Font = Enum.Font.GothamBold
-    TitleMain.Parent = TitleContainer
-
-    local TitleSub = Instance.new("TextLabel")
-    TitleSub.AutomaticSize = Enum.AutomaticSize.X
-    TitleSub.BackgroundTransparency = 1
-    TitleSub.Text = "(by nhatlong)"
-    TitleSub.TextColor3 = Color3.fromRGB(140, 148, 170)
-    TitleSub.TextSize = 12
-    TitleSub.Font = Enum.Font.GothamMedium
-    TitleSub.Parent = TitleContainer
-
-    -- Header Controls
-    local ToggleBtn = Instance.new("TextButton")
-    ToggleBtn.Size = UDim2.new(0, 26, 0, 26)
-    ToggleBtn.Position = UDim2.new(1, -32, 0, 6)
-    ToggleBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
-    ToggleBtn.Text = "-"
-    ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ToggleBtn.TextSize = 16
-    ToggleBtn.Font = Enum.Font.GothamBold
-    ToggleBtn.Parent = Header
-
-    local ToggleCorner = Instance.new("UICorner")
-    ToggleCorner.CornerRadius = UDim.new(0, 6)
-    ToggleCorner.Parent = ToggleBtn
-
-    local PowerBtn = Instance.new("TextButton")
-    PowerBtn.Size = UDim2.new(0, 28, 0, 26)
-    PowerBtn.Position = UDim2.new(0, 6, 0, 6)
-    PowerBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 130)
-    PowerBtn.Text = "ON"
-    PowerBtn.TextColor3 = Color3.fromRGB(15, 17, 23)
-    PowerBtn.TextSize = 11
-    PowerBtn.Font = Enum.Font.GothamBold
-    PowerBtn.Parent = Header
-
-    local PowerCorner = Instance.new("UICorner")
-    PowerCorner.CornerRadius = UDim.new(0, 6)
-    PowerCorner.Parent = PowerBtn
-
-    -- TAB BAR
-    local TabBar = Instance.new("Frame")
-    TabBar.Size = UDim2.new(1, -20, 0, 30)
-    TabBar.Position = UDim2.new(0, 10, 0, 44)
-    TabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
-    TabBar.BorderSizePixel = 0
-    TabBar.Parent = MainFrame
-
-    local TabBarCorner = Instance.new("UICorner")
-    TabBarCorner.CornerRadius = UDim.new(0, 8)
-    TabBarCorner.Parent = TabBar
-
-    local TabListLayout = Instance.new("UIListLayout")
-    TabListLayout.FillDirection = Enum.FillDirection.Horizontal
-    TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    TabListLayout.Parent = TabBar
-
-    local Tab1Btn = Instance.new("TextButton")
-    Tab1Btn.Size = UDim2.new(0.333, 0, 1, 0)
-    Tab1Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    Tab1Btn.Text = "🔍 Inspector"
-    Tab1Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
-    Tab1Btn.Font = Enum.Font.GothamBold
-    Tab1Btn.TextSize = 11
-    Tab1Btn.Parent = TabBar
-
-    local Tab1Corner = Instance.new("UICorner")
-    Tab1Corner.CornerRadius = UDim.new(0, 8)
-    Tab1Corner.Parent = Tab1Btn
-
-    local Tab2Btn = Instance.new("TextButton")
-    Tab2Btn.Size = UDim2.new(0.333, 0, 1, 0)
-    Tab2Btn.BackgroundTransparency = 1
-    Tab2Btn.Text = "🌐 All Game Scan"
-    Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-    Tab2Btn.Font = Enum.Font.GothamBold
-    Tab2Btn.TextSize = 11
-    Tab2Btn.Parent = TabBar
-
-    local Tab2Corner = Instance.new("UICorner")
-    Tab2Corner.CornerRadius = UDim.new(0, 8)
-    Tab2Corner.Parent = Tab2Btn
-
-    local Tab3Btn = Instance.new("TextButton")
-    Tab3Btn.Size = UDim2.new(0.334, 0, 1, 0)
-    Tab3Btn.BackgroundTransparency = 1
-    Tab3Btn.Text = "📜 Executor"
-    Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-    Tab3Btn.Font = Enum.Font.GothamBold
-    Tab3Btn.TextSize = 11
-    Tab3Btn.Parent = TabBar
-
-    local Tab3Corner = Instance.new("UICorner")
-    Tab3Corner.CornerRadius = UDim.new(0, 8)
-    Tab3Corner.Parent = Tab3Btn
-
-    ----------------------------------------------------
-    -- TAB 1 CONTENT
-    ----------------------------------------------------
-    local Tab1Content = Instance.new("Frame")
-    Tab1Content.Size = UDim2.new(1, -20, 1, -85)
-    Tab1Content.Position = UDim2.new(0, 10, 0, 80)
-    Tab1Content.BackgroundTransparency = 1
-    Tab1Content.Parent = MainFrame
-
-    local ScrollFrame1 = Instance.new("ScrollingFrame")
-    ScrollFrame1.Size = UDim2.new(0, 245, 0, 140)
-    ScrollFrame1.Position = UDim2.new(0, 0, 0, 0)
-    ScrollFrame1.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    ScrollFrame1.BorderSizePixel = 0
-    ScrollFrame1.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    ScrollFrame1.ScrollBarThickness = 3
-    ScrollFrame1.Parent = Tab1Content
-
-    local Scroll1Corner = Instance.new("UICorner")
-    Scroll1Corner.CornerRadius = UDim.new(0, 8)
-    Scroll1Corner.Parent = ScrollFrame1
-
-    local InfoBox = Instance.new("TextBox")
-    InfoBox.Size = UDim2.new(1, -10, 0, 0)
-    InfoBox.AutomaticSize = Enum.AutomaticSize.Y
-    InfoBox.BackgroundTransparency = 1
-    InfoBox.TextColor3 = Color3.fromRGB(220, 225, 235)
-    InfoBox.TextSize = 11
-    InfoBox.Font = Enum.Font.Code
-    InfoBox.TextXAlignment = Enum.TextXAlignment.Left
-    InfoBox.TextYAlignment = Enum.TextYAlignment.Top
-    InfoBox.TextWrapped = true
-    InfoBox.ClearTextOnFocus = false
-    InfoBox.TextEditable = false
-    InfoBox.Text = "Chạm/Click vào đối tượng trong Game để kiểm tra..."
-    InfoBox.Parent = ScrollFrame1
-
-    local InfoPadding = Instance.new("UIPadding")
-    InfoPadding.PaddingTop = UDim.new(0, 6)
-    InfoPadding.PaddingLeft = UDim.new(0, 6)
-    InfoPadding.Parent = InfoBox
-
-    local CopyBtn1 = Instance.new("TextButton")
-    CopyBtn1.Size = UDim2.new(0, 245, 0, 34)
-    CopyBtn1.Position = UDim2.new(0, 0, 0, 146)
-    CopyBtn1.BackgroundColor3 = Color3.fromRGB(30, 140, 90)
-    CopyBtn1.Text = "📋 Copy Thông Tin"
-    CopyBtn1.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CopyBtn1.Font = Enum.Font.GothamBold
-    CopyBtn1.TextSize = 11
-    CopyBtn1.Parent = Tab1Content
-
-    local Copy1Corner = Instance.new("UICorner")
-    Copy1Corner.CornerRadius = UDim.new(0, 8)
-    Copy1Corner.Parent = CopyBtn1
-
-    local TweenBtn1 = Instance.new("TextButton")
-    TweenBtn1.Size = UDim2.new(0, 245, 0, 34)
-    TweenBtn1.Position = UDim2.new(0, 0, 0, 185)
-    TweenBtn1.BackgroundColor3 = Color3.fromRGB(0, 130, 230)
-    TweenBtn1.Text = "🚀 Tween Đến Vị Trí"
-    TweenBtn1.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TweenBtn1.Font = Enum.Font.GothamBold
-    TweenBtn1.TextSize = 11
-    TweenBtn1.Parent = Tab1Content
-
-    local Tween1Corner = Instance.new("UICorner")
-    Tween1Corner.CornerRadius = UDim.new(0, 8)
-    Tween1Corner.Parent = TweenBtn1
-
-    -- Viewport 3D (Tab 1)
-    local Viewport1 = Instance.new("ViewportFrame")
-    Viewport1.Size = UDim2.new(0, 165, 0, 219)
-    Viewport1.Position = UDim2.new(1, -165, 0, 0)
-    Viewport1.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
-    Viewport1.BorderSizePixel = 0
-    Viewport1.Active = true
-    Viewport1.Parent = Tab1Content
-
-    local Viewport1Corner = Instance.new("UICorner")
-    Viewport1Corner.CornerRadius = UDim.new(0, 8)
-    Viewport1Corner.Parent = Viewport1
-
-    local Camera1 = Instance.new("Camera")
-    Viewport1.CurrentCamera = Camera1
-    Camera1.Parent = Viewport1
-
-    ----------------------------------------------------
-    -- TAB 2 CONTENT (UNIVERSAL ALL GAME SCANNER)
-    ----------------------------------------------------
-    local Tab2Content = Instance.new("Frame")
-    Tab2Content.Size = UDim2.new(1, -20, 1, -85)
-    Tab2Content.Position = UDim2.new(0, 10, 0, 80)
-    Tab2Content.BackgroundTransparency = 1
-    Tab2Content.Visible = false
-    Tab2Content.Parent = MainFrame
-
-    -- Group List Scroll
-    local GroupScroll = Instance.new("ScrollingFrame")
-    GroupScroll.Size = UDim2.new(0, 140, 0, 182)
-    GroupScroll.Position = UDim2.new(0, 0, 0, 0)
-    GroupScroll.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    GroupScroll.BorderSizePixel = 0
-    GroupScroll.ScrollBarThickness = 3
-    GroupScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    GroupScroll.Parent = Tab2Content
-
-    local GroupScrollCorner = Instance.new("UICorner")
-    GroupScrollCorner.CornerRadius = UDim.new(0, 8)
-    GroupScrollCorner.Parent = GroupScroll
-
-    local GroupListLayout = Instance.new("UIListLayout")
-    GroupListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    GroupListLayout.Padding = UDim.new(0, 4)
-    GroupListLayout.Parent = GroupScroll
-
-    local RefreshBtn = Instance.new("TextButton")
-    RefreshBtn.Size = UDim2.new(0, 140, 0, 32)
-    RefreshBtn.Position = UDim2.new(0, 0, 0, 187)
-    RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 95, 200)
-    RefreshBtn.Text = "🔄 Quét Tập Tin Game"
-    RefreshBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    RefreshBtn.Font = Enum.Font.GothamBold
-    RefreshBtn.TextSize = 10
-    RefreshBtn.Parent = Tab2Content
-
-    local RefreshCorner = Instance.new("UICorner")
-    RefreshCorner.CornerRadius = UDim.new(0, 8)
-    RefreshCorner.Parent = RefreshBtn
-
-    -- World Info Box
-    local WorldInfoBox = Instance.new("TextBox")
-    WorldInfoBox.Size = UDim2.new(0, 140, 0, 146)
-    WorldInfoBox.Position = UDim2.new(0, 146, 0, 0)
-    WorldInfoBox.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    WorldInfoBox.BorderSizePixel = 0
-    WorldInfoBox.TextColor3 = Color3.fromRGB(220, 225, 235)
-    WorldInfoBox.TextSize = 10
-    WorldInfoBox.Font = Enum.Font.Code
-    WorldInfoBox.TextXAlignment = Enum.TextXAlignment.Left
-    WorldInfoBox.TextYAlignment = Enum.TextYAlignment.Top
-    WorldInfoBox.TextWrapped = true
-    WorldInfoBox.ClearTextOnFocus = false
-    WorldInfoBox.TextEditable = false
-    WorldInfoBox.Text = "Chọn danh mục tập tin bên trái..."
-    WorldInfoBox.Parent = Tab2Content
-
-    local WorldInfoCorner = Instance.new("UICorner")
-    WorldInfoCorner.CornerRadius = UDim.new(0, 8)
-    WorldInfoCorner.Parent = WorldInfoBox
-
-    local WorldInfoPadding = Instance.new("UIPadding")
-    WorldInfoPadding.PaddingTop = UDim.new(0, 6)
-    WorldInfoPadding.PaddingLeft = UDim.new(0, 6)
-    WorldInfoPadding.Parent = WorldInfoBox
-
-    local WorldCopyBtn = Instance.new("TextButton")
-    WorldCopyBtn.Size = UDim2.new(0, 140, 0, 33)
-    WorldCopyBtn.Position = UDim2.new(0, 146, 0, 150)
-    WorldCopyBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 90)
-    WorldCopyBtn.Text = "📋 Copy Thông Tin"
-    WorldCopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    WorldCopyBtn.Font = Enum.Font.GothamBold
-    WorldCopyBtn.TextSize = 10
-    WorldCopyBtn.Parent = Tab2Content
-
-    local WorldCopyCorner = Instance.new("UICorner")
-    WorldCopyCorner.CornerRadius = UDim.new(0, 8)
-    WorldCopyCorner.Parent = WorldCopyBtn
-
-    local WorldTweenBtn = Instance.new("TextButton")
-    WorldTweenBtn.Size = UDim2.new(0, 140, 0, 32)
-    WorldTweenBtn.Position = UDim2.new(0, 146, 0, 187)
-    WorldTweenBtn.BackgroundColor3 = Color3.fromRGB(0, 130, 230)
-    WorldTweenBtn.Text = "🚀 Tween Đến"
-    WorldTweenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    WorldTweenBtn.Font = Enum.Font.GothamBold
-    WorldTweenBtn.TextSize = 10
-    WorldTweenBtn.Parent = Tab2Content
-
-    local WorldTweenCorner = Instance.new("UICorner")
-    WorldTweenCorner.CornerRadius = UDim.new(0, 8)
-    WorldTweenCorner.Parent = WorldTweenBtn
-
-    -- Viewport 3D (Tab 2 World)
-    local Viewport2 = Instance.new("ViewportFrame")
-    Viewport2.Size = UDim2.new(0, 124, 0, 219)
-    Viewport2.Position = UDim2.new(1, -124, 0, 0)
-    Viewport2.BackgroundColor3 = Color3.fromRGB(10, 12, 16)
-    Viewport2.BorderSizePixel = 0
-    Viewport2.Active = true
-    Viewport2.Parent = Tab2Content
-
-    local Viewport2Corner = Instance.new("UICorner")
-    Viewport2Corner.CornerRadius = UDim.new(0, 8)
-    Viewport2Corner.Parent = Viewport2
-
-    local Camera2 = Instance.new("Camera")
-    Viewport2.CurrentCamera = Camera2
-    Camera2.Parent = Viewport2
-
-    ----------------------------------------------------
-    -- TAB 3 CONTENT (SCRIPT EXECUTERS)
-    ----------------------------------------------------
-    local Tab3Content = Instance.new("Frame")
-    Tab3Content.Size = UDim2.new(1, -20, 1, -85)
-    Tab3Content.Position = UDim2.new(0, 10, 0, 80)
-    Tab3Content.BackgroundTransparency = 1
-    Tab3Content.Visible = false
-    Tab3Content.Parent = MainFrame
-
-    local Tab3Layout = Instance.new("UIListLayout")
-    Tab3Layout.FillDirection = Enum.FillDirection.Vertical
-    Tab3Layout.SortOrder = Enum.SortOrder.LayoutOrder
-    Tab3Layout.Padding = UDim.new(0, 12)
-    Tab3Layout.Parent = Tab3Content
-
-    -- Remote Spy Button
-    local RemoteSpyBtn = Instance.new("TextButton")
-    RemoteSpyBtn.Size = UDim2.new(1, 0, 0, 48)
-    RemoteSpyBtn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    RemoteSpyBtn.Text = "📡 Remote Spy (Soi Event & Function Game)"
-    RemoteSpyBtn.TextColor3 = Color3.fromRGB(0, 255, 170)
-    RemoteSpyBtn.Font = Enum.Font.GothamBold
-    RemoteSpyBtn.TextSize = 13
-    RemoteSpyBtn.Parent = Tab3Content
-
-    local RemoteSpyCorner = Instance.new("UICorner")
-    RemoteSpyCorner.CornerRadius = UDim.new(0, 8)
-    RemoteSpyCorner.Parent = RemoteSpyBtn
-
-    local RemoteSpyStroke = Instance.new("UIStroke")
-    RemoteSpyStroke.Color = Color3.fromRGB(0, 255, 170)
-    RemoteSpyStroke.Thickness = 1
-    RemoteSpyStroke.Transparency = 0.6
-    RemoteSpyStroke.Parent = RemoteSpyBtn
-
-    RemoteSpyBtn.MouseButton1Click:Connect(function()
-        task.spawn(function()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-SimpleSpy-Remote-Spy-remake-127839"))()
-        end)
-    end)
-
-    -- Dex Explorer Button
-    local DexBtn = Instance.new("TextButton")
-    DexBtn.Size = UDim2.new(1, 0, 0, 48)
-    DexBtn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-    DexBtn.Text = "🔍 Dark Dex Explorer (Xem Cấu Trúc Script)"
-    DexBtn.TextColor3 = Color3.fromRGB(0, 180, 255)
-    DexBtn.Font = Enum.Font.GothamBold
-    DexBtn.TextSize = 13
-    DexBtn.Parent = Tab3Content
-
-    local DexCorner = Instance.new("UICorner")
-    DexCorner.CornerRadius = UDim.new(0, 8)
-    DexCorner.Parent = DexBtn
-
-    local DexStroke = Instance.new("UIStroke")
-    DexStroke.Color = Color3.fromRGB(0, 180, 255)
-    DexStroke.Thickness = 1
-    DexStroke.Transparency = 0.6
-    DexStroke.Parent = DexBtn
-
-    DexBtn.MouseButton1Click:Connect(function()
-        task.spawn(function()
-            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Dark-Dex-245188"))()
-        end)
-    end)
-
-    ----------------------------------------------------
-    -- SYSTEM FUNCTIONS & LOGIC
-    ----------------------------------------------------
-
-    local function ClearEffects()
-        if CurrentHighlight then CurrentHighlight:Destroy() CurrentHighlight = nil end
-        if PreviewModelTab1 then PreviewModelTab1:Destroy() PreviewModelTab1 = nil end
-        if PreviewModelTab2 then PreviewModelTab2:Destroy() PreviewModelTab2 = nil end
-    end
-
-    -- Tab Switching Logic
-    Tab1Btn.MouseButton1Click:Connect(function()
-        Tab1Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-        Tab1Btn.BackgroundTransparency = 0
-        Tab1Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
-        
-        Tab2Btn.BackgroundTransparency = 1
-        Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab3Btn.BackgroundTransparency = 1
-        Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab1Content.Visible = true
-        Tab2Content.Visible = false
-        Tab3Content.Visible = false
-    end)
-
-    Tab2Btn.MouseButton1Click:Connect(function()
-        Tab2Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-        Tab2Btn.BackgroundTransparency = 0
-        Tab2Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
-        
-        Tab1Btn.BackgroundTransparency = 1
-        Tab1Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab3Btn.BackgroundTransparency = 1
-        Tab3Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab1Content.Visible = false
-        Tab2Content.Visible = true
-        Tab3Content.Visible = false
-    end)
-
-    Tab3Btn.MouseButton1Click:Connect(function()
-        Tab3Btn.BackgroundColor3 = Color3.fromRGB(22, 25, 35)
-        Tab3Btn.BackgroundTransparency = 0
-        Tab3Btn.TextColor3 = Color3.fromRGB(0, 255, 170)
-        
-        Tab1Btn.BackgroundTransparency = 1
-        Tab1Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab2Btn.BackgroundTransparency = 1
-        Tab2Btn.TextColor3 = Color3.fromRGB(130, 138, 155)
-        
-        Tab1Content.Visible = false
-        Tab2Content.Visible = false
-        Tab3Content.Visible = true
-    end)
-
-    -- Minimize Window
-    local isMinimized = false
-    ToggleBtn.MouseButton1Click:Connect(function()
-        isMinimized = not isMinimized
-        Tab1Content.Visible = (not isMinimized) and (Tab1Btn.BackgroundTransparency == 0)
-        Tab2Content.Visible = (not isMinimized) and (Tab2Btn.BackgroundTransparency == 0)
-        Tab3Content.Visible = (not isMinimized) and (Tab3Btn.BackgroundTransparency == 0)
-        TabBar.Visible = not isMinimized
-        MainFrame.Size = isMinimized and UDim2.new(0, 440, 0, 38) or UDim2.new(0, 440, 0, 310)
-        ToggleBtn.Text = isMinimized and "+" or "-"
-    end)
-
-    -- Toggle Power
-    PowerBtn.MouseButton1Click:Connect(function()
-        scriptEnabled = not scriptEnabled
-        PowerBtn.Text = scriptEnabled and "ON" or "OFF"
-        PowerBtn.BackgroundColor3 = scriptEnabled and Color3.fromRGB(0, 220, 130) or Color3.fromRGB(230, 50, 60)
-        
-        if not scriptEnabled then
-            ClearEffects()
-            InfoBox.Text = "Script đang TẮT."
-            currentTargetPos = nil
-        else
-            InfoBox.Text = "Chạm/Click vào đối tượng trong Game để kiểm tra..."
-        end
-    end)
-
-    -- ESP Highlight
-    local function HighlightObject(target, targetType)
-        if CurrentHighlight then CurrentHighlight:Destroy() end
-        if not (target:IsA("Model") or target:IsA("BasePart")) then return end
-
-        local highlight = Instance.new("Highlight")
-        highlight.Name = "ScriptTarget_ESP"
-        
-        if string.find(targetType, "Player") then
-            highlight.FillColor = Color3.fromRGB(255, 60, 60)
-        elseif string.find(targetType, "NPC") or string.find(targetType, "Quái") or string.find(targetType, "Enemies") then
-            highlight.FillColor = Color3.fromRGB(255, 190, 0)
-        else
-            highlight.FillColor = Color3.fromRGB(0, 255, 170)
-        end
-
-        highlight.FillTransparency = 0.4
-        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-        highlight.Adornee = target
-        highlight.Parent = target
-        CurrentHighlight = highlight
-    end
-
-    -- Camera Orbit Updates
-    local function UpdateCamera1()
-        if not PreviewModelTab1 then return end
-        local radX, radY = math.rad(cam1AngleX), math.rad(cam1AngleY)
-        local x = cam1Dist * math.sin(radX) * math.cos(radY)
-        local y = cam1Dist * math.sin(radY)
-        local z = cam1Dist * math.cos(radX) * math.cos(radY)
-        Camera1.CFrame = CFrame.new(cam1TargetCenter + Vector3.new(x, y, z), cam1TargetCenter)
-    end
-
-    local function UpdateCamera2()
-        if not PreviewModelTab2 then return end
-        local radX, radY = math.rad(cam2AngleX), math.rad(cam2AngleY)
-        local x = cam2Dist * math.sin(radX) * math.cos(radY)
-        local y = cam2Dist * math.sin(radY)
-        local z = cam2Dist * math.cos(radX) * math.cos(radY)
-        Camera2.CFrame = CFrame.new(cam2TargetCenter + Vector3.new(x, y, z), cam2TargetCenter)
-    end
-
-    -- 3D Preview Engine
-    local function Render3DPreview(target, tabIndex)
-        pcall(function()
-            if tabIndex == 1 and PreviewModelTab1 then PreviewModelTab1:Destroy() PreviewModelTab1 = nil end
-            if tabIndex == 2 and PreviewModelTab2 then PreviewModelTab2:Destroy() PreviewModelTab2 = nil end
-
-            local descendants = target:GetDescendants()
-            local isHuge = #descendants > 1200
-            
-            local cf = CFrame.new()
-            local size = Vector3.new(4, 4, 4)
-
-            if target:IsA("BasePart") then
-                cf = target.CFrame
-                size = target.Size
-            elseif target:IsA("Model") then
-                cf, size = target:GetBoundingBox()
-            end
-
-            local maxDim = math.max(size.X, size.Y, size.Z)
-            local wrapper = Instance.new("Model")
-            local previewObj
-
-            if isHuge or maxDim > 300 or target:IsA("Terrain") then
-                local repPart = Instance.new("Part")
-                repPart.Size = Vector3.new(math.clamp(size.X, 5, 50), math.clamp(size.Y, 5, 50), math.clamp(size.Z, 5, 50))
-                repPart.CFrame = cf
-                repPart.Material = Enum.Material.ForceField
-                repPart.Color = Color3.fromRGB(0, 255, 170)
-                repPart.Anchored = true
-                previewObj = repPart
-            else
-                target.Archivable = true
-                previewObj = target:Clone()
-                
-                for _, v in pairs(previewObj:GetDescendants()) do
-                    if v:IsA("LuaSourceContainer") or v:IsA("Sound") or v:IsA("Camera") or v:IsA("ParticleEmitter") then
-                        v:Destroy()
-                    end
-                end
-            end
-
-            if tabIndex == 1 then
-                wrapper.Parent = Viewport1
-                previewObj.Parent = wrapper
-                PreviewModelTab1 = wrapper
-            else
-                wrapper.Parent = Viewport2
-                previewObj.Parent = wrapper
-                PreviewModelTab2 = wrapper
-            end
-
-            local center = cf.Position
-            local dist = math.clamp(maxDim * 1.4, 6, 250)
-
-            if tabIndex == 1 then
-                cam1TargetCenter = center
-                cam1Dist = dist
-                cam1AngleX, cam1AngleY = 45, 20
-                UpdateCamera1()
-            else
-                cam2TargetCenter = center
-                cam2Dist = dist
-                cam2AngleX, cam2AngleY = 45, 20
-                UpdateCamera2()
-            end
-        end)
-    end
-
-    -- Orbit Controls Listeners
-    Viewport1.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            isDraggingTab1 = true
-            lastInputPos = input.Position
-        end
-    end)
-
-    Viewport2.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            isDraggingTab2 = true
-            lastInputPos = input.Position
-        end
-    end)
-
-    UserInputService.InputChanged:Connect(function(input)
-        if not (isDraggingTab1 or isDraggingTab2) then return end
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            local delta = input.Position - lastInputPos
-            lastInputPos = input.Position
-            local sensitivity = 0.6
-            
-            if isDraggingTab1 then
-                cam1AngleX = cam1AngleX - (delta.X * sensitivity)
-                cam1AngleY = math.clamp(cam1AngleY + (delta.Y * sensitivity), -80, 80)
-                UpdateCamera1()
-            elseif isDraggingTab2 then
-                cam2AngleX = cam2AngleX - (delta.X * sensitivity)
-                cam2AngleY = math.clamp(cam2AngleY + (delta.Y * sensitivity), -80, 80)
-                UpdateCamera2()
-            end
-        end
-    end)
-
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            isDraggingTab1 = false
-            isDraggingTab2 = false
-        end
-    end)
-
-    ----------------------------------------------------
-    -- UNIVERSAL ALL-GAME SCANNER ENGINE (TAB 2)
-    ----------------------------------------------------
-    local worldCategories = {}
-    local RenderItemList
-
-    local function IsCompleteObject(obj)
-        if obj:IsA("BasePart") or obj:IsA("Tool") or obj:IsA("Accoutrement") then
-            return true
-        end
-        if obj:IsA("Model") and obj:FindFirstChildOfClass("Humanoid") then
-            return true
-        end
-        if obj:IsA("Model") then
-            if obj.PrimaryPart then return true end
-            for _, child in pairs(obj:GetChildren()) do
-                if child:IsA("BasePart") then return true end
-            end
-        end
-        return false
-    end
-
-    local function IsCategoryContainer(obj)
-        if IsCompleteObject(obj) then return false end
-        if obj:IsA("Folder") or obj:IsA("ServiceProvider") then return true end
-        if obj:IsA("Model") and #obj:GetChildren() > 0 then return true end
-        return false
-    end
-
-    local function GetCategoryForObject(obj)
-        if obj == LocalPlayer.Character or obj:IsDescendantOf(LocalPlayer.Character) or obj.Name == "MakeScript_NhatLong" then
-            return nil
-        end
-        if obj:IsA("ServiceProvider") or (obj.Parent == game and obj ~= workspace) then
-            return "Services", "⚙️"
-        end
-        if Players:GetPlayerFromCharacter(obj) then
-            return "Players", "👤"
-        end
-
-        local rootAncestor = obj
-        while rootAncestor.Parent and rootAncestor.Parent ~= workspace and rootAncestor.Parent ~= game do
-            rootAncestor = rootAncestor.Parent
-        end
-
-        local rootNameLower = string.lower(rootAncestor.Name)
-
-        -- Quét thông minh hỗ trợ tất cả Game Roblox (Blox Fruits, MM2, Pet Sim, King Legacy,...)
-        if string.find(rootNameLower, "island") or string.find(rootNameLower, "map") or string.find(rootNameLower, "dao") or string.find(rootNameLower, "location") or string.find(rootNameLower, "world") then
-            return "Đảo / Bản đồ", "🏝️"
-        elseif string.find(rootNameLower, "enemy") or string.find(rootNameLower, "enemies") or string.find(rootNameLower, "mob") or string.find(rootNameLower, "boss") or string.find(rootNameLower, "monster") then
-            return "Quái / Enemies", "⚔️"
-        elseif string.find(rootNameLower, "npc") or string.find(rootNameLower, "quest") or string.find(rootNameLower, "dialogue") then
-            return "NPCs / Giao tiếp", "🤖"
-        elseif string.find(rootNameLower, "chest") or string.find(rootNameLower, "box") or string.find(rootNameLower, "crate") or string.find(rootNameLower, "loot") then
-            return "Rương / Chests", "🎁"
-        elseif string.find(rootNameLower, "fruit") or string.find(rootNameLower, "item") or string.find(rootNameLower, "drop") or string.find(rootNameLower, "weapon") or string.find(rootNameLower, "coin") then
-            return "Vật phẩm / Items", "🍎"
-        elseif string.find(rootNameLower, "tree") or string.find(rootNameLower, "foliage") or string.find(rootNameLower, "prop") then
-            return "Cảnh quan / Props", "🌲"
-        elseif obj:IsA("Model") and obj:FindFirstChildOfClass("Humanoid") then
-            return "Nhân vật / Mobs", "👾"
-        elseif rootAncestor:IsA("Folder") or rootAncestor:IsA("Model") then
-            return rootAncestor.Name, "📁"
-        end
-
-        return "Khác (Other)", "📦"
-    end
-
-    RenderItemList = function(containerObj, parentName, onBackToParent)
-        for _, child in pairs(GroupScroll:GetChildren()) do
-            if child:IsA("TextButton") then child:Destroy() end
-        end
-
-        local backBtn = Instance.new("TextButton")
-        backBtn.Size = UDim2.new(1, -4, 0, 24)
-        backBtn.BackgroundColor3 = Color3.fromRGB(75, 35, 45)
-        backBtn.Text = " ⬅ Trở về danh mục"
-        backBtn.TextColor3 = Color3.fromRGB(255, 190, 190)
-        backBtn.Font = Enum.Font.GothamBold
-        backBtn.TextSize = 10
-        backBtn.TextXAlignment = Enum.TextXAlignment.Left
-        backBtn.Parent = GroupScroll
-
-        local backCorner = Instance.new("UICorner")
-        backCorner.CornerRadius = UDim.new(0, 5)
-        backCorner.Parent = backBtn
-
-        backBtn.MouseButton1Click:Connect(function()
-            onBackToParent()
-        end)
-
-        local children = containerObj:GetChildren()
-        for idx, item in ipairs(children) do
-            local isSubCategory = IsCategoryContainer(item)
-            local itemBtn = Instance.new("TextButton")
-            itemBtn.Size = UDim2.new(1, -4, 0, 24)
-            itemBtn.BackgroundColor3 = isSubCategory and Color3.fromRGB(38, 48, 68) or Color3.fromRGB(28, 38, 52)
-            
-            local prefix = isSubCategory and "📁 " or string.format("#%d: ", idx)
-            itemBtn.Text = string.format(" %s%s", prefix, item.Name)
-            itemBtn.TextColor3 = isSubCategory and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(0, 220, 180)
-            itemBtn.Font = Enum.Font.Gotham
-            itemBtn.TextSize = 10
-            itemBtn.TextXAlignment = Enum.TextXAlignment.Left
-            itemBtn.Parent = GroupScroll
-
-            local itemCorner = Instance.new("UICorner")
-            itemCorner.CornerRadius = UDim.new(0, 5)
-            itemCorner.Parent = itemBtn
-
-            itemBtn.MouseButton1Click:Connect(function()
-                if IsCategoryContainer(item) then
-                    RenderItemList(item, item.Name, function()
-                        RenderItemList(containerObj, parentName, onBackToParent)
-                    end)
-                else
-                    local cf = CFrame.new()
-                    if item:IsA("BasePart") then
-                        cf = item.CFrame
-                    elseif item:IsA("Model") then
-                        cf = item:GetPivot()
-                    end
-                    
-                    currentTargetPos = cf.Position
-
-                    WorldInfoBox.Text = string.format(
-                        "• Tên: %s\n• Danh mục: %s\n\n• Code Path:\n%s\n\n• Vector3:\n%.2f, %.2f, %.2f\n\n• CFrame:\n%s",
-                        item.Name,
-                        parentName,
-                        item:GetFullName(),
-                        currentTargetPos.X, currentTargetPos.Y, currentTargetPos.Z,
-                        tostring(cf)
-                    )
-
-                    HighlightObject(item, parentName)
-                    Render3DPreview(item, 2)
-                end
-            end)
-        end
-    end
-
-    local function ScanWorldObjects()
-        RefreshBtn.Text = "⏳ Đang quét Game..."
-        RefreshBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 30)
-
-        for _, child in pairs(GroupScroll:GetChildren()) do
-            if child:IsA("TextButton") then child:Destroy() end
-        end
-        
-        worldCategories = {}
-
-        task.delay(0.1, function()
-            worldCategories["Services"] = {Icon = "⚙️", Items = {}}
-            local servicesToScan = {ReplicatedStorage, Lighting, workspace, Players, game:GetService("ReplicatedFirst"), game:GetService("MaterialService")}
-            for _, srv in pairs(servicesToScan) do
-                if srv then
-                    table.insert(worldCategories["Services"].Items, srv)
-                end
-            end
-
-            for _, obj in pairs(workspace:GetChildren()) do
-                if obj ~= LocalPlayer.Character and obj.Name ~= "MakeScript_NhatLong" then
-                    local isContainer = IsCategoryContainer(obj)
-                    
-                    if isContainer then
-                        for _, subObj in pairs(obj:GetChildren()) do
-                            local catName, icon = GetCategoryForObject(subObj)
-                            if catName then
-                                if not worldCategories[catName] then
-                                    worldCategories[catName] = {Icon = icon, Items = {}}
-                                end
-                                table.insert(worldCategories[catName].Items, subObj)
-                            end
-                        end
-                    else
-                        local catName, icon = GetCategoryForObject(obj)
-                        if catName then
-                            if not worldCategories[catName] then
-                                worldCategories[catName] = {Icon = icon, Items = {}}
-                            end
-                            table.insert(worldCategories[catName].Items, obj)
-                        end
-                    end
-                end
-            end
-
-            for catName, catData in pairs(worldCategories) do
-                if #catData.Items > 0 then
-                    local btn = Instance.new("TextButton")
-                    btn.Size = UDim2.new(1, -4, 0, 26)
-                    btn.BackgroundColor3 = Color3.fromRGB(32, 36, 48)
-                    btn.Text = string.format(" %s %s (%d)", catData.Icon, catName, #catData.Items)
-                    btn.TextColor3 = Color3.fromRGB(220, 225, 235)
-                    btn.Font = Enum.Font.GothamBold
-                    btn.TextSize = 10
-                    btn.TextXAlignment = Enum.TextXAlignment.Left
-                    btn.Parent = GroupScroll
-                    
-                    local btnCorner = Instance.new("UICorner")
-                    btnCorner.CornerRadius = UDim.new(0, 5)
-                    btnCorner.Parent = btn
-                    
-                    btn.MouseButton1Click:Connect(function()
-                        local virtualRoot = {
-                            GetChildren = function() return catData.Items end
-                        }
-                        RenderItemList(virtualRoot, catName, ScanWorldObjects)
-                    end)
-                end
-            end
-
-            RefreshBtn.Text = "🔄 Quét Tập Tin Game"
-            RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 95, 200)
-        end)
-    end
-
-    RefreshBtn.MouseButton1Click:Connect(ScanWorldObjects)
-
-    -- Copy Functions
-    CopyBtn1.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(InfoBox.Text)
-            local oldText = CopyBtn1.Text
-            CopyBtn1.Text = "✅ Đã sao chép!"
-            task.delay(1.5, function() CopyBtn1.Text = oldText end)
-        else
-            InfoBox:CaptureFocus()
-        end
-    end)
-
-    WorldCopyBtn.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(WorldInfoBox.Text)
-            local oldText = WorldCopyBtn.Text
-            WorldCopyBtn.Text = "✅ Đã sao chép!"
-            task.delay(1.5, function() WorldCopyBtn.Text = oldText end)
-        else
-            WorldInfoBox:CaptureFocus()
-        end
-    end)
-
-    -- Tween Function
-    local function DoTween()
-        if not currentTargetPos then return end
-        local character = LocalPlayer.Character
-        if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-        local hrp = character.HumanoidRootPart
-        local distance = (hrp.Position - currentTargetPos).Magnitude
-        local speed = 120
-        local tweenTime = distance / speed
-
-        local tweenInfo = TweenInfo.new(math.clamp(tweenTime, 0.5, 10), Enum.EasingStyle.Linear)
-        local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(currentTargetPos + Vector3.new(0, 3, 0))})
-        
-        tween:Play()
-    end
-
-    TweenBtn1.MouseButton1Click:Connect(DoTween)
-    WorldTweenBtn.MouseButton1Click:Connect(DoTween)
-
-    -- Raycast Click Picker (Tab 1 Inspector)
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed or not scriptEnabled then return end
-        
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            local objectsAtPos = CoreGui:GetGuiObjectsAtPosition(input.Position.X, input.Position.Y)
-            for _, guiObj in pairs(objectsAtPos) do
-                if guiObj:IsDescendantOf(MainFrame) then
-                    return
-                end
-            end
-
-            local target = Mouse.Target
-            if target then
-                local parentModel = target:FindFirstAncestorOfClass("Model")
-                local finalTarget = (parentModel and parentModel ~= workspace) and parentModel or target
-                
-                local targetType = "Vật thể"
-                local isPlayer = Players:GetPlayerFromCharacter(finalTarget)
-                
-                if isPlayer then
-                    targetType = "Player (" .. isPlayer.Name .. ")"
-                elseif finalTarget:FindFirstChildOfClass("Humanoid") then
-                    targetType = "NPC / Mob"
-                end
-
-                local cf = target:IsA("BasePart") and target.CFrame or (finalTarget:IsA("Model") and finalTarget:GetPivot() or CFrame.new())
-                currentTargetPos = cf.Position
-                
-                InfoBox.Text = string.format(
-                    "• Loại: %s\n• Tên: %s\n\n• Code Path:\n%s\n\n• Vector3:\n%.2f, %.2f, %.2f\n\n• CFrame:\n%s",
-                    targetType,
-                    finalTarget.Name,
-                    finalTarget:GetFullName(),
-                    currentTargetPos.X, currentTargetPos.Y, currentTargetPos.Z,
-                    tostring(cf)
-                )
-                
-                HighlightObject(finalTarget, targetType)
-                Render3DPreview(finalTarget, 1)
-            end
-        end
-    end)
-
-    -- Quét khởi tạo ban đầu
-    ScanWorldObjects()
+-- Obfuscated with Lua Dynamic Loadstring Encrypter
+-- Generated Code for Roblox / Luau Execution
+
+local _0x1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local function _0x2(_data)
+    _data = string.gsub(_data, '[^'.._0x1..'=]', '')
+    return (_data:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(string.find(_0x1, x)-1)
+        for i=6,1,-1 do r=r..(f%2^i>=2^(i-1) and '1' or '0') end
+        return r
+    end):gsub('%d%d%d%d%d%d%d%d', function(x)
+        local c=0
+        for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+        return string.char(c)
+    end))
 end
 
--- Chạy thanh tiến trình màn hình Welcome (2.5s) -> Mở Main UI
+local _0x3 = {
+    "LS0gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0K",
+    "LS0gVUkgMTogV0VMQ09NRSBTQ1JFRU4gKE5FT04gTU9ERVJOIExPQURJTkcgVUkpDQotLSA9PT09PT09",
+    "PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQpsb2NhbCBDb3JlR3Vp",
+    "ID0gZ2FtZTpHZXRTZXJ2aWNlKCJDb3JlR3VpIikNCmxvY2FsIFR3ZWVuU2VydmljZSA9IGdhbWU6R2V0",
+    "U2VydmljZSgiVHdlZW5TZXJ2aWNlIikNCg0KaWYgQ29yZUd1aTpGaW5kRmlyc3RDaGlsZCgiV2VsY29t",
+    "ZV9VSTEiKSB0aGVuIENvcmVHdWkuV2VsY29tZV9VSTE6RGVzdHJveSgpIGVuZA0KaWYgQ29yZUd1aTpG",
+    "aW5kRmlyc3RDaGlsZCgiTWFrZVNjcmlwdF9OaGF0TG9uZyIpIHRoZW4gQ29yZUd1aS5NYWtlU2NyaXB0",
+    "X05oYXRMb25nOkRlc3Ryb3koKSBlbmQNCg0KbG9jYWwgV2VsY29tZUd1aSA9IEluc3RhbmNlLm5ldygi",
+    "U2NyZWVuR3VpIikNCldlbGNvbWVHdWkuTmFtZSA9ICJXZWxjb21lX1VJMSINCldlbGNvbWVHdWkuUGFy",
+    "ZW50ID0gQ29yZUd1aQ0KV2VsY29tZUd1aS5SZXNldE9uU3Bhd24gPSBmYWxzZQ0KDQpsb2NhbCBXZWxj",
+    "b21lRnJhbWUgPSBJbnN0YW5jZS5uZXcoIkZyYW1lIikNCldlbGNvbWVGcmFtZS5OYW1lID0gIldlbGNv",
+    "bWVGcmFtZSINCldlbGNvbWVGcmFtZS5TaXplID0gVURpbTIubmV3KDAsIDIzMCwgMCwgMjMwKQ0KV2Vs",
+    "Y29tZUZyYW1lLkFuY2hvclBvaW50ID0gVmVjdG9yMi5uZXcoMC41LCAwLjUpDQpXZWxjb21lRnJhbWUu",
+    "UG9zaXRpb24gPSBVRGltMi5uZXcoMC41LCAwLCAwLjUsIDApDQpXZWxjb21lRnJhbWUuQmFja2dyb3Vu",
+    "ZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDE1LCAxNywgMjMpDQpXZWxjb21lRnJhbWUuQm9yZGVyU2l6",
+    "ZVBpeGVsID0gMA0KV2VsY29tZUZyYW1lLkFjdGl2ZSA9IHRydWUNCldlbGNvbWVGcmFtZS5EcmFnZ2Fi",
+    "bGUgPSB0cnVlDQpXZWxjb21lRnJhbWUuUGFyZW50ID0gV2VsY29tZUd1aQ0KDQpsb2NhbCBXZWxjb21l",
+    "Q29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpXZWxjb21lQ29ybmVyLkNvcm5lclJhZGl1",
+    "cyA9IFVEaW0ubmV3KDAsIDE2KQ0KV2VsY29tZUNvcm5lci5QYXJlbnQgPSBXZWxjb21lRnJhbWUNCg0K",
+    "bG9jYWwgV2VsY29tZVN0cm9rZSA9IEluc3RhbmNlLm5ldygiVUlTdHJva2UiKQ0KV2VsY29tZVN0cm9r",
+    "ZS5Db2xvciA9IENvbG9yMy5mcm9tUkdCKDAsIDI1NSwgMTcwKQ0KV2VsY29tZVN0cm9rZS5UaGlja25l",
+    "c3MgPSAxLjUNCVdlbGNvbWVTdHJva2UuVHJhbnNwYXJlbmN5ID0gMC4zDQpXZWxjb21lU3Ryb2tlLlBh",
+    "cmVudCA9IFdlbGNvbWVGcmFtZQ0KDQpsb2NhbCBDb3JuZXJUaXRsZSA9IEluc3RhbmNlLm5ldygiVGV4",
+    "dExhYmVsIikNCkNvcm5lclRpdGxlLlNpemUgPSBVRGltMi5uZXcoMCwgMTAwLCAwLCAyMCkNCkNvcm5l",
+    "clRpdGxlLlBvc2l0aW9uID0gVURpbTIubmV3KDAsIDE0LCAwLCAxMCkNCkNvcm5lclRpdGxlLkJhY2tn",
+    "cm91bmRUcmFuc3BhcmVuY3kgPSAxDQpDb3JuZXJUaXRsZS5UZXh0ID0gIlNZU1RFTSBJTklUSUFMSVpJ",
+    "TkciDQpDb3JuZXJUaXRsZS5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMTIwLCAxMzAsIDE1NSIN",
+    "CkNvcm5lclRpdGxlLlRleHRTaXplID0gOQ0KQ29ybmVyVGl0bGUuRm9udCA9IEVudW0uRm9udC5Hb3Ro",
+    "YW1Cb2xkDQpDb3JuZXJUaXRsZS5UZXh0WEFsaWdubWVudCA9IEVudW0uVGV4dFhBbGlnbm1lbnQuTGVm",
+    "dA0KQ29ybmVyVGl0bGUuUGFyZW50ID0gV2VsY29tZUZyYW1lDQoNCmxvY2FsIE1haW5UaXRsZSA9IElu",
+    "c3RhbmNlLm5ldygiVGV4dExhYmVsIikNCk1haW5UaXRsZS5TaXplID0gVURpbTIubmV3KDEsIC0yMCwg",
+    "MCwgNDApDQpNYWluVGl0bGUuUG9zaXRpb24gPSBVRGltMi5uZXcoMCwgMTAsIDAuMzgsIC0yMCkNCk1h",
+    "aW5UaXRsZS5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID0gMQ0KTWFpblRpdGxlLlRleHQgPSAiZG94IHYy",
+    "Ig0KTWFpblRpdGxlLlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigwLCAyNTUsIDE3MCkNCk1haW5U",
+    "aXRsZS5UZXh0U2l6ZSA9IDI2DQpNYWluVGl0bGUuRm9udCA9IEVudW0uRm9udC5Hb3RoYW1Cb2xkDQpN",
+    "YWluVGl0bGUuVGV4dFhBbGlnbm1lbnQgPSBFbnVtLlRleHRYQWxpZ25tZW50LkNlbnRlcg0KTWFpblRp",
+    "dGxlLlBhcmVudCA9IFdlbGNvbWVGcmFtZQ0KDQpsb2NhbCBTdWJUaXRsZSA9IEluc3RhbmNlLm5ldygi",
+    "VGV4dExhYmVsIikNClN1YlRpdGxlLlNpemUgPSBVRGltMi5uZXcoMSwgLTIwLCAwLCAyMCkNClN1YlRp",
+    "dGxlLlBvc2l0aW9uID0gVURpbTIubmV3KDAsIDEwLCAwLjUyLCAwKQ0KU3ViVGl0bGUuQmFja2dyb3Vu",
+    "ZFRyYW5zcGFyZW5jeSA9IDENClN1YlRpdGxlLlRleHQgPSAiVW5pdmVyc2FsIEdhbWUgU2Nhbm5lciIN",
+    "ClN1YlRpdGxlLlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigxODAsIDE5MCwgMjEwKQ0KU3ViVGl0",
+    "bGUuVGV4dFNpemUgPSAxMQ0KU3ViVGl0bGUuRm9udCA9IEVudW0uRm9udC5Hb3RoYW1NZWRpdW0NClN1",
+    "YlRpdGxlLlRleHRYQWxpZ25tZW50ID0gRW51bS5UZXh0WEFsaWdubWVudC5DZW50ZXINClN1YlRpdGxl",
+    "LlBhcmVudCA9IFdlbGNvbWVGcmFtZQ0KDQpsb2NhbCBMb2FkaW5nQmcgPSBJbnN0YW5jZS5uZXcoIkZy",
+    "YW1lIikNCkxvYWRpbmdCZy5TaXplID0gVURpbTIubmV3KDAuODUsIDAsIDAsIDYpDQpMb2FkaW5nQmcu",
+    "UG9zaXRpb24gPSBVRGltMi5uZXcoMC4wNzUsIDAsIDAuOCwgMCkNCkxvYWRpbmdCZy5CYWNrZ3JvdW5k",
+    "Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjUsIDI4LCAzOCkNCkxvYWRpbmdCZy5Cb3JkZXJTaXplUGl4",
+    "ZWwgPSAwDQpMb2FkaW5nQmcuQ2xpcHNEZXNjZW5kYW50cyA9IHRydWUNCkxvYWRpbmdCZy5QYXJlbnQg",
+    "PSBXZWxjb21lRnJhbWUNCg0KbG9jYWwgTG9hZGluZ0JnQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNv",
+    "cm5lciIpDQpMb2FkaW5nQmdDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMSwgMCkNCkxvYWRp",
+    "bmdCZENvcm5lci5QYXJlbnQgPSBMb2FkaW5nQmcNCg0KbG9jYWwgTG9hZGluZ0ZpbGwgPSBJbnN0YW5j",
+    "ZS5uZXcoIkZyYW1lIikNCkxvYWRpbmdGaWxsLlNpemUgPSBVRGltMi5uZXcoMCwgMCwgMSwgMCkNCkxv",
+    "YWRpbmdGaWxsLkJhY2tncm91bmRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigwLCAyNTUsIDE3MCkNCkxv",
+    "YWRpbmdGaWxsLkJvcmRlclNpemVQaXhlbCA9IDANCkxvYWRpbmdGaWxsLlBhcmVudCA9IExvYWRpbmdC",
+    "Zw0KDQpsb2NhbCBMb2FkaW5nRmlsbENvcm5lciA9IEluc3RhbmNlLm5ldygiVUlDb3JuZXIiKQ0KTG9h",
+    "ZGluZ0ZpbGxDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMSwgMCkNCkxvYWRpbmdGaWxsQ29y",
+    "bmVyLlBhcmVudCA9IExvYWRpbmdGaWxsDQoNCmxvY2FsIGZ1bmN0aW9uIExvYWRNYWluU2NyaXB0KCkN",
+    "CmxvY2FsIFBsYXllcnMgPSBnYW1lOkdldFNlcnZpY2UoIlBsYXllcnMiKQ0KbG9jYWwgVXNlcklucHV0",
+    "U2VydmljZSA9IGdhbWU6R2V0U2VydmljZSgiVXNlcklucHV0U2VydmljZSIpDQpsb2NhbCBSZXBsaWNh",
+    "dGVkU3RvcmFnZSA9IGdhbWU6R2V0U2VydmljZSgiUmVwbGljYXRlZFN0b3JhZ2UiKQ0KbG9jYWwgTGln",
+    "aHRpbmcgPSBnYW1lOkdldFNlcnZpY2UoIkxpZ2h0aW5nIikNCmxvY2FsIExvY2FsUGxheWVyID0gUGxh",
+    "eWVycy5Mb2NhbFBsYXllcg0KbG9jYWwgTW91c2UgPSBMb2NhbFBsYXllcjpHZXRNb3VzZSgpDQpsb2Nh",
+    "bCBzY3JpcHRFbmFibGVkID0gdHJ1ZQ0KbG9jYWwgY3VycmVudFRhcmdldFBvcyA9IG5pbA0KbG9jYWwg",
+    "Q3VycmVudEhpZ2hsaWdodCA9IG5pbA0KbG9jYWwgUHJldmlld01vZGVsVGFiMSA9IG5pbA0KbG9jYWwg",
+    "UHJldmlld01vZGVsVGFiMiA9IG5pbA0KbG9jYWwgY2FtMUFuZ2xlWCwgY2FtMUFuZ2xlWSwgY2FtMURp",
+    "c3QgPSA0NSwgMjAsIDEwDQpsb2NhbCBjYW0xVGFyZ2V0Q2VudGVyID0gVmVjdG9yMy56ZXJvDQpsb2Nh",
+    "bCBpc0RyYWdnaW5nVGFiMSA9IGZhbHNlDQpsb2NhbCBjYW0yQW5nbGVYLCBjYW0yQW5nbGVZLCBjYW0y",
+    "RGlzdCA9IDQ1LCAyMCwgMTANCmxvY2FsIGNhbTJUYXJnZXRDZW50ZXIgPSBWZWN0b3IzLnplcm8NCmxv",
+    "Y2FsIGlzRHJhZ2dpbmdUYWIyID0gZmFsc2UNCmxvY2FsIGxhc3RJbnB1dFBvcyA9IFZlY3RvcjIuemVy",
+    "bw0KbG9jYWwgU2NyZWVuR3VpID0gSW5zdGFuY2UubmV3KCJTY3JlZW5HdWkiKQ0KU2NyZWVuR3VpLk5h",
+    "bWUgPSAiTWFrZVNjcmlwdF9OaGF0TG9uZyINClNjc2Vlbkd1aS5QYXJlbnQgPSBDb3JlR3VpDQpTY3Jl",
+    "ZW5HVWkuUmVzZXRPblNwYXduID0gZmFsc2UNCmxvY2FsIE1haW5GcmFtZSA9IEluc3RhbmNlLm5ldygi",
+    "RnJhbWUiKQ0KTWFpbkZyYW1lLk5hbWUgPSAiTWFpbkZyYW1lIg0KTWFpbkZyYW1lLlNpemUgPSBVRGlt",
+    "Mi5uZXcoMCwgNDQwLCAwLCAzMTApDQpNYWluRnJhbWUuUG9zaXRpb24gPSBVRGltMi5uZXcoMC41LCAt",
+    "MjIwLCAwLjMsIDApDQpNYWluRnJhbWUuQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDE1",
+    "LCAxNywgMjMpDQpNYWluRnJhbWUuQm9yZGVyU2l6ZVBpeGVsID0gMA0KTWFpbkZyYW1lLkFjdGl2ZSA9",
+    "IHRydWUNCk1haW5GcmFtZS5EcmFnZ2FibGUgPSB0cnVlDQpNYWluRnJhbWUuUGFyZW50ID0gU2NyZWVu",
+    "R3VpDQpsb2NhbCBNYWluQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpNYWluQ29ybmVy",
+    "LkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDE0KQ0KTWFpbkNvcm5lci5QYXJlbnQgPSBNYWluRnJh",
+    "bWUNCmxvY2FsIE1haW5TdHJva2UgPSBJbnN0YW5jZS5uZXcoIlVJU3Ryb2tlIikNCk1haW5TdHJva2Uu",
+    "Q29sb3IgPSBDb2xvcjMuZnJvbVJHQigwLCAyNTUsIDE3MCkNCk1haW5TdHJva2UuVGhpY2tuZXNzID0g",
+    "MS4yDQpNYWluU3Ryb2tlLlRyYW5zcGFyZW5jeSA9IDAuNQ0KTWFpblN0cm9rZS5QYXJlbnQgPSBNYWlu",
+    "RnJhbWUNCmxvY2FsIEhlYWRlciA9IEluc3RhbmNlLm5ldygiRnJhbWUiKQ0KSGVhZGVyLlNpemUgPSBV",
+    "RGltMi5uZXcoMSwgMCwgMCwgMzgpDQpIZWFkZXIuQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9t",
+    "UkdCKDIyLCAyNSwgMzUpDQpIZWFkZXIuQm9yZGVyU2l6ZVBpeGVsID0gMA0KSGVhZGVyLlBhcmVudCA9",
+    "IE1haW5GcmFtZQ0KbG9jYWwgSGVhZGVyQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpI",
+    "ZWFkZXJDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMCwgMTQpDQpIZWFkZXJDb3JuZXIuUGFy",
+    "ZW50ID0gSGVhZGVyDQpsb2NhbCBUaXRsZUNvbnRhaW5lciA9IEluc3RhbmNlLm5ldygiRnJhbWUiKQ0K",
+    "VGl0bGVDb250YWluZXIuU2l6ZSA9IFVEaW0yLm5ldygxLCAtODAsIDEsIDApDQpUaXRsZUNvbnRhaW5l",
+    "ci5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCA0MCwgMCwgMCkNClRpdGxlQ29udGFpbmVyLkJhY2tncm91",
+    "bmRUcmFuc3BhcmVuY3kgPSAxDQpUaXRsZUNvbnRhaW5lci5QYXJlbnQgPSBIZWFkZXINCmxvY2FsIFVJ",
+    "TGlzdExheW91dEhlYWRlciA9IEluc3RhbmNlLm5ldygiVUlMaXN0TGF5b3V0IikNClVJTGlzdExheW91",
+    "dEhlYWRlci5GaWxsRGlyZWN0aW9uID0gRW51bS5GaWxsRGlyZWN0aW9uLkhvcml6b250YWwNClVJTGlz",
+    "dExheW91dEhlYWRlci5Ib3Jpem9udGFsQWxpZ25tZW50ID0gRW51bS5Ib3Jpem9udGFsQWxpZ25tZW50",
+    "LkNlbnRlcg0KVUlMaXN0TGF5b3V0SGVhZGVyLlZlcnRpY2FsQWxpZ25tZW50ID0gRW51bS5WZXJ0aWNh",
+    "bEFsaWdubWVudC5DZW50ZXINClVJTGlzdExheW91dEhlYWRlci5QYWRkaW5nID0gVURpbS5uZXcoMCwg",
+    "NikNClVJTGlzdExheW91dEhlYWRlci5QYXJlbnQgPSBUaXRsZUNvbnRhaW5lcg0KbG9jYWwgVGl0bGVN",
+    "YWluID0gSW5zdGFuY2UubmV3KCJUZXh0TGFiZWwiKQ0KVGl0TWFpbi5BdXRvbWF0aWNTaXplID0gRW51",
+    "bS5BdXRvbWF0aWNTaXplLlhhDQpUaXRsZU1haW4uQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDENClRp",
+    "dGxlTWFpbi5UZXh0ID0gImRveCB2MiINClRpdGxlTWFpbi5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21S",
+    "R0IoMCwgMjU1LCAxNzApDQpUaXRsZU1haW4uVGV4dFNpemUgPSAxNg0KVGl0TWFpbi5Gb250ID0gRW51",
+    "bS5Gb250LkdvdGhhbUJvbGQNClRpdGxlTWFpbi5QYXJlbnQgPSBUaXRsZUNvbnRhaW5lcg0KbG9jYWwg",
+    "VGl0bGVTdWIgPSBJbnN0YW5jZS5uZXcoIlRleHRMYWJlbCIpDQpUaXRsZVN1Yi5BdXRvbWF0aWNTaXpl",
+    "ID0gRW51bS5BdXRvbWF0aWNTaXplLlhhDQpUaXRsZVN1Yi5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID0g",
+    "MQ0KVGl0bGVTdWIuVGV4dCA9ICIoYnkgbmhhdGxvbmcpIg0KVGl0bGVTdWIuVGV4dENvbG9yMyA9IENv",
+    "bG9yMy5mcm9tUkdCKDE0MCwgMTQ4LCAxNzApDQpUaXRsZVN1Yi5UZXh0U2l6ZSA9IDEyDQpUaXRsZVN1",
+    "Yi5Gb250ID0gRW51bS5Gb250LkdvdGhhbU1lZGl1bQ0KVGl0bGVTdWIuUGFyZW50ID0gVGl0bGVDb250",
+    "YWluZXINCmxvY2FsIFRvZ2dsZUJ0biA9IEluc3RhbmNlLm5ldygiVGV4dEJ1dHRvbiIpDQpUb2dnbGVC",
+    "dG4uU2l6ZSA9IFVEaW0yLm5ldygwLCAyNiwgMCwgMjYpDQpUb2dnbGVCdG4uUG9zaXRpb24gPSBVRGlt",
+    "Mi5uZXcoMSwgLTMyLCAwLCA2KQ0KVG9nZ2xlQnRuLkJhY2tncm91bmRDb2xvcjMgPSBDb2xvcjMuZnJv",
+    "bVJHQigzNSwgNDAsIDU1KQ0KVG9nZ2xlQnRuLlRleHQgPSAiLSINClRvZ2dsZUJ0bi5UZXh0Q29sb3Iz",
+    "ID0gQ29sb3IzLmZyb21SR0IoMjU1LCAyNTUsIDI1NSkNClRvZ2dsZUJ0bi5UZXh0U2l6ZSA9IDE2DQpU",
+    "b2dnbGVCdG4uRm9udCA9IEVudW0uRm9udC5Hb3RoYW1Cb2xkDQpUb2dnbGVCdG4uUGFyZW50ID0gSGVh",
+    "ZGVyDQpsb2NhbCBUb2dnbGVDb3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJQ29ybmVyIikNClRvZ2dsZUNv",
+    "cm5lci5Db3JuZXJSYWRpdXMgPSBVRGltLm5ldygwLCA2KQ0KVG9nZ2xlQ29ybmVyLlBhcmVudCA9IFRv",
+    "Z2dsZUJ0bg0KbG9jYWwgUG93ZXJCdG4gPSBJbnN0YW5jZS5uZXcoIlRleHRCdXR0b24iKQ0KUG93ZXJC",
+    "dG4uU2l6ZSA9IFVEaW0yLm5ldygwLCAyOCwgMCwgMjYpDQpQb3dlckJ0bi5Qb3NpdGlvbiA9IFVEaW0y",
+    "Lm5ldygwLCA2LCAwLCA2KQ0KUG93ZXJCdG4uQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdC",
+    "KDAsIDIyMCwgMTMwKQ0KUG93ZXJCdG4uVGV4dCA9ICJPTiINClBvd2VyQnRuLlRleHRDb2xvcjMgPSBD",
+    "b2xvcjMuZnJvbVJHQigxNSwgMTcsIDIzKQ0KUG93ZXJCdG4uVGV4dFNpemUgPSAxMQ0KUG93ZXJCdG4u",
+    "Rm9udCA9IEVudW0uRm9udC5Hb3RoYW1Cb2xkDQpQb3dlckJ0bi5QYXJlbnQgPSBIZWFkZXINCmxvY2Fs",
+    "IFBvd2VyQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpQb3dlckNvcm5lci5Db3JuZXJS",
+    "YWRpdXMgPSBVRGltLm5ldygwLCA2KQ0KUG93ZXJDb3JuZXIuUGFyZW50ID0gUG93ZXJCdG4NCmxvY2Fs",
+    "IFRhYkJhciA9IEluc3RhbmNlLm5ldygiRnJhbWUiKQ0KVGFiQmFyLlNpemUgPSBVRGltMi5uZXcoMSwg",
+    "LTIwLCAwLCAzMCkNClRhYkJhci5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAxMCwgMCwgNDQpDQpUYWJC",
+    "YXIuQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDEwLCAxMiwgMTYpDQpUYWJCYXIuQm9y",
+    "ZGVyU2l6ZVBpeGVsID0gMA0KVGFiQmFyLlBhcmVudCA9IE1haW5GcmFtZQ0KbG9jYWwgVGFiQmFyQ29y",
+    "bmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpUYWJCYXJDb3JuZXIuQ29ybmVyUmFkaXVzID0g",
+    "VURpbS5uZXcoMCwgOCkNClRhYkJhckNvcm5lci5QYXJlbnQgPSBUYWJCYXINCmxvY2FsIFRhYkxpc3RM",
+    "YXlvdXQgPSBJbnN0YW5jZS5uZXcoIlVJTGlzdExheW91dCIpDQpUYWJMaXN0TGF5b3V0LkZpbGxEaXJl",
+    "Y3Rpb24gPSBFbnVtLkZpbGxEaXJlY3Rpb24uSG9yaXpvbnRhbA0KVGFiTGlzdExheW91dC5Tb3J0T3Jk",
+    "ZXIgPSBFbnVtLlNvcnRPcmRlci5MYXlvdXRPcmRlcg0KVGFiTGlzdExheW91dC5QYXJlbnQgPSBUYWJC",
+    "YXINCmxvY2FsIFRhYjFCdG4gPSBJbnN0YW5jZS5uZXcoIlRleHRCdXR0b24iKQ0KVGFiMUJ0bi5TaXpl",
+    "ID0gVURpbTIubmV3KDAuMzMzLCAwLCAxLCAwKQ0KVGFiMUJ0bi5CYWNrZ3JvdW5kQ29sb3IzID0gQ29s",
+    "b3IzLmZyb21SR0IoMjIsIDI1LCAzNSkNClRhYjFCdG4uVGV4dCA9ICLwn5CU IEluc3BlY3RvciINClRh",
+    "YjFCdG4uVGV4dENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDAsIDI1NSwgMTcwKQ0KVGFiMUJ0bi5Gb250",
+    "ID0gRW51bS5Gb250LkdvdGhhbUJvbGQNClRhYjFCdG4uVGV4dFNpemUgPSAxMQ0KVGFiMUJ0bi5QYXJl",
+    "bnQgPSBUYWJCYXINCmxvY2FsIFRhYjFDb3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJQ29ybmVyIikNClRh",
+    "YjFDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMCwgOCkNClRhYjFDb3JuZXIuUGFyZW50ID0g",
+    "VGFiMUJ0bg0KbG9jYWwgVGFiMkJ0biA9IEluc3RhbmNlLm5ldygiVGV4dEJ1dHRvbiIpDQpUYWIyQnRu",
+    "LlNpemUgPSBVRGltMi5uZXcoMC4zMzMsIDAsIDEsIDApDQpUYWIyQnRuLkJhY2tncm91bmRUcmFuc3Bh",
+    "cmVuY3kgPSAxDQpUYWIyQnRuLlRleHQgPSAi8J2MkyBBbGwgR2FtZSBTY2FuIg0KVGFiMkJ0bi5UZXh0",
+    "Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMTMwLCAxMzgsIDE1NSkNClRhYjJCdG4uRm9udCA9IEVudW0u",
+    "Rm9udC5Hb3RoYW1Cb2xkDQpUYWIyQnRuLlRleHRTaXplID0gMTENClRhYjJCdG4uUGFyZW50ID0gVGFi",
+    "QmFyDQpsb2NhbCBUYWIyQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpUYWIyQ29ybmVy",
+    "LkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpUYWIyQ29ybmVyLlBhcmVudCA9IFRhYjJCdG4N",
+    "CmxvY2FsIFRhYjNCdG4gPSBJbnN0YW5jZS5uZXcoIlRleHRCdXR0b24iKQ0KVGFiM0J0bi5TaXplID0g",
+    "VURpbTIubmV3KDAuMzM0LCAwLCAxLCAwKQ0KVGFiM0J0bi5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID0g",
+    "MQ0KVGFiM0J0bi5UZXh0ID0gI📜 IEV4ZWN1dG9yIg0KVGFiM0J0bi5UZXh0Q29sb3IzID0gQ29sb3Iz",
+    "LmZyb21SR0IoMTMwLCAxMzgsIDE1NSkNClRhYjNCdG4uRm9udCA9IEVudW0uRm9udC5Hb3RoYW1Cb2xk",
+    "DQpUYWIzQnRuLlRleHRTaXplID0gMTENClRhYjNCdG4uUGFyZW50ID0gVGFiQmFyDQpsb2NhbCBUYWIz",
+    "Q29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNvcm5lciIpDQpUYWIzQ29ybmVyLkNvcm5lclJhZGl1cyA9",
+    "IFVEaW0ubmV3KDAsIDgpDQpUYWIzQ29ybmVyLlBhcmVudCA9IFRhYjNCdG4NCmxvY2FsIFRhYjFDb250",
+    "ZW50ID0gSW5zdGFuY2UubmV3KCJGcmFtZSIpDQpUYWIxQ29udGVudC5TaXplID0gVURpbTIubmV3KDEs",
+    "IC0yMCwgMSwgLTg1KQ0KVGFiMUNvbnRlbnQuUG9zaXRpb24gPSBVRGltMi5uZXcoMCwgMTAsIDAsIDgw",
+    "KQ0KVGFiMUNvbnRlbnQuQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDENClRhYjFDb250ZW50LlBhcmVu",
+    "dCA9IE1haW5GcmFtZQ0KbG9jYWwgU2Nyb2xsRnJhbWUxID0gSW5zdGFuY2UubmV3KCJTY3JvbGxpbmdG",
+    "cmFtZSIpDQpTY3JvbGxGcmFtZTEuU2l6ZSA9IFVEaW0yLm5ldygwLCAyNDUsIDAsIDE0MCkNClNjc29s",
+    "bEZyYW1lMS5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAwLCAwLCAwKQ0KU2Nyb2xsRnJhbWUxLkJhY2tn",
+    "cm91bmRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigyMiwgMjUsIDM1KQ0KU2Nyb2xsRnJhbWUxLkJvcmRl",
+    "clNpemVQaXhlbCA9IDANClNjc29sbEZyYW1lMS5BdXRvbWF0aWNDYW52YXNTaXplID0gRW51bS5BdXRv",
+    "bWF0aWNTaXplLllBDVNjc29sbEZyYW1lMS5TY3JvbGxCYXJUaGlja25lc3MgPSAzDQpTY3JvbGxGcmFt",
+    "ZTEuUGFyZW50ID0gVGFiMUNvbnRlbnQNCmxvY2FsIFNjcm9sbDFDb3JuZXIgPSBJbnN0YW5jZS5uZXco",
+    "IlVJQ29ybmVyIikNClNjc29sbDFDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMCwgOCkNClNj",
+    "cm9sbDFDb3JuZXIuUGFyZW50ID0gU2Nyb2xsRnJhbWUxDQpsb2NhbCBJbmZvQm94ID0gSW5zdGFuY2Uu",
+    "bmV3KCJUZXh0Qm94IikNCkluZm9Cb3guU2l6ZSA9IFVEaW0yLm5ldygxLCAtMTAsIDAsIDApDQpJbmZv",
+    "Qm94LkF1dG9tYXRpY1NpemUgPSBFbnVtLkF1dG9tYXRpY1NpemUuWQ0KSW5mb0JveC5CYWNrZ3JvdW5k",
+    "VHJhbnNwYXJlbmN5ID0gMQ0KSW5mb0JveC5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjIwLCAy",
+    "MjUsIDIzNSkNCkluZm9Cb3guVGV4dFNpemUgPSAxMQ0KSW5mb0JveC5Gb250ID0gRW51bS5Gb250LkNv",
+    "ZGUNCkluZm9Cb3guVGV4dFhBbGlnbm1lbnQgPSBFbnVtLlRleHRYQWxpZ25tZW50LkxlZnQNCkluZm9C",
+    "b3guVGV4dFlBbGlnbm1lbnQgPSBFbnVtLlRleHRZQWxpZ25tZW50LlRvcA0KSW5mb0JveC5UZXh0V3Jh",
+    "cHBlZCA9IHRydWUNCkluZm9Cb3guQ2xlYXJUZXh0T25Gb2N1cyA9IGZhbHNlDQpJbmZvQm94LlRleHRF",
+    "ZGl0YWJsZSA9IGZhbHNlDQpJbmZvQm94LlRleHQgPSAiQ2jhuqFtL0NsaWNrIHZhbyDEkeG7kWkgdMaw",
+    "4bujbmcgdHJvbmcgR2FtZSDEkeG7gyBraeG7g20gdHJhLi4uIg0KSW5mb0JveC5QYXJlbnQgPSBTY3Jv",
+    "bGxGcmFtZTENCmxvY2FsIEluZm9QYWRkaW5nID0gSW5zdGFuY2UubmV3KCJVSVBhZGRpbmciKQ0KSW5m",
+    "b1BhZGRpbmcuUGFkZGluZ1RvcCA9IFVEaW0ubmV3KDAsIDYpDQpJbmZvUGFkZGluZy5QYWRkaW5nTGVm",
+    "dCA9IFVEaW0ubmV3KDAsIDYpDQpJbmZvUGFkZGluZy5QYXJlbnQgPSBJbmZvQm94DQpsb2NhbCBDb3B5",
+    "QnRuMSA9IEluc3RhbmNlLm5ldygiVGV4dEJ1dHRvbiIpDQpDb3B5QnRuMS5TaXplID0gVURpbTIubmV3",
+    "KDAsIDI0NSwgMCwgMzQpDQpDb3B5QnRuMS5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAwLCAwLCAxNDYp",
+    "DQpDb3B5QnRuMS5CYWNrZ3JvdW5kQ29sb3IzID0gQ29sb3IzLmZyb21SR0IoMzAsIDE0MCwgOTApDQpD",
+    "b3B5QnRuMS5UZXh0ID0gI📋 IENvcHkgVGjDtG5nIFRpbiINCkNvcHlCdG4xLlRleHRDb2xvcjMgPSBD",
+    "b2xvcjMuZnJvbVJHQigyNTUsIDI1NSwgMjU1KQ0KQ29weUJ0bjEuRm9udCA9IEVudW0uRm9udC5Hb3Ro",
+    "YW1Cb2xkDQpDb3B5QnRuMS5UZXh0U2l6ZSA9IDExDQpDb3B5QnRuMS5QYXJlbnQgPSBUYWIxQ29udGVu",
+    "dA0KbG9jYWwgQ29weTFDb3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJQ29ybmVyIikNCkNvcHkxQ29ybmVy",
+    "LkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpDb3B5MUNvcm5lci5QYXJlbnQgPSBDb3B5QnRu",
+    "MQ0KbG9jYWwgVHdlZW5CdG4xID0gSW5zdGFuY2UubmV3KCJUZXh0QnV0dG9uIikNCkN3ZWVuQnRuMS5T",
+    "aXplID0gVURpbTIubmV3KDAsIDI0NSwgMCwgMzQpDQpUd2VlbkJ0bjEuUG9zaXRpb24gPSBVRGltMi5u",
+    "ZXcoMCwgMCwgMCwgMTg1KQ0KVHdlZW5CdG4xLkJhY2tncm91bmRDb2xvcjMgPSBDb2xvcjMuZnJvbVJH",
+    "QigwLCAxMzAsIDIzMCkNCkN3ZWVuQnRuMS5UZXh0ID0gI🚀 IFR3ZWVuIMSQ4bqZuIFbhu4sgVHLDrSIN",
+    "Q1R3ZWVuQnRuMS5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjU1LCAyNTUsIDI1NSkNCkN3ZWVu",
+    "QnRuMS5Gb250ID0gRW51bS5Gb250LkdvdGhhbUJvbGQNCkN3ZWVuQnRuMS5UZXh0U2l6ZSA9IDExDQpD",
+    "d2VlbkJ0bjEuUGFyZW50ID0gVGFiMUNvbnRlbnQNCmxvY2FsIFR3ZWVuMUNvcm5lciA9IEluc3RhbmNl",
+    "Lm5ldygiVUlDb3JuZXIiKQ0KVHdlZW4xQ29ybmVyLkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDgp",
+    "DQpUd2VlbjFDb3JuZXIuUGFyZW50ID0gVHdlZW5CdG4xDQpsb2NhbCBWaWV3cG9ydDEgPSBJbnN0YW5j",
+    "ZS5uZXcoIlZpZXdwb3J0RnJhbWUiKQ0KVmlld3BvcnQxLlNpemUgPSBVRGltMi5uZXcoMCwgMTY1LCAw",
+    "LCAyMTkpDQpWaWV3cG9ydDEuUG9zaXRpb24gPSBVRGltMi5uZXcoMSwgLTE2NSwgMCwgMCkNClZpZXdw",
+    "b3J0MS5CYWNrZ3JvdW5kQ29sb3IzID0gQ29sb3IzLmZyb21SR0IoMTAsIDEyLCAxNikNClZpZXdwb3J0",
+    "MS5Cb3JkZXJTaXplUGl4ZWwgPSAwDQpWaWV3cG9ydDEuQWN0aXZlID0gdHJ1ZQ0KVmlld3BvcnQxLlBh",
+    "cmVudCA9IFRhYjFDb250ZW50DQpsb2NhbCBWaWV3cG9ydDFDb3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJ",
+    "Q29ybmVyIikNClZpZXdwb3J0MUNvcm5lci5Db3JuZXJSYWRpdXMgPSBVRGltLm5ldygwLCA4KQ0KVmll",
+    "d3BvcnQxQ29ybmVyLlBhcmVudCA9IFZpZXdwb3J0MQ0KbG9jYWwgQ2FtZXJhMSA9IEluc3RhbmNlLm5l",
+    "dygiQ2FtZXJhIikNClZpZXdwb3J0MS5DdXJyZW50Q2FtZXJhID0gQ2FtZXJhMQ0KQ2FtZXJhMS5QYXJl",
+    "bnQgPSBWaWV3cG9ydDFEbmxvY2FsIFRhYjJDb250ZW50ID0gSW5zdGFuY2UubmV3KCJGcmFtZSIpDQpU",
+    "YWIyQ29udGVudC5TaXplID0gVURpbTIubmV3KDEsIC0yMCwgMSwgLTg1KQ0KVGFiMkNvbnRlbnQuUG9z",
+    "aXRpb24gPSBVRGltMi5uZXcoMCwgMTAsIDAsIDgwKQ0KVGFiMkNvbnRlbnQuQmFja2dyb3VuZFRyYW5z",
+    "cGFyZW5jeSA9IDENClRhYjJDb250ZW50LlZpc2libGUgPSBmYWxzZQ0KVGFiMkNvbnRlbnQuUGFyZW50",
+    "ID0gTWFpbkZyYW1lDQpsb2NhbCBHcm91cFNjcm9sbCA9IEluc3RhbmNlLm5ldygiU2Nyb2xsaW5nRnJh",
+    "bWUiKQ0KR3JvdXBTY3JvbGwuU2l6ZSA9IFVEaW0yLm5ldygwLCAxNDAsIDAsIDE4MikNCkdyb3VwU2Ny",
+    "b2xsLlBvc2l0aW9uID0gVURpbTIubmV3KDAsIDAsIDAsIDApDQpHcm91cFNjc29sbC5CYWNrZ3JvdW5k",
+    "Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjIsIDI1LCAzNSkNCkdyb3VwU2Nyb2xsLkJvcmRlclNpemVQ",
+    "aXhlbCA9IDANCkdyb3VwU2Nyb2xsLlNjcm9sbEJhclRoaWNrbmVzcyA9IDMNCkdyb3VwU2Nyb2xsLkF1",
+    "dG9tYXRpY0NhbnZhc1NpemUgPSBFbnVtLkF1dG9tYXRpY1NpemUuWQ0KR3JvdXBTY3JvbGwuUGFyZW50",
+    "ID0gVGFiMkNvbnRlbnQNCmxvY2FsIEdyb3VwU2Nyb2xsQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNv",
+    "cm5lciIpDQpHcm91cFNjc29sbENvcm5lci5Db3JuZXJSYWRpdXMgPSBVRGltLm5ldygwLCA4KQ0KR3Jv",
+    "dXBTY3JvbGxDb3JuZXIuUGFyZW50ID0gR3JvdXBTY3JvbGwNCmxvY2FsIEdyb3VwTGlzdExheW91dCA9",
+    "IEluc3RhbmNlLm5ldygiVUlMaXN0TGF5b3V0IikNCkdyb3VwTGlzdExheW91dC5Tb3J0T3JkZXIgPSBF",
+    "bnVtLlNvcnRPcmRlci5MYXlvdXRPcmRlcg0KR3JvdXBMaXN0TGF5b3V0LlBhZGRpbmcgPSBVRGltLm5l",
+    "dygwLCA0KQ0KR3JvdXBMaXN0TGF5b3V0LlBhcmVudCA9IEdyb3VwU2Nyb2xsDQpsb2NhbCBSZWZyZXNo",
+    "QnRuID0gSW5zdGFuY2UubmV3KCJUZXh0QnV0dG9uIikNClJlZnJlc2hCdG4uU2l6ZSA9IFVEaW0yLm5l",
+    "dygwLCAxNDAsIDAsIDMyKQ0KUmVmcmVzaEJ0bi5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAwLCAwLCAx",
+    "ODcpDQpSZWZyZXNoQnRuLkJhY2tncm91bmRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQig0MCwgOTUsIDIw",
+    "MCkNClJlZnJlc2hCdG4uVGV4dCA9ICLwn4SEDJR14bqxdCBU4bqtcCBUaW4gR2FtZSINClJlZnJlc2hC",
+    "dG4uVGV4dENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDI1NSwgMjU1LCAyNTUpDQpSZWZyZXNoQnRuLkZv",
+    "bnQgPSBFbnVtLkZvbnQuR290aGFtQm9sZA0KUmVmcmVzaEJ0bi5UZXh0U2l6ZSA9IDEwDQpSZWZyZXNo",
+    "QnRuLlBhcmVudCA9IFRhYjJDb250ZW50DQpsb2NhbCBSZWZyZXNoQ29ybmVyID0gSW5zdGFuY2UubmV3",
+    "KCJVSUNvcm5lciIpDQpSZWZyZXNoQ29ybmVyLkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpS",
+    "ZWZyZXNoQ29ybmVyLlBhcmVudCA9IFJlZnJlc2hCdG4NCmxvY2FsIFdvcmxkSW5mb0JveCA9IEluc3Rh",
+    "bmNlLm5ldygiVGV4dEJveCIpDQpXb3JsZEluZm9Cb3guU2l6ZSA9IFVEaW0yLm5ldygwLCAxNDAsIDAs",
+    "IDE0NikNCldvcmxkSW5mb0JveC5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAxNDYsIDAsIDApDQpXb3Js",
+    "ZEluZm9Cb3guQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDIyLCAyNSwgMzUpDQpXb3Js",
+    "ZEluZm9Cb3guQm9yZGVyU2l6ZVBpeGVsID0gMA0KV29ybGRJbmZvQm94LlRleHRDb2xvcjMgPSBDb2xv",
+    "cjMuZnJvbVJHQigyMjAsIDIyNSwgMjM1KQ0KV29ybGRJbmZvQm94LlRleHRTaXplID0gMTANCldvcmxk",
+    "SW5mb0JveC5Gb250ID0gRW51bS5Gb250LkNvZGUNCldvcmxkSW5mb0JveC5UZXh0WEFsaWdubWVudCA9",
+    "IEVudW0uVGV4dFhBbGlnbm1lbnQuTGVmdA0KV29ybGRJbmZvQm94LlRleHRZQWxpZ25tZW50ID0gRW51",
+    "bS5UZXh0WUFsaWdubWVudC5Ub3ANCldvcmxkSW5mb0JveC5UZXh0V3JhcHBlZCA9IHRydWUNCldvcmxk",
+    "SW5mb0JveC5DbGVhclRleHRPbkZvY3VzID0gZmFsc2UNCldvcmxkSW5mb0JveC5UZXh0RWRpdGFibGUg",
+    "PSBmYWxzZQ0KV29ybGRJbmZvQm94LlRleHQgPSAiQ2jhu4NuIGRhbmggbeG7pWMgdOG6rXAgdGluIGLD",
+    "qm4gdHLDoWkuLi4iDQpXb3JsZEluZm9Cb3guUGFyZW50ID0gVGFiMkNvbnRlbnQNCmxvY2FsIFdvcmxk",
+    "SW5mb0Nvcm5lciA9IEluc3RhbmNlLm5ldygiVUlDb3JuZXIiKQ0KV29ybGRJbmZvQ29ybmVyLkNvcm5l",
+    "clJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpXb3JsZEluZm9Db3JuZXIuUGFyZW50ID0gV29ybGRJbmZv",
+    "Qm94DQpsb2NhbCBXb3JsZEluZm9QYWRkaW5nID0gSW5zdGFuY2UubmV3KCJVSVBhZGRpbmciKQ0KV29y",
+    "bGRJbmZvUGFkZGluZy5QYWRkaW5nT3A9IFVEaW0ubmV3KDAsIDYpDQpXb3JsZEluZm9QYWRkaW5nLlBh",
+    "ZGRpbmdMZWZ0ID0gVURpbS5uZXcoMCwgNikNCldvcmxkSW5mb1BhZGRpbmcuUGFyZW50ID0gV29ybGRJ",
+    "bmZvQm94DQpsb2NhbCBXb3JsZENvcHlCdG4gPSBJbnN0YW5jZS5uZXcoIlRleHRCdXR0b24iKQ0KV29y",
+    "bGRDb3B5QnRuLlNpemUgPSBVRGltMi5uZXcoMCwgMTQwLCAwLCAzMykNCldvcmxkQ29weUJ0bi5Qb3Np",
+    "dGlvbiA9IFVEaW0yLm5ldygwLCAxNDYsIDAsIDE1MCkNCldvcmxkQ29weUJ0bi5CYWNrZ3JvdW5kQ29s",
+    "b3IzID0gQ29sb3IzLmZyb21SR0IoMzAsIDE0MCwgOTApDQpXb3JsZENvcHlCdG4uVGV4dCA9ICLwn4SY",
+    "IENvcHkgVGjDtG5nIFRpbiINCldvcmxkQ29weUJ0bi5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0Io",
+    "MjU1LCAyNTUsIDI1NSkNCldvcmxkQ29weUJ0bi5Gb250ID0gRW51bS5Gb250LkdvdGhhbUJvbGQNCldv",
+    "cmxkQ29weUJ0bi5UZXh0U2l6ZSA9IDEwDQpXb3JsZENvcHlCdG4uUGFyZW50ID0gVGFiMkNvbnRlbnQN",
+    "CmxvY2FsIFdvcmxkQ29weUNvcm5lciA9IEluc3RhbmNlLm5ldygiVUlDb3JuZXIiKQ0KV29ybGRDb3B5",
+    "Q29ybmVyLkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpXb3JsZENvcHlDb3JuZXIuUGFyZW50",
+    "ID0gV29ybGRDb3B5QnRuDQpsb2NhbCBXb3JsZFR3ZWVuQnRuID0gSW5zdGFuY2UubmV3KCJUZXh0QnV0",
+    "dG9uIikNCldvcmxkVHdlZW5CdG4uU2l6ZSA9IFVEaW0yLm5ldygwLCAxNDAsIDAsIDMyKQ0KV29ybGRU",
+    "d2VlbkJ0bi5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLCAxNDYsIDAsIDE4NykNCldvcmxkVHdlZW5CdG4u",
+    "QmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDAsIDEzMCwgMjMwKQ0KV29ybGRUd2VlbkJ0",
+    "bi5UZXh0ID0gI🚀 IFR3ZWVuIMSQ4bqZuIg0KV29ybGRUd2VlbkJ0bi5UZXh0Q29sb3IzID0gQ29sb3Iz",
+    "LmZyb21SR0IoMjU1LCAyNTUsIDI1NSkNCldvcmxkVHdlZW5CdG4uRm9udCA9IEVudW0uRm9udC5Hb3Ro",
+    "YW1Cb2xkDQpXb3JsZFR3ZWVuQnRuLlRleHRTaXplID0gMTANCldvcmxkVHdlZW5CdG4uUGFyZW50ID0g",
+    "VGFiMkNvbnRlbnQNCmxvY2FsIFdvcmxkVHdlZW5Db3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJQ29ybmVy",
+    "IikNCldvcmxkVHdlZW5Db3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMCwgOCkNCldvcmxkVHdl",
+    "ZW5Db3JuZXIuUGFyZW50ID0gV29ybGRUd2VlbkJ0bg0KbG9jYWwgVmlld3BvcnQyID0gSW5zdGFuY2Uu",
+    "bmV3KCJWaWV3cG9ydEZyYW1lIikNClZpZXdwb3J0Mi5TaXplID0gVURpbTIubmV3KDAsIDEyNCwgMCwg",
+    "MjE5KQ0KVmlld3BvcnQyLlBvc2l0aW9uID0gVURpbTIubmV3KDEsIC0xMjQsIDAsIDApDQpWaWV3cG9y",
+    "dDIuQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDEwLCAxMiwgMTYpDQpWaWV3cG9ydDIu",
+    "Qm9yZGVyU2l6ZVBpeGVsID0gMA0KVmlld3BvcnQyLkFjdGl2ZSA9IHRydWUNClZpZXdwb3J0Mi5QYXJl",
+    "bnQgPSBUYWIyQ29udGVudA0KbG9jYWwgVmlld3BvcnQyQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNv",
+    "cm5lciIpDQpWaWV3cG9ydDJDb3JuZXIuQ29ybmVyUmFkaXVzID0gVURpbS5uZXcoMCwgOCkNClZpZXdw",
+    "b3J0MkNvcm5lci5QYXJlbnQgPSBWaWV3cG9ydDINCmxvY2FsIENhbWVyYTIgPSBJbnN0YW5jZS5uZXco",
+    "IkNhbWVyYSIpDQpWaWV3cG9ydDIuQ3VycmVudENhbWVyYSA9IENhbWVyYTINCkNhbWVyYTIuUGFyZW50",
+    "ID0gVmlld3BvcnQyDQpsb2NhbCBUYWIzQ29udGVudCA9IEluc3RhbmNlLm5ldygiRnJhbWUiKQ0KVGFi",
+    "M0NvbnRlbnQuU2l6ZSA9IFVEaW0yLm5ldygxLCAtMjAsIDEsIC04NSkNClRhYjNDb250ZW50LlBvc2l0",
+    "aW9uID0gVURpbTIubmV3KDAsIDEwLCAwLCA4MCkNClRhYjNDb250ZW50LkJhY2tncm91bmRUcmFuc3Bh",
+    "cmVuY3kgPSAxDQpUYWIzQ29udGVudC5WaXNpYmxlID0gZmFsc2UNClRhYjNDb250ZW50LlBhcmVudCA9",
+    "IE1haW5GcmFtZQ0KbG9jYWwgVGFiM0xheW91dCA9IEluc3RhbmNlLm5ldygiVUlMaXN0TGF5b3V0IikN",
+    "ClRhYjNMYXlvdXQuRmlsbERpcmVjdGlvbiA9IEVudW0uRmlsbERpcmVjdGlvbi5WZXJ0aWNhbA0KVGFi",
+    "M0xheW91dC5Tb3J0T3JkZXIgPSBFbnVtLlNvcnRPcmRlci5MYXlvdXRPcmRlcg0KVGFiM0xheW91dC5Q",
+    "YWRkaW5nID0gVURpbS5uZXcoMCwgMTIpDQpUYWIzTGF5b3V0LlBhcmVudCA9IFRhYjNDb250ZW50DQps",
+    "b2NhbCBSZW1vdGVTcHlCdG4gPSBJbnN0YW5jZS5uZXcoIlRleHRCdXR0b24iKQ0KUmVtb3RlU3B5QnRu",
+    "LlNpemUgPSBVRGltMi5uZXcoMSwgMCwgMCwgNDgpDQpSZW1vdGVTcHlCdG4uQmFja2dyb3VuZENvbG9y",
+    "MyA9IENvbG9yMy5mcm9tUkdCKDIyLCAyNSwgMzUpDQpSZW1vdGVTcHlCdG4uVGV4dCA9ICI88J2SgSBS",
+    "ZW1vdGUgU3B5IChTb2kgRXZlbnQgJiBGdW5jdGlvbiBHYW1lKSINClJlbW90ZVNweUJ0bi5UZXh0Q29s",
+    "b3IzID0gQ29sb3IzLmZyb21SR0IoMCwgMjU1LCAxNzApDQpSZW1vdGVTcHlCdG4uRm9udCA9IEVudW0u",
+    "Rm9udC5Hb3RoYW1Cb2xkDQpSZW1vdGVTcHlCdG4uVGV4dFNpemUgPSAxMw0KUmVtb3RlU3B5QnRuLlBh",
+    "cmVudCA9IFRhYjNDb250ZW50DQpsb2NhbCBSZW1vdGVTcHlDb3JuZXIgPSBJbnN0YW5jZS5uZXcoIlVJ",
+    "Q29ybmVyIikNClJlbW90ZVNweUNvcm5lci5Db3JuZXJSYWRpdXMgPSBVRGltLm5ldygwLCA4KQ0KUmVt",
+    "b3RlU3B5Q29ybmVyLlBhcmVudCA9IFJlbW90ZVNweUJ0bg0KbG9jYWwgUmVtb3RlU3B5U3Ryb2tlID0g",
+    "SW5zdGFuY2UubmV3KCJVSVN0cm9rZSIpDQpSZW1vdGVTcHlTdHJva2UuQ29sb3IgPSBDb2xvcjMuZnJv",
+    "bVJHQigwLCAyNTUsIDE3MCkNClJlbW90ZVNweVN0cm9rZS5UaGlja25lc3MgPSAxDQpSZW1vdGVTcHlT",
+    "dHJva2UuVHJhbnNwYXJlbmN5ID0gMC42DQpSZW1vdGVTcHlTdHJva2UuUGFyZW50ID0gUmVtb3RlU3B5",
+    "QnRuDQpSZW1vdGVTcHlCdG4uTW91c2VCdXR0b24xQ2xpY2s6Q29ubmVjdChmdW5jdGlvbigpDQp0YXNr",
+    "LnNwYXduKGZ1bmN0aW9uKCkNCmxvYWRzdHJpbmcoZ2FtZTpIdHRwR2V0KCJodHRwczovL3Jhd3Njcmlw",
+    "dHMubmV0L3Jhdy9Vbml2ZXJzYWwtU2NyaXB0LVNpbXBsZVNweS1SZW1vdGUtU3B5LXJlbWFrZS0xMjc4",
+    "MzkiKSkoKQ0KZW5kKQ0KZW5kKQ0KbG9jYWwgRGV4QnRuID0gSW5zdGFuY2UubmV3KCJUZXh0QnV0dG9u",
+    "IikNCkRleEJ0bi5TaXplID0gVURpbTIubmV3KDEsIDAsIDAsIDQ4KQ0KRGV4QnRuLkJhY2tncm91bmRD",
+    "b2xvcjMgPSBDb2xvcjMuZnJvbVJHQigyMiwgMjUsIDM1KQ0KRGV4QnRuLlRleHQgPSAi8J2QniBEYXJr",
+    "IERleCBFeHBsb3JlciAoWGVtIEMmIzI0Mjt1IFRyw7pjIFNjcmlwdCkiDQpEZXhCdG4uVGV4dENvbG9y",
+    "MyA9IENvbG9yMy5mcm9tUkdCKDAsIDE4MCwgMjU1KQ0KRGV4QnRuLkZvbnQgPSBFbnVtLkZvbnQuR290",
+    "aGFtQm9sZA0KRGV4QnRuLlRleHRTaXplID0gMTMNCkRleEJ0bi5QYXJlbnQgPSBUYWIzQ29udGVudCAN",
+    "CmxvY2FsIERleENvcm5lciA9IEluc3RhbmNlLm5ldygiVUlDb3JuZXIiKQ0KRGV4Q29ybmVyLkNvcm5l",
+    "clJhZGl1cyA9IFVEaW0ubmV3KDAsIDgpDQpEZXhDb3JuZXIuUGFyZW50ID0gRGV4QnRuDQpsb2NhbCBE",
+    "ZXhTdHJva2UgPSBJbnN0YW5jZS5uZXcoIlVJU3Ryb2tlIikNCkRleFN0cm9rZS5Db2xvciA9IENvbG9y",
+    "My5mcm9tUkdCKDAsIDE4MCwgMjU1KQ0KRGV4U3Ryb2tlLlRoaWNrbmVzcyA9IDENCkRleFN0cm9rZS5U",
+    "cmFuc3BhcmVuY3kgPSAwLjYNCkRleFN0cm9rZS5QYXJlbnQgPSBEZXhCdG4NCkRleEJ0bi5Nb3VzZUJ1",
+    "dHRvbjFDbGljazpDb25uZWN0KGZ1bmN0aW9uKCkNCnRhc2suc3Bhd24oZnVuY3Rpb24oKQ0KbG9hZHN0",
+    "cmluZyhnYW1lOkh0dHBHZXQoImh0dHBzOi8vcmF3c2NyaXB0cy5uZXQvcmF3L1VuaXZlcnNhbC1TY3Jp",
+    "cHQtRGFyay1EZXgtMjQ1MTg4IikpKCkNCmVuZCkNCmVuZCkNCmxvY2FsIGZ1bmN0aW9uIENsZWFyRWZm",
+    "ZWN0cygpDQppZiBDdXJyZW50SGlnaGxpZ2h0IHRoZW4gQ3VycmVudEhpZ2hsaWdodDpEZXN0cm95KCkg",
+    "Q3VycmVudEhpZ2hsaWdodCA9IG5pbCBlbmQNCmlmIFByZXZpZXdNb2RlbFRhYjEgdGhlbiBQcmV2aWV3",
+    "TW9kZWxUYWIxOkRlc3Ryb3koKSBQcmV2aWV3TW9kZWxUYWIxID0gbmlsIGVuZA0KaWYgUHJldmlld01v",
+    "ZGVsVGFiMiB0aGVuIFByZXZpZXdNb2RlbFRhYjI6RGVzdHJveSgpIFByZXZpZXdNb2RlbFRhYjIgPSBu",
+    "aWwgZW5kDQplbmQNClRhYjFCdG4uTW91c2VCdXR0b24xQ2xpY2s6Q29ubmVjdChmdW5jdGlvbigpDQpU",
+    "YWIxQnRuLkJhY2tncm91bmRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigyMiwgMjUsIDM1KQ0KVGFiMUJ0",
+    "bi5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID0gMA0KVGFiMUJ0bi5UZXh0Q29sb3IzID0gQ29sb3IzLmZy",
+    "b21SR0IoMCwgMjU1LCAxNzApDQpUYWIyQnRuLkJhY2tncm91bmRUcmFuc3BhcmVuY3kgPSAxDQpUYWIy",
+    "QnRuLlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigxMzAsIDEzOCwgMTU1KQ0KVGFiM0J0bi5CYWNr",
+    "Z3JvdW5kVHJhbnNwYXJlbmN5ID0gMQ0KVGFiM0J0bi5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0Io",
+    "MTMwLCAxMzgsIDE1NSkNClRhYjFDb250ZW50LlZpc2libGUgPSB0cnVlDQpUYWIyQ29udGVudC5WaXNp",
+    "YmxlID0gZmFsc2UNClRhYjNDb250ZW50LlZpc2libGUgPSBmYWxzZQ0KZW5kKQ0KVGFiMkJ0bi5Nb3Vz",
+    "ZUJ1dHRvbjFDbGljazpDb25uZWN0KGZ1bmN0aW9uKCkNClRhYjJCdG4uQmFja2dyb3VuZENvbG9yMyA9",
+    "IENvbG9yMy5mcm9tUkdCKDIyLCAyNSwgMzUpDQpUYWIyQnRuLkJhY2tncm91bmRUcmFuc3BhcmVuY3kg",
+    "PSAwDQpUYWIyQnRuLlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigwLCAyNTUsIDE3MCkNClRhYjFC",
+    "dG4uQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDENClRhYjFCdG4uVGV4dENvbG9yMyA9IENvbG9yMy5m",
+    "cm9tUkdCKDEzMCwgMTM4LCAxNTUpDQpUYWIzQnRuLkJhY2tncm91bmRUcmFuc3BhcmVuY3kgPSAxDQpU",
+    "YWIzQnRuLlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigxMzAsIDEzOCwgMTU1KQ0KVGFiMUNvbnRl",
+    "bnQuVmlzaWJsZSA9IGZhbHNlDQpUYWIyQ29udGVudC5WaXNpYmxlID0gdHJ1ZQ0KVGFiM0NvbnRlbnQu",
+    "VmlzaWJsZSA9IGZhbHNlDQplbmQpDQpUYWIzQnRuLk1vdXNlQnV0dG9uMUNsaWNrOkNvbm5lY3QoZnVu",
+    "Y3Rpb24oKQ0KVGFiM0J0bi5CYWNrZ3JvdW5kQ29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjIsIDI1LCAz",
+    "NSkNClRhYjNCdG4uQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDANClRhYjNCdG4uVGV4dENvbG9yMyA9",
+    "IENvbG9yMy5mcm9tUkdCKDAsIDI1NSwgMTcwKQ0KVGFiMUJ0bi5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5",
+    "ID0gMQ0KVGFiMUJ0bi5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMTMwLCAxMzgsIDE1NSkNClRh",
+    "YjJCdG4uQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDENClRhYjJCdG4uVGV4dENvbG9yMyA9IENvbG9y",
+    "My5mcm9tUkdCKDEzMCwgMTM4LCAxNTUpDQpUYWIxQ29udGVudC5WaXNpYmxlID0gZmFsc2UNClRhYjJD",
+    "b250ZW50LlZpc2libGUgPSBmYWxzZQ0KVGFiM0NvbnRlbnQuVmlzaWJsZSA9IHRydWUNCmVuZCkNCmxv",
+    "Y2FsIGlzTWluaW1pemVkID0gZmFsc2UNClRvZ2dsZUJ0bi5Nb3VzZUJ1dHRvbjFDbGljazpDb25uZWN0",
+    "KGZ1bmN0aW9uKCkNCmlzTWluaW1pemVkID0gbm90IGlzTWluaW1pemVkDQpUYWIxQ29udGVudC5WaXNp",
+    "YmxlID0gKG5vdCBpc01pbmltaXplZCkgYW5kIChUYWIxQnRuLkJhY2tncm91bmRUcmFuc3BhcmVuY3kg",
+    "PT0gMCkNClRhYjJDb250ZW50LlZpc2libGUgPSAobm90IGlzTWluaW1pemVkKSBhbmQgKFRhYjJCdG4u",
+    "QmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9PSAwKQ0KVGFiM0NvbnRlbnQuVmlzaWJsZSA9IChub3QgaXNN",
+    "aW5pbWl6ZWQpIGFuZCAoVGFiM0J0bi5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID09IDApDQpUYWJCYXIu",
+    "VmlzaWJsZSA9IG5vdCBpc01pbmltaXplZA0KTWFpbkZyYW1lLlNpemUgPSBpc01pbmltaXplZCBhbmQg",
+    "VURpbTIubmV3KDAsIDQ0MCwgMCwgMzgpIG9yIFVEaW0yLm5ldygwLCA0NDAsIDAsIDMxMCkNClRvZ2ds",
+    "ZUJ0bi5UZXh0ID0gaXNNaW5pbWl6ZWQgYW5kICIrIiBvciAiLSINCmVuZCkNClBvd2VyQnRuLk1vdXNl",
+    "QnV0dG9uMUNsaWNrOkNvbm5lY3QoZnVuY3Rpb24oKQ0Kc2NyaXB0RW5hYmxlZCA9IG5vdCBzY3JpcHRF",
+    "bmFibGVkDQpQb3dlckJ0bi5UZXh0ID0gc2NyaXB0RW5hYmxlZCBhbmQgIk9OIiBvciAiT0ZGIg0KUG93",
+    "ZXJCdG4uQmFja2dyb3VuZENvbG9yMyA9IHNjcmlwdEVuYWJsZWQgYW5kIENvbG9yMy5mcm9tUkdCKDAs",
+    "IDIyMCwgMTMwKSBvciBDb2xvcjMuZnJvbVJHQigyMzAsIDUwLCA2MCkNCmlmIG5vdCBzY3JpcHRFbmFi",
+    "bGVkIHRoZW4NCkNsZWFyRWZmZWN0cygpDQpJbmZvQm94LlRleHQgPSAiU2NyaXB0IMSRYW5nIFThuKJUIi",
+    "DQpjdXJyZW50VGFyZ2V0UG9zID0gbmlsDQplbHNlDQpJbmZvQm94LlRleHQgPSAiQ2jhuqFtL0NsaWNr",
+    "IHZhbyDEkeG7kWkgdMaw4bujbmcgdHJvbmcgR2FtZSDEkeG7gyBraeG7g20gdHJhLi4uIg0KZW5kDQpl",
+    "bmQpDQpsb2NhstageWZ1bmN0aW9uIEhpZ2hsaWdodE9iamVjdCh0YXJnZXQsIHRhcmdldFR5cGUpDQpp",
+    "ZiBDdXJyZW50SGlnaGxpZ2h0IHRoZW4gQ3VycmVudEhpZ2hsaWdodDpEZXN0cm95KCkgZW5kDQppZiBu",
+    "b3QgKHRhcmdldDpJc0EoIk1vZGVsIikgb3IgdGFyZ2V0OklzQSgiQmFzZVBhcnQiKSkgdGhlbiByZXR1",
+    "cm4gZW5kDQpsb2NhbCBoaWdobGlnaHQgPSBJbnN0YW5jZS5uZXcoIkhpZ2hsaWdodCIpDQpoaWdobGln",
+    "aHQuTmFtZSA9ICJTY3JpcHRUYXJnZXRfRVNQIg0KaWYgc3RyaW5nLmZpbmQodGFyZ2V0VHlwZSwgIlBs",
+    "YXllciIpIHRoZW4NCmhpZ2hsaWdodC5GaWxsQ29sb3IgPSBDb2xvcjMuZnJvbVJHQigyNTUsIDYwLCA2",
+    "MCkNCmVsc2VpZiBzdHJpbmcuZmluZCh0YXJnZXRUeXBlLCAiTlBDIikgb3Igc3RyaW5nLmZpbmQodGFy",
+    "Z2V0VHlwZSwgIlF1w6FpIikgb3Igc3RyaW5nLmZpbmQodGFyZ2V0VHlwZSwgIkVuZW1pZXMiKSB0aGVu",
+    "DQpoaWdobGlnaHQuRmlsbENvbG9yID0gQ29sb3IzLmZyb21SR0IoMjU1LCAxOTAsIDApDQplbHNlDQpo",
+    "aWdobGlnaHQuRmlsbENvbG9yID0gQ29sb3IzLmZyb21SR0IoMCwgMjU1LCAxNzApDQplbmQNCmhpZ2hs",
+    "aWdodC5GaWxsVHJhbnNwYXJlbmN5ID0gMC40DQpoaWdobGlnaHQuT3V0bGluZUNvbG9yID0gQ29sb3Iz",
+    "LmZyb21SR0IoMjU1LCAyNTUsIDI1NSkNCmhpZ2hsaWdodC5BZG9ybmVlID0gdGFyZ2V0DQpoaWdobGln",
+    "aHQuUGFyZW50ID0gdGFyZ2V0DQpDdXJyZW50SGlnaGxpZ2h0ID0gaGlnaGxpZ2h0DQplbmQNCmxvY2Fs",
+    "IGZ1bmN0aW9uIFVwZGF0ZUNhbWVyYTEoKQ0KaWYgbm90IFByZXZpZXdNb2RlbFRhYjEgdGhlbiByZXR1",
+    "cm4gZW5kDQpsb2NhbCByYWRYLCByYWRZYSA9IG1hdGgucmFkKGNhbTFBbmdsZVgpLCBtYXRoLnJhZChj",
+    "YW0xQW5nbGVZKQ0KbG9jYWwgeCA9IGNhbTFEaXN0ICogbWF0aC5zaW4ocmFkWCkgKiBtYXRoLmNvcyhy",
+    "YWRZKQ0KbG9jYWwgeSA9IGNhbTFEaXN0ICogbWF0aC5zaW4ocmFkWSkNCmxvY2FsIHo9IGNhbTFEaXN0",
+    "ICogbWF0aC5jb3MocmFkWCkgKiBtYXRoLmNvcyhyYWRZKQ0KQ2FtZXJhMS5DQ2ZyYW1lID0gQ0ZyYW1l",
+    "Lm5ldyhDYW0xVGFyZ2V0Q2VudGVyICsgVmVjdG9yMy5uZXcoeCwgeSwgeiksIENhbTFUYXJnZXRDZW50",
+    "ZXIpDQplbmQNCmxvY2FsIGZ1bmN0aW9uIFVwZGF0ZUNhbWVyYTIoKQ0KaWYgbm90IFByZXZpZXdNb2Rl",
+    "bFRhYjIgdGhlbiByZXR1cm4gZW5kDQpsb2NhbCByYWRYLCByYWRZYSA9IG1hdGgucmFkKGNhbTJBbmds",
+    "ZVgpLCBtYXRoLnJhZChjYW0yQW5nbGVZKQ0KbG9jYWwgeCA9IGNhbTJEaXN0ICogbWF0aC5zaW4ocmFk",
+    "WCkgKiBtYXRoLmNvcyhyYWRZKQ0KbG9jYWwgeSA9IGNhbTJEaXN0ICogbWF0aC5zaW4ocmFkWSkNCmxv",
+    "Y2FsIHo9IGNhbTJEaXN0ICogbWF0aC5jb3MocmFkWCkgKiBtYXRoLmNvcyhyYWRZKQ0KQ2FtZXJhMi5D",
+    "Q2ZyYW1lID0gQ0ZyYW1lLm5ldyhDYW0yVGFyZ2V0Q2VudGVyICsgVmVjdG9yMy5uZXcoeCwgeSwgeiks",
+    "IENhbTJUYXJnZXRDZW50ZXIpDQplbmQNCmxvY2FsIGZ1bmN0aW9uIFJlbmRlcjNEUHJldmlldyh0YXJn",
+    "ZXQsIHRhYkluZGV4KQ0KcGNhbGwoZnVuY3Rpb24oKQ0KaWYgdGFiSW5kZXggPT0gMSBhbmQgUHJldmll",
+    "d01vZGVsVGFiMSB0aGVuIFByZXZpZXdNb2RlbFRhYjE6RGVzdHJveSgpIFByZXZpZXdNb2RlbFRhYjEg",
+    "PSBuaWwgZW5kDQppZiB0YWJJbmRleCA9PSAyIGFuZCBQcmV2aWV3TW9kZWxUYWIyIHRoZW4gUHJldmll",
+    "d01vZGVsVGFiMjpEZXN0cm95KCkgUHJldmlld01vZGVsVGFiMiA9IG5pbCBlbmQNCmxvY2FsIGRlc2Nl",
+    "bmRhbnRzID0gdGFyZ2V0OkdldERlc2NlbmRhbnRzKCkNCmxvY2FsIGlzSHVnZSA9ICNkZXNjZW5kYW50",
+    "cyA+IDEyMDANCmxvY2FsIGNmID0gQ0ZyYW1lLm5ldygpDQpsb2NhbCBzaXplID0gVmVjdG9yMy5uZXco",
+    "NCwgNCwgNCkNCmlmIHRhcmdldDpJc0EoIkJhc2VQYXJ0IikgdGhlbg0KY2YgPSB0YXJnZXQuQ0ZyYW1l",
+    "DQpzaXplID0gdGFyZ2V0LlNpemUNCmVsc2VpZiB0YXJnZXQ6SXNBBCIsTW9kZWwiKSB0aGVuDQpjZiwg",
+    "c2l6ZSA9IHRhcmdldDpHZXRCb3VuZGluZ0JveCgpDQplbmQNCmxvY2FsIG1heERpbSA9IG1hdGgubWF4",
+    "KHNpemUuWCwgc2l6ZS5ZLCBzaXplLlopDQpsb2NhbCB3cmFwcGVyID0gSW5zdGFuY2UubmV3KCJNb2Rl",
+    "bCIpDQpsb2NhbCBwcmV2aWV3T2JqDQppZiBpc0h1Z2Ugb3IgbWF4RGltID4gMzAwIG9yIHRhcmdldDpJ",
+    "c0EoIlRlcnJhaW4iKSB0aGVuDQpsb2NhbCByZXBQYXJ0ID0gSW5zdGFuY2UubmV3KCJQYXJ0IikNCnJl",
+    "cFBhcnQuU2l6ZSA9IFZlY3RvcjIubmV3KG1hdGguY2xhbXAoc2l6ZS5YLCA1LCA1MCksIG1hdGguY2xh",
+    "bXAoc2l6ZS5ZLCA1LCA1MCksIG1hdGguY2xhbXAoc2l6ZS5aLCA1LCA1MCkpDQpyZXBQYXJ0LkNGcmFt",
+    "ZSA9IGNmDQpyZXBQYXJ0Lk1hdGVyaWFsID0gRW51bS5NYXRlcmlhbC5Gb3JjZUZpZWxkDQpyZXBQYXJ0",
+    "LkNvbG9yID0gQ29sb3IzLmZyb21SR0IoMCwgMjU1LCAxNzApDQpyZXBQYXJ0LkFuY2hvcmVkID0gdHJ1",
+    "ZQ0KcHJldmlld09iaiA9IHJlcFBhcnQNCmVsc2UNCnRhcmdldC5BcmNoaXZhYmxlID0gdHJ1ZQ0KcHJl",
+    "dmlld09iaiA9IHRhcmdldDpDbG9uZSgpDQpmb3IgXywgdiBpbiBwYWlycyhwcmV2aWV3T2JqOkdldERl",
+    "c2NlbmRhbnRzKCkpIGRvDQppZiB2OklzQSgiTHVhU291cmNlQ29udGFpbmVyIikgb3IgOklzQSgiU291",
+    "bmQiKSBvciB2OklzQSgiQ2FtZXJhIikgb3IgOklzQSgiUGFydGljbGVFbWl0dGVyIikgdGhlbg0KdjpE",
+    "ZXN0cm95KCkNCmVuZA0KZW5kDQplbmQNCmlmIHRhYkluZGV4ID09IDEgdGhlbg0Kd3JhcHBlci5QYXJl",
+    "bnQgPSBWaWV3cG9ydDFEbnByZXZpZXdPYmouUGFyZW50ID0gd3JhcHBlcg0KUHJldmlld01vZGVsVGFi",
+    "MSA9IHdyYXBwZXINCmVsc2UNCndyYXBwZXIuUGFyZW50ID0gVmlld3BvcnQyDQpwcmV2aWV3T2JqLlBh",
+    "cmVudCA9IHdyYXBwZXINClByZXZpZXdNb2RlbFRhYjIgPSB3cmFwcGVyDQplbmQNCmxvY2FsIGNlbnRl",
+    "ciA9IGNmLlBvc2l0aW9uDQpsb2NhbCBkaXN0ID0gbWF0aC5jbGFtcChtYXREaW0gKiAxLjQsIDYsIDI1",
+    "MCkNCmlmIHRhYkluZGV4ID09IDEgdGhlbg0KY2FtMVRhcmdldENlbnRlciA9IGNlbnRlcg0KY2FtMURp",
+    "c3QgPSBkaXN0DQpjYW0xQW5nbGVYLCBjYW0xQW5nbGVZID0gNDUsIDIwDQpVcGRhdGVDYW1lcmExKCkN",
+    "CmVsc2UNCmNhbTJUYXJnZXRDZW50ZXIgPSBjZW50ZXINCmNhbTJEaXN0ID0gZGlzdA0KY2FtMkFuZ2xl",
+    "WCwgY2FtMkFuZ2xlWSA9IDQ1LCAyMA0KVXBkYXRlQ2FtZXJhMigpDQplbmQNCmVuZCkNCmVuZA0KVmll",
+    "d3BvcnQxLklucHV0QmVnYW46Q29ubmVjdChmdW5jdGlvbihpbnB1dCkNCmlmIGlucHV0LlVzZXJJbnB1",
+    "dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0dG9uMSBvciBpbnB1dC5Vc2VySW5wdXRU",
+    "eXBlLlRvdWNoIHRoZW4NCmlzRHJhZ2dpbmdUYWIxID0gdHJ1ZQ0KbGFzdElucHV0UG9zID0gaW5wdXQu",
+    "UG9zaXRpb24NCmVuZA0KZW5kKQ0KVmlld3BvcnQyLklucHV0QmVnYW46Q29ubmVjdChmdW5jdGlvbihp",
+    "bnB1dCkNCmlmIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0",
+    "dG9uMSBvciBpbnB1dC5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4NCmlzRHJhZ2dpbmdUYWIyID0gdHJ1",
+    "ZQ0KbGFzdElucHV0UG9zID0gaW5wdXQuUG9zaXRpb24NCmVuZA0KZW5kKQ0KVXNlcklucHV0U2Vydmlj",
+    "ZS5JbnB1dENoYW5nZWQ6Q29ubmVjdChmdW5jdGlvbihpbnB1dCkNCmlmIG5vdCAoaXNEcmFnaW5nVGFi",
+    "MSBvciBpc0RyYWdnaW5nVGFiMikgdGhlbiByZXR1cm4gZW5kDQppZiBpbnB1dC5Vc2VySW5wdXRUeXBl",
+    "ID09IEVudW0uVXNlcklucHV0VHlwZS5Nb3VzZU1vdmVtZW50IG9yIGlucHV0LlVzZXJJbnB1dFR5cGUg",
+    "PT0gRW51bS5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4NCmxvY2FsIGRlbHRhID0gaW5wdXQuUG9zaXRp",
+    "b24gLSBsYXN0SW5wdXRQb3MNCmxhc3RJbnB1dFBvcyA9IGlucHV0LlBvc2l0aW9uDQpsb2NhbCBzZW5z",
+    "aXRpdml0eSA9IDAuNg0KaWYgaXNEcmFnaW5nVGFiMSB0aGVuDQpjYW0xQW5nbGVYID0gY2FtMUFuZ2xl",
+    "WCAtIChkZWx0YS5YICogc2Vuc2l0aXZpdHkpDQpjYW0xQW5nbGVZID0gbWF0aC5jbGFtcChjYW0xQW5n",
+    "bGVZICsgKGRlbHRhLlkgKiBzZW5zaXRpdml0eSksIC04MCwgODApDQpVcGRhdGVDYW1lcmExKCkNCmVs",
+    "c2VpZiBpc0RyYWdnaW5nVGFiMiB0aGVuDQpjYW0yQW5nbGVYID0gY2FtMkFuZ2xlWCAtIChkZWx0YS5Y",
+    "ICogc2Vuc2l0aXZpdHkpDQpjYW0yQW5nbGVZID0gbWF0aC5jbGFtcChjYW0yQW5nbGVZICsgKGRlbHRh",
+    "LlkgKiBzZW5zaXRpdml0eSksIC04MCwgODApDQpVcGRhdGVDYW1lcmEyKCkNCmVuZA0KZW5kDQplbmQp",
+    "DQpVc2VySW5wdXRTZXJ2aWNlLklucHV0RW5kZWQ6Q29ubmVjdChmdW5jdGlvbihpbnB1dCkNCmlmIGlu",
+    "cHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0dG9uMSBvciBpbnB1",
+    "dC5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4NCmlzRHJhZ2dpbmdUYWIxID0gZmFsc2UNCmlzRHJhZ2dp",
+    "bmdUYWIyID0gZmFsc2UNCmVuZA0KZW5kKQ0KbG9jYWwgd29ybGRDYXRlZ29yaWVzID0ge30NCmxvY2Fs",
+    "IFJlbmRlckl0ZW1MaXN0DQpsb2NhstageWZ1bmN0aW9uIElzQ29tcGxldGVPYmplY3Qob2JqKQ0KaWYg",
+    "b2JqOklzQSgiQmFzZVBhcnQiKSBvciBvYmo6SXNBBENUvb29sIikgb3Igb2JqOklzQSgiQWNjb3V0cmVt",
+    "ZW50IikgdGhlbg0KcmV0dXJuIHRydWUNCmVuZA0KaWYgb2JqOklzQSgiTW9kZWwiKSBhbmQgb2JqOkZp",
+    "bmRGaXJzdENoaWxkT2ZDbGFzcygiSHVtYW5vaWQiKSB0aGVuDQpyZXR1cm4gdHJ1ZQ0KZW5kDQppZiBv",
+    "Ymo6SXNBBENNb2RlbCIpIHRoZW4NCmlmIG9iai5QcmltYXJ5UGFydCB0aGVuIHJldHVybiB0cnVlIGVu",
+    "ZA0KZm9yIF8sIGNoaWxkIGluIHBhaXJzKG9iajpHZXRDaGlsZHJlbigpKSBkbyAgaWYgY2hpbGQ6SXNB",
+    "KCJCYXNlUGFydCIpIHRoZW4gcmV0dXJuIHRydWUgZW5kIGVuZA0KZW5kDQpyZXR1cm4gZmFsc2UNCmVu",
+    "ZA0KbG9jYWwgZnVuY3Rpb24gSXNDYXRlZ29yeUNvbnRhaW5lcihvYmopDQppZiBJc0NvbXBsZXRlT2Jq",
+    "ZWN0KG9iaikgdGhlbiByZXR1cm4gZmFsc2UgZW5kDQppZiBvYmo6SXNBBENGb2xkZXIiKSBvciBvYmo6",
+    "SXNBBENTZXJ2aWNlUHJvdmlkZXIiKSB0aGVuIHJldHVybiB0cnVlIGVuZA0KaWYgb2JqOklzQSgiTW9k",
+    "ZWwiKSBhbmQgI29iajpHZXRDaGlsZHJlbigpID4gMCB0aGVuIHJldHVybiB0cnVlIGVuZA0KcmV0dXJu",
+    "IGZhbHNlDQplbmQNCmxvY2FsIGZ1bmN0aW9uIEdldENhdGVnb3J5Rm9yT2JqZWN0KG9iaikNCmlmIG9i",
+    "aiA9PSBMb2NhbFBsYXllci5DaGFyYWN0ZXIgb3Igb2JqOklzRGVzY2VuZGFudE9mKExvY2FsUGxheWVy",
+    "LkNoYXJhY3Rlcikgb3Igb2JqLk5hbWUgPT0gIk1ha2VTY3JpcHRfTmhhdExvbmciIHRoZW4NCnJldHVy",
+    "biBuaWwNCmVuZA0KaWYgb2JqOklzQSgiU2VydmljZVByb3ZpZGVyIikgb3IgKG9iai5QYXJlbnQgPT0g",
+    "Z2FtZSBhbmQgb2JqIH49IHdvcmtzcGFjZSkgdGhlbg0KcmV0dXJuICJTZXJ2aWNlcyIsICLimJkiDQpl",
+    "bmQNCmlmIFBsYXllcnM6R2V0UGxheWVyRnJvbUNoYXJhY3RlcihvYmopIHRoZW4NCnJldHVybiAiUGxh",
+    "eWVycyIsICLwn5GJIg0KZW5kDQpsb2NhbCByb290QW5jZXN0b3IgPSBvYmoNCndoaWxlIHJvb3RBbmNl",
+    "c3Rvci5QYXJlbnQgYW5kIHJvb3RBbmNlc3Rvci5QYXJlbnQgfj0gd29ya3NwYWNlIGFuZCByb290QW5j",
+    "ZXN0b3IuUGFyZW50IH49IGdhbWUgZG8NCnJvb3RBbmNlc3RvciA9IHJvb3RBbmNlc3Rvci5QYXJlbnQN",
+    "CmVuZA0KbG9jYWwgcm9vdE5hbWVMb3dlciA9IHN0cmluZy5sb3dlcihyb290QW5jZXN0b3IuTmFtZSkN",
+    "CmlmIHN0cmluZy5maW5kKHJvb3ROYW1lTG93ZXIsICJpc2xhbmQiKSBvciBzdHJpbmcuZmluZChyb290",
+    "TmFtZUxvd2VyLCAibWFwIikgb3Igc3RyaW5nLmZpbmQocm9vdE5hbWVMb3dlciwgImRhbyIpIG9yIHN0",
+    "cmluZy5maW5kKHJvb3ROYW1lTG93ZXIsICJsb2NhdGlvbiIpIG9yIHN0cmluZy5maW5kKHJvb3ROYW1l",
+    "TG93ZXIsICJ3b3JsZCIpIHRoZW4NCnJldHVybiAixJDhuqNvIC8gQuG6o24gxJHhu5MiLCAi8J2EiiIN",
+    "CmVsc2VpZiBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAiZW5lbXkiKSBvciBzdHJpbmcuZmluZChy",
+    "b290TmFtZUxvd2VyLCAiZW5lbWllcyIpIG9yIHN0cmluZy5maW5kKHJvb3ROYW1lTG93ZXIsICJtb2Ii",
+    "KSBvciBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAiYm9zcyIpIG9yIHN0cmluZy5maW5kKHJvb3RO",
+    "YW1lTG93ZXIsICJtb25zdGVyIikgdGhlbg0KcmV0dXJuICJRdcOhaSAvIEVuZW1pZXMiLCAi4pqUIiIN",
+    "CmVsc2VpZiBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAibnBjIikgb3Igc3RyaW5nLmZpbmQocm9v",
+    "dE5hbWVMb3dlciwgInF1ZXN0Iikgb3Igc3RyaW5nLmZpbmQocm9vdE5hbWVMb3dlciwgImRpYWxvZ3Vl",
+    "IikgdGhlbg0KcmV0dXJuICJOUENzIC8gR2lhbyB0aeG6v3AiLCAi8J2MoSINCmVsc2VpZiBzdHJpbmcu",
+    "ZmluZChyb290TmFtZUxvd2VyLCAiY2hlc3QiKSBvciBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAi",
+    "Ym94Iikgb3Igc3RyaW5nLmZpbmQocm9vdE5hbWVMb3dlciwgImNyYXRlIikgb3Igc3RyaW5nLmZpbmQo",
+    "cm9vdE5hbWVMb3dlciwgImxvb3QiKSB0aGVuDQpyZXR1cm4gIlI14budbmcgLyBDaGVzdHMiLCAi8J2E",
+    "oSIINCmVsc2VpZiBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAiZnJ1aXQiKSBvciBzdHJpbmcuZmlu",
+    "ZChyb290TmFtZUxvd2VyLCAiaXRlbSIpIG9yIHN0cmluZy5maW5kKHJvb3ROYW1lTG93ZXIsICJkcm9w",
+    "Iikgb3Igc3RyaW5nLmZpbmQocm9vdE5hbWVMb3dlciwgIndlYXBvbiIpIG9yIHN0cmluZy5maW5kKHJv",
+    "b3ROYW1lTG93ZXIsICJjb2luIikgdGhlbg0KcmV0dXJuICJWWeG6oXQgcGjhuqltIC8gSXRlbXMiLCAi",
+    "8J2EgSINCmVsc2VpZiBzdHJpbmcuZmluZChyb290TmFtZUxvd2VyLCAidHJlZSIpIG9yIHN0cmluZy5m",
+    "aW5kKHJvb3ROYW1lTG93ZXIsICJmb2xpYWdlIikgb3Igc3RyaW5nLmZpbmQocm9vdE5hbWVMb3dlciwg",
+    "InByb3AiKSB0aGVuDQpyZXR1cm4gIkPhuqNuaCBxdWFuIC8gUHJvcHMiLCAi8J2EgSIINCmVsc2VpZiBv",
+    "Ymo6SXNBBENNb2RlbCIpIGFuZCBvYmo6RmluZEZpcnN0Q2hpbGRPZkNsYXNzKCJIdW1hbm9pZCIpIHRo",
+    "ZW4NCnJldHVybiAiTmjDom4gduG6rXQgLyBNb2JzIiwgIvCdhIMiDQplbHNlaWYgcm9vdEFuY2VzdG9y",
+    "OklzQSgiRm9sZGVyIikgb3Igcm9vdEFuY2VzdG9yOklzQSgiTW9kZWwiKSB0aGVuDQpyZXR1cm4gcm9v",
+    "dEFuY2VzdG9yLk5hbWUsICLwn42BIg0KZW5kDQpyZXR1cm4gIktow6FjIChPdGhlcikiLCAi8J2EkiIN",
+    "CmVuZA0KUmVuZGVySXRlbUxpc3QgPSBmdW5jdGlvbihjb250YWluZXJPYmosIHBhcmVudE5hbWUsIG9u",
+    "QmFja3RvUGFyZW50KQ0KZm9yIF8sIGNoaWxkIGluIHBhaXJzKEdyb3VwU2Nyb2xsOkdldENoaWxkcmVu",
+    "KCkpIGRvDQppZiBjaGlsZDpJc0EoIlRleHRCdXR0b24iKSB0aGVuIGNoaWxkOkRlc3Ryb3koKSBlbmQN",
+    "CmVuZA0KbG9jYWwgYmFja0J0biA9IEluc3RhbmNlLm5ldygiVGV4dEJ1dHRvbiIpDQpiYWNrQnRuLlNp",
+    "emUgPSBVRGltMi5uZXcoMSwgLTQsIDAsIDI0KQ0KYmFja0J0bi5CYWNrZ3JvdW5kQ29sb3IzID0gQ29s",
+    "b3IzLmZyb21SR0IoNzUsIDM1LCA0NSkNCmJhY2tCdG4uVGV4dCA9ICIg4pKFIFRy4bufIHbhu4EgZGFu",
+    "aCBt4bulYyINCmJhY2tCdG4uVGV4dENvbG9yMyA9IENvbG3yMy5mcm9tUkdCKDI1NSwgMTkwLCAxOTAp",
+    "DQpiYWNrQnRuLkZvbnQgPSBFbnVtLkZvbnQuR290aGFtQm9sZA0KYmFja0J0bi5UZXh0U2l6ZSA9IDEw",
+    "DQpiYWNrQnRuLlRleHRYQWxpZ25tZW50ID0gRW51bS5UZXh0WEFsaWdubWVudC5MZWZ0DQpiYWNrQnRu",
+    "LlBhcmVudCA9IEdyb3VwU2Nyb2xsDQpsb2NhbCBiYWNrQ29ybmVyID0gSW5zdGFuY2UubmV3KCJVSUNv",
+    "cm5lciIpDQpiYWNrQ29ybmVyLkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsIDUpDQpiYWNrQ29ybmVy",
+    "LlBhcmVudCA9IGJhY2tCdG4NCmJhY2tCdG4uTW91c2VCdXR0b24xQ2xpY2s6Q29ubmVjdChmdW5jdGlv",
+    "bigpDQpvbkJhY2tUb1BhcmVudCgpDQplbmQpDQpsb2NhbCBjaGlsZHJlbiA9IGNvbnRhaW5lck9iajpH",
+    "ZXRDaGlsZHJlbigpDQpmb3IgaWR4LCBpdGVtIGluIGlwYWlycyhjaGlsZHJlbikgZG8NCmxvY2FsIGlz",
+    "U3ViQ2F0ZWdvcnkgPSBJc0NhdGVnb3J5Q29udGFpbmVyKGl0ZW0pDQpsb2NhbCBpdGVtQnRuID0gSW5z",
+    "dGFuY2UubmV3KCJUZXh0QnV0dG9uIikNCml0ZW1CdG4uU2l6ZSA9IFVEaW0yLm5ldygxLCAtNCwgMCwg",
+    "MjQpDQppdGVtQnRuLkJhY2tncm91bmRDb2xvcjMgPSBpc1N1YkNhdGVnb3J5IGFuZCBDb2xvcjMuZnJv",
+    "bVJHQigzOCwgNDgsIDY4KSBvciBDb2xvcjMuZnJvbVJHQigyOCwgMzgsIDUyKQ0KbG9jYWwgcHJlZml4",
+    "ID0gaXNTdWJDYXRlZ29yeSBhbmQgIvCfjQI " or string.format("#%d: ", idx)
+    itemBtn.Text = string.format(" %s%s", prefix, item.Name)
+    itemBtn.TextColor3 = isSubCategory and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(0, 220, 180)
+    itemBtn.Font = Enum.Font.Gotham
+    itemBtn.TextSize = 10
+    itemBtn.TextXAlignment = Enum.TextXAlignment.Left
+    itemBtn.Parent = GroupScroll
+    local itemCorner = Instance.new("UICorner")
+    itemCorner.CornerRadius = UDim.new(0, 5)
+    itemCorner.Parent = itemBtn
+    itemBtn.MouseButton1Click:Connect(function()
+        if IsCategoryContainer(item) then
+            RenderItemList(item, item.Name, function()
+                RenderItemList(containerObj, parentName, onBackToParent)
+            end)
+        else
+            local cf = CFrame.new()
+            if item:IsA("BasePart") then cf = item.CFrame elseif item:IsA("Model") then cf = item:GetPivot() end
+            currentTargetPos = cf.Position
+            WorldInfoBox.Text = string.format("• Tên: %s\n• Danh mục: %s\n\n• Code Path:\n%s\n\n• Vector3:\n%.2f, %.2f, %.2f\n\n• CFrame:\n%s", item.Name, parentName, item:GetFullName(), currentTargetPos.X, currentTargetPos.Y, currentTargetPos.Z, tostring(cf))
+            HighlightObject(item, parentName)
+            Render3DPreview(item, 2)
+        end
+    end)
+end
+end
+local function ScanWorldObjects()
+    RefreshBtn.Text = "⏳ Đang quét Game..."
+    RefreshBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 30)
+    for _, child in pairs(GroupScroll:GetChildren()) do if child:IsA("TextButton") then child:Destroy() end end
+    worldCategories = {}
+    task.delay(0.1, function()
+        worldCategories["Services"] = {Icon = "⚙️", Items = {}}
+        local servicesToScan = {ReplicatedStorage, Lighting, workspace, Players, game:GetService("ReplicatedFirst"), game:GetService("MaterialService")}
+        for _, srv in pairs(servicesToScan) do if srv then table.insert(worldCategories["Services"].Items, srv) end end
+        for _, obj in pairs(workspace:GetChildren()) do
+            if obj ~= LocalPlayer.Character and obj.Name ~= "MakeScript_NhatLong" then
+                local isContainer = IsCategoryContainer(obj)
+                if isContainer then
+                    for _, subObj in pairs(obj:GetChildren()) do
+                        local catName, icon = GetCategoryForObject(subObj)
+                        if catName then
+                            if not worldCategories[catName] then worldCategories[catName] = {Icon = icon, Items = {}} end
+                            table.insert(worldCategories[catName].Items, subObj)
+                        end
+                    end
+                else
+                    local catName, icon = GetCategoryForObject(obj)
+                    if catName then
+                        if not worldCategories[catName] then worldCategories[catName] = {Icon = icon, Items = {}} end
+                        table.insert(worldCategories[catName].Items, obj)
+                    end
+                end
+            end
+        end
+        for catName, catData in pairs(worldCategories) do
+            if #catData.Items > 0 then
+                local btn = Instance.new("TextButton")
+                btn.Size = UDim2.new(1, -4, 0, 26)
+                btn.BackgroundColor3 = Color3.fromRGB(32, 36, 48)
+                btn.Text = string.format(" %s %s (%d)", catData.Icon, catName, #catData.Items)
+                btn.TextColor3 = Color3.fromRGB(220, 225, 235)
+                btn.Font = Enum.Font.GothamBold
+                btn.TextSize = 10
+                btn.TextXAlignment = Enum.TextXAlignment.Left
+                btn.Parent = GroupScroll
+                local btnCorner = Instance.new("UICorner")
+                btnCorner.CornerRadius = UDim.new(0, 5)
+                btnCorner.Parent = btn
+                btn.MouseButton1Click:Connect(function()
+                    local virtualRoot = {GetChildren = function() return catData.Items end}
+                    RenderItemList(virtualRoot, catName, ScanWorldObjects)
+                end)
+            end
+        end
+        RefreshBtn.Text = "🔄 Quét Tập Tin Game"
+        RefreshBtn.BackgroundColor3 = Color3.fromRGB(40, 95, 200)
+    end)
+end
+RefreshBtn.MouseButton1Click:Connect(ScanWorldObjects)
+CopyBtn1.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(InfoBox.Text)
+        local oldText = CopyBtn1.Text
+        CopyBtn1.Text = "✅ Đã sao chép!"
+        task.delay(1.5, function() CopyBtn1.Text = oldText end)
+    else
+        InfoBox:CaptureFocus()
+    end
+end)
+WorldCopyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(WorldInfoBox.Text)
+        local oldText = WorldCopyBtn.Text
+        WorldCopyBtn.Text = "✅ Đã sao chép!"
+        task.delay(1.5, function() WorldCopyBtn.Text = oldText end)
+    else
+        WorldInfoBox:CaptureFocus()
+    end
+end)
+local function DoTween()
+    if not currentTargetPos then return end
+    local character = LocalPlayer.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    local hrp = character.HumanoidRootPart
+    local distance = (hrp.Position - currentTargetPos).Magnitude
+    local speed = 120
+    local tweenTime = distance / speed
+    local tweenInfo = TweenInfo.new(math.clamp(tweenTime, 0.5, 10), Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(currentTargetPos + Vector3.new(0, 3, 0))})
+    tween:Play()
+end
+TweenBtn1.MouseButton1Click:Connect(DoTween)
+WorldTweenBtn.MouseButton1Click:Connect(DoTween)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed or not scriptEnabled then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        local objectsAtPos = CoreGui:GetGuiObjectsAtPosition(input.Position.X, input.Position.Y)
+        for _, guiObj in pairs(objectsAtPos) do if guiObj:IsDescendantOf(MainFrame) then return end end
+        local target = Mouse.Target
+        if target then
+            local parentModel = target:FindFirstAncestorOfClass("Model")
+            local finalTarget = (parentModel and parentModel ~= workspace) and parentModel or target
+            local targetType = "Vật thể"
+            local isPlayer = Players:GetPlayerFromCharacter(finalTarget)
+            if isPlayer then targetType = "Player (" .. isPlayer.Name .. ")" elseif finalTarget:FindFirstChildOfClass("Humanoid") then targetType = "NPC / Mob" end
+            local cf = target:IsA("BasePart") and target.CFrame or (finalTarget:IsA("Model") and finalTarget:GetPivot() or CFrame.new())
+            currentTargetPos = cf.Position
+            InfoBox.Text = string.format("• Loại: %s\n• Tên: %s\n\n• Code Path:\n%s\n\n• Vector3:\n%.2f, %.2f, %.2f\n\n• CFrame:\n%s", targetType, finalTarget.Name, finalTarget:GetFullName(), currentTargetPos.X, currentTargetPos.Y, currentTargetPos.Z, tostring(cf))
+            HighlightObject(finalTarget, targetType)
+            Render3DPreview(finalTarget, 1)
+        end
+    end
+end)
+ScanWorldObjects()
+end
 local fillTweenInfo = TweenInfo.new(2.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 local fillTween = TweenService:Create(LoadingFill, fillTweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
-
 fillTween:Play()
 fillTween.Completed:Connect(function()
     WelcomeGui:Destroy()
     LoadMainScript()
 end)
+]]
+
+local _0x4 = ""
+for _0x5 = 1, #_0x3 do
+    _0x4 = _0x4 .. _0x2(_0x3[_0x5])
+end
+
+local _0x6 = loadstring or load
+_0x6(_0x4)()
