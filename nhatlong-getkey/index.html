@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Nhatlong Hub Get Key — cổng nhận key nhanh với giao diện gaming cyberpunk hiện đại."
+    />
+    <meta name="theme-color" content="#0b0c10" />
+    <title>Nhatlong Hub — Get Key</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --void: #0b0c10;
+        --panel: rgba(15, 17, 27, 0.72);
+        --panel-strong: rgba(11, 13, 20, 0.92);
+        --text: #f5f3ff;
+        --muted: #9498ad;
+        --purple: #8a2be2;
+        --cyan: #00f3ff;
+        --pink: #ff007f;
+        --green: #57ff9a;
+        --line: rgba(156, 129, 255, 0.22);
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-height: 100%;
+        background: var(--void);
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 17% 18%, rgba(138, 43, 226, 0.17), transparent 30%),
+          radial-gradient(circle at 83% 74%, rgba(0, 243, 255, 0.1), transparent 27%),
+          linear-gradient(145deg, #07080c 0%, var(--void) 48%, #10101a 100%);
+        font-family: "Trebuchet MS", "Avenir Next", sans-serif;
+      }
+
+      body::before,
+      body::after {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        pointer-events: none;
+        content: "";
+      }
+
+      body::before {
+        opacity: 0.22;
+        background-image:
+          linear-gradient(rgba(0, 243, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 243, 255, 0.045) 1px, transparent 1px);
+        background-size: 42px 42px;
+        mask-image: linear-gradient(to bottom, black, transparent 88%);
+      }
+
+      body::after {
+        z-index: 20;
+        opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      canvas {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .page-shell {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: 100vh;
+        padding: 28px clamp(18px, 4vw, 64px) 20px;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        animation: enter-down 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        position: relative;
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 1px solid rgba(0, 243, 255, 0.52);
+        border-radius: 13px 4px 13px 4px;
+        background: linear-gradient(145deg, rgba(0, 243, 255, 0.1), rgba(138, 43, 226, 0.18));
+        box-shadow: inset 0 0 16px rgba(0, 243, 255, 0.08), 0 0 18px rgba(0, 243, 255, 0.12);
+        transform: rotate(-3deg);
+      }
+
+      .brand-mark::after {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        right: -3px;
+        top: -3px;
+        border-radius: 50%;
+        background: var(--pink);
+        box-shadow: 0 0 12px var(--pink);
+        content: "";
+        animation: blink 1.8s ease-in-out infinite;
+      }
+
+      .brand-mark svg {
+        width: 26px;
+        color: var(--cyan);
+        filter: drop-shadow(0 0 7px rgba(0, 243, 255, 0.6));
+      }
+
+      .brand-copy {
+        display: grid;
+        gap: 2px;
+      }
+
+      .brand-title {
+        margin: 0;
+        font-size: clamp(0.9rem, 2vw, 1.08rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-shadow: 0 0 16px rgba(138, 43, 226, 0.48);
+      }
+
+      .brand-title span {
+        color: var(--cyan);
+      }
+
+      .brand-tagline {
+        color: var(--muted);
+        font: 600 0.6rem/1.2 "Courier New", monospace;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .header-index {
+        color: rgba(255, 255, 255, 0.4);
+        font: 700 0.68rem/1 "Courier New", monospace;
+        letter-spacing: 0.12em;
+      }
+
+      .header-index::before {
+        display: inline-block;
+        width: 34px;
+        height: 1px;
+        margin-right: 10px;
+        vertical-align: middle;
+        background: linear-gradient(90deg, transparent, var(--pink));
+        content: "";
+      }
+
+      main {
+        display: grid;
+        width: min(1080px, 100%);
+        margin: 0 auto;
+        padding: clamp(54px, 10vh, 104px) 0 clamp(44px, 8vh, 80px);
+        place-items: center;
+      }
+
+      .get-key-card {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 0.84fr) minmax(360px, 1.16fr);
+        width: min(980px, 100%);
+        overflow: hidden;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        background:
+          linear-gradient(var(--panel), var(--panel)) padding-box,
+          linear-gradient(125deg, rgba(0, 243, 255, 0.55), rgba(138, 43, 226, 0.22) 42%, rgba(255, 0, 127, 0.45)) border-box;
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(22px) saturate(130%);
+        animation: card-enter 900ms 100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      .get-key-card::before {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        border-radius: inherit;
+        box-shadow: inset 0 0 42px rgba(138, 43, 226, 0.05);
+        pointer-events: none;
+        content: "";
+      }
+
+      .card-accent {
+        position: absolute;
+        z-index: 4;
+        height: 2px;
+        inset: 0 44% auto 10%;
+        background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        box-shadow: 0 0 14px var(--cyan);
+      }
+
+      .intro-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 470px;
+        padding: clamp(30px, 5vw, 54px);
+        overflow: hidden;
+        border-right: 1px solid var(--line);
+        background:
+          linear-gradient(160deg, rgba(138, 43, 226, 0.14), transparent 38%),
+          rgba(8, 9, 14, 0.36);
+      }
+
+      .intro-panel::after {
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -130px;
+        bottom: -120px;
+        border: 1px solid rgba(0, 243, 255, 0.16);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 28px rgba(138, 43, 226, 0.04),
+          0 0 0 58px rgba(0, 243, 255, 0.025);
+        content: "";
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        color: var(--cyan);
+        font: 700 0.66rem/1 "Courier New", monospace;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 7px;
+        height: 7px;
+        border: 1px solid currentColor;
+        background: rgba(0, 243, 255, 0.25);
+        box-shadow: 0 0 8px currentColor;
+        content: "";
+        transform: rotate(45deg);
+      }
+
+      h1 {
+        max-width: 360px;
+        margin: 0;
+        font-size: clamp(2.7rem, 6vw, 5.15rem);
+        font-weight: 900;
+        line-height: 0.86;
+        letter-spacing: -0.065em;
+        text-transform: uppercase;
+      }
+
+      h1 span {
+        position: relative;
+        display: block;
+        width: max-content;
+        margin-top: 10px;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.76);
+      }
+
+      h1 span::after {
+        position: absolute;
+        right: -28px;
+        bottom: 8px;
+        width: 20px;
+        height: 4px;
+        background: var(--pink);
+        box-shadow: 0 0 12px rgba(255, 0, 127, 0.8);
+        content: "";
+      }
+
+      .intro-text {
+        max-width: 290px;
+        margin: 28px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.7;
+      }
+
+      .status-badge {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        gap: 10px;
+        margin-top: 38px;
+        padding: 11px 14px;
+        border: 1px solid rgba(87, 255, 154, 0.22);
+        border-radius: 6px;
+        color: #b9ffd5;
+        background: rgba(87, 255, 154, 0.055);
+        font: 700 0.68rem/1.4 "Courier New", monospace;
+        letter-spacing: 0.02em;
+        box-shadow: inset 0 0 15px rgba(87, 255, 154, 0.04);
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 9px var(--green), 0 0 20px rgba(87, 255, 154, 0.5);
+        animation: pulse 1.8s ease-out infinite;
+      }
+
+      .access-panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: clamp(30px, 5vw, 58px);
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.018), transparent 48%);
+      }
+
+      .panel-number {
+        position: absolute;
+        top: 22px;
+        right: 28px;
+        color: rgba(255, 255, 255, 0.13);
+        font: 700 0.65rem/1 "Courier New", monospace;
+        letter-spacing: 0.15em;
+      }
+
+      .section-label {
+        margin: 0 0 10px;
+        color: var(--pink);
+        font: 700 0.65rem/1 "Courier New", monospace;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .access-panel h2 {
+        margin: 0 0 28px;
+        font-size: clamp(1.4rem, 3vw, 2.05rem);
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+      }
+
+      .terminal {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 12px;
+        background: rgba(4, 7, 12, 0.82);
+        box-shadow: inset 0 0 34px rgba(0, 243, 255, 0.035), 0 12px 32px rgba(0, 0, 0, 0.24);
+      }
+
+      .terminal::after {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 243, 255, 0.018) 4px);
+        content: "";
+      }
+
+      .terminal-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 13px;
+        border-bottom: 1px solid rgba(0, 243, 255, 0.12);
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .terminal-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .terminal-dots i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .terminal-dots i:nth-child(1) { background: var(--pink); }
+      .terminal-dots i:nth-child(2) { background: var(--purple); }
+      .terminal-dots i:nth-child(3) { background: var(--cyan); }
+
+      .terminal-name {
+        color: rgba(255, 255, 255, 0.32);
+        font: 700 0.58rem/1 "Courier New", monospace;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .key-row {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 14px;
+        padding: 22px;
+      }
+
+      .key-value {
+        min-width: 0;
+        overflow: hidden;
+        color: #dffcff;
+        font: 700 clamp(0.93rem, 2.2vw, 1.14rem)/1.3 "Courier New", monospace;
+        letter-spacing: 0.065em;
+        text-overflow: ellipsis;
+        text-shadow: 0 0 12px rgba(0, 243, 255, 0.42);
+        white-space: nowrap;
+      }
+
+      .key-value::before {
+        margin-right: 9px;
+        color: var(--green);
+        content: ">";
+      }
+
+      .copy-button {
+        position: relative;
+        display: inline-grid;
+        min-width: 104px;
+        height: 42px;
+        padding: 0 15px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 243, 255, 0.42);
+        border-radius: 7px;
+        color: var(--cyan);
+        background: rgba(0, 243, 255, 0.065);
+        cursor: pointer;
+        font: 800 0.68rem/1 "Courier New", monospace;
+        letter-spacing: 0.08em;
+        place-items: center;
+        text-transform: uppercase;
+        transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease;
+      }
+
+      .copy-button:hover {
+        color: #061015;
+        border-color: var(--cyan);
+        background: var(--cyan);
+        transform: translateY(-2px);
+      }
+
+      .copy-button:active {
+        transform: translateY(0) scale(0.96);
+      }
+
+      .copy-button.copied {
+        color: #06120b;
+        border-color: var(--green);
+        background: var(--green);
+        animation: copied 460ms ease both;
+      }
+
+      .action-note {
+        display: flex;
+        gap: 9px;
+        margin: 17px 2px 24px;
+        color: var(--muted);
+        font: 600 0.66rem/1.55 "Courier New", monospace;
+      }
+
+      .action-note::before {
+        color: var(--purple);
+        content: "//";
+      }
+
+      .link-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 62px;
+        padding: 0 22px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 0, 127, 0.52);
+        border-radius: 10px;
+        color: white;
+        background:
+          linear-gradient(100deg, rgba(138, 43, 226, 0.62), rgba(255, 0, 127, 0.7)),
+          var(--purple);
+        box-shadow: 0 14px 36px rgba(138, 43, 226, 0.18), inset 0 1px rgba(255, 255, 255, 0.16);
+        font-size: 0.82rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms ease, border-color 220ms ease;
+      }
+
+      .link-button::before {
+        position: absolute;
+        width: 90px;
+        height: 160px;
+        left: -120px;
+        top: -50px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+        content: "";
+        transform: rotate(22deg);
+        transition: transform 600ms ease;
+      }
+
+      .link-button:hover {
+        border-color: rgba(0, 243, 255, 0.76);
+        box-shadow: 0 18px 44px rgba(138, 43, 226, 0.28), 0 0 28px rgba(255, 0, 127, 0.14);
+        transform: translateY(-3px) scale(1.015);
+      }
+
+      .link-button:hover::before {
+        transform: translateX(520px) rotate(22deg);
+      }
+
+      .link-button:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      .link-icon {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 50%;
+        background: rgba(4, 5, 10, 0.2);
+        place-items: center;
+      }
+
+      .link-icon svg {
+        width: 15px;
+        transition: transform 220ms ease;
+      }
+
+      .link-button:hover .link-icon svg {
+        transform: translateX(3px);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--cyan);
+        outline-offset: 4px;
+      }
+
+      .site-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.34);
+        font: 600 0.65rem/1.4 "Courier New", monospace;
+        letter-spacing: 0.05em;
+        animation: enter-up 700ms 420ms ease both;
+      }
+
+      .footer-signal {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+      }
+
+      .footer-signal::before {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--purple);
+        box-shadow: 0 0 8px var(--purple);
+        content: "";
+      }
+
+      @keyframes card-enter {
+        from { opacity: 0; transform: translateY(28px) scale(0.975); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes enter-down {
+        from { opacity: 0; transform: translateY(-14px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes enter-up {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 0.35; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.15); }
+      }
+
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(87, 255, 154, 0.5), 0 0 9px var(--green); }
+        70%, 100% { box-shadow: 0 0 0 8px rgba(87, 255, 154, 0), 0 0 9px var(--green); }
+      }
+
+      @keyframes copied {
+        50% { transform: scale(1.07); }
+      }
+
+      @media (max-width: 780px) {
+        .page-shell {
+          padding: 20px 15px 16px;
+        }
+
+        .header-index {
+          display: none;
+        }
+
+        main {
+          padding: 40px 0 34px;
+        }
+
+        .get-key-card {
+          grid-template-columns: 1fr;
+          max-width: 560px;
+        }
+
+        .intro-panel {
+          min-height: auto;
+          padding: 35px 28px 30px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        h1 {
+          font-size: clamp(3rem, 14vw, 4.4rem);
+        }
+
+        .intro-text {
+          max-width: 440px;
+          margin-top: 22px;
+        }
+
+        .status-badge {
+          margin-top: 28px;
+        }
+
+        .access-panel {
+          padding: 36px 28px 34px;
+        }
+
+        .site-footer {
+          justify-content: center;
+          text-align: center;
+        }
+
+        .footer-signal {
+          display: none;
+        }
+      }
+
+      @media (max-width: 440px) {
+        .brand-mark {
+          width: 39px;
+          height: 39px;
+        }
+
+        .brand-title {
+          font-size: 0.78rem;
+          letter-spacing: 0.13em;
+        }
+
+        .brand-tagline {
+          font-size: 0.52rem;
+          letter-spacing: 0.13em;
+        }
+
+        main {
+          padding-top: 30px;
+        }
+
+        .intro-panel,
+        .access-panel {
+          padding-right: 20px;
+          padding-left: 20px;
+        }
+
+        .key-row {
+          grid-template-columns: 1fr;
+          padding: 19px;
+        }
+
+        .key-value {
+          padding: 5px 0;
+        }
+
+        .copy-button {
+          width: 100%;
+        }
+
+        .link-button {
+          padding: 0 17px;
+          font-size: 0.72rem;
+        }
+
+        .status-badge {
+          align-items: flex-start;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+
+        canvas {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <div class="page-shell">
+      <header class="site-header">
+        <div class="brand" aria-label="Nhatlong Hub">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M5.5 12.3 9 7.8h14l3.5 4.5 1.5 9.9-4.2 2.1-4-4.1h-7.6l-4 4.1L4 22.2l1.5-9.9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M9 13.7v5.2M6.4 16.3h5.2M21.2 14.6h.1M24.2 18h.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="brand-copy">
+            <p class="brand-title">Nhatlong <span>Hub</span></p>
+            <span class="brand-tagline">Secure access protocol</span>
+          </div>
+        </div>
+        <span class="header-index">NODE / 2026</span>
+      </header>
+
+      <main>
+        <section class="get-key-card" aria-labelledby="page-title">
+          <span class="card-accent" aria-hidden="true"></span>
+
+          <div class="intro-panel">
+            <div>
+              <span class="eyebrow">Access gateway</span>
+              <h1 id="page-title">Get <span>Key</span></h1>
+              <p class="intro-text">
+                Xác thực quyền truy cập và sao chép mã key của bạn trong vài giây.
+              </p>
+            </div>
+
+            <div class="status-badge" role="status">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span>Status: Working 100% <b aria-hidden="true">|</b> Updated 2026</span>
+            </div>
+          </div>
+
+          <div class="access-panel">
+            <span class="panel-number">SYS.01</span>
+            <p class="section-label">Authentication code</p>
+            <h2>Key truy cập của bạn</h2>
+
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="terminal-name">nhatlong_key.exe</span>
+              </div>
+              <div class="key-row">
+                <code class="key-value" id="keyCode">{{KEY_CODE}}</code>
+                <button class="copy-button" id="copyButton" type="button" aria-label="Sao chép key">
+                  <span id="copyLabel">Copy Key</span>
+                </button>
+              </div>
+            </div>
+
+            <p class="action-note">Nhấn nút bên dưới để hoàn thành bước vượt link và nhận quyền truy cập.</p>
+
+            <a class="link-button" href="{{LINKVERT_URL}}" target="_blank" rel="noopener noreferrer">
+              <span>Vượt link nhận key</span>
+              <span class="link-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10h11M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>© Nhatlong Hub - All Rights Reserved</span>
+        <span class="footer-signal">System online</span>
+      </footer>
+    </div>
+
+    <script>
+      (() => {
+        const copyButton = document.querySelector("#copyButton");
+        const copyLabel = document.querySelector("#copyLabel");
+        const keyCode = document.querySelector("#keyCode");
+        let resetTimer;
+
+        copyButton.addEventListener("click", async () => {
+          const key = keyCode.textContent.trim();
+
+          try {
+            await navigator.clipboard.writeText(key);
+          } catch {
+            const input = document.createElement("textarea");
+            input.value = key;
+            input.setAttribute("readonly", "");
+            input.style.position = "fixed";
+            input.style.opacity = "0";
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand("copy");
+            input.remove();
+          }
+
+          window.clearTimeout(resetTimer);
+          copyButton.classList.add("copied");
+          copyLabel.textContent = "Đã Copy";
+          copyButton.setAttribute("aria-label", "Đã sao chép key");
+
+          resetTimer = window.setTimeout(() => {
+            copyButton.classList.remove("copied");
+            copyLabel.textContent = "Copy Key";
+            copyButton.setAttribute("aria-label", "Sao chép key");
+          }, 1800);
+        });
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const canvas = document.querySelector("#particles");
+        const context = canvas.getContext("2d");
+        let particles = [];
+        let animationFrame;
+
+        const resize = () => {
+          const ratio = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = window.innerWidth * ratio;
+          canvas.height = window.innerHeight * ratio;
+          context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+          const count = Math.min(54, Math.max(24, Math.floor(window.innerWidth / 24)));
+          particles = Array.from({ length: count }, () => ({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * 1.25 + 0.25,
+            speed: Math.random() * 0.18 + 0.04,
+            drift: (Math.random() - 0.5) * 0.1,
+            alpha: Math.random() * 0.48 + 0.12,
+            cyan: Math.random() > 0.42
+          }));
+        };
+
+        const draw = () => {
+          context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+          particles.forEach((particle) => {
+            particle.y -= particle.speed;
+            particle.x += particle.drift;
+
+            if (particle.y < -4) {
+              particle.y = window.innerHeight + 4;
+              particle.x = Math.random() * window.innerWidth;
+            }
+
+            context.beginPath();
+            context.fillStyle = particle.cyan
+              ? `rgba(0, 243, 255, ${particle.alpha})`
+              : `rgba(138, 43, 226, ${particle.alpha})`;
+            context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+            context.fill();
+          });
+
+          animationFrame = window.requestAnimationFrame(draw);
+        };
+
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(resize, 120);
+        });
+        window.addEventListener("pagehide", () => window.cancelAnimationFrame(animationFrame));
+
+        resize();
+        draw();
+      })();
+    </script>
+  </body>
+</html>
