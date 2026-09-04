@@ -1,0 +1,4497 @@
+--[[
+    LONG UI LIBRARY V4.0
+    Roblox Lua UI Library
+    Layout: Centered / Topbar / Sidebar / Content
+    Features:
+    - 7 Languages
+    - Theme Presets
+    - Accent Colors
+    - Glass Mode
+    - Light Theme
+    - Resizable Menu
+    - UI Scale
+    - Search Tabs
+    - FPS / Ping / Clock
+    - Compact Mode
+    - Lock Menu
+    - Auto Fit
+    - Notifications
+    - Touch + Mouse Drag
+    - Keybind
+    - Cleanup
+]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Stats = game:GetService("Stats")
+local GuiService = game:GetService("GuiService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local Library = {}
+
+----------------------------------------------------------------
+-- SETTINGS
+----------------------------------------------------------------
+
+Library.Settings = {
+    MenuWidth = 580,
+    MenuHeight = 400,
+    SidebarWidth = 135,
+
+    UIScale = 100,
+    CornerRadius = 10,
+
+    AnimationSpeed = 0.18,
+
+    ThemePreset = "Purple",
+    AccentPreset = "Purple",
+
+    Language = "Vietnamese",
+
+    GlassMode = false,
+    GlassTransparency = 0.18,
+
+    TabSearch = true,
+    Notifications = true,
+    FloatingButton = true,
+    Dragging = true,
+
+    ShowFPS = false,
+    ShowPing = false,
+    ShowClock = false,
+
+    CompactMode = false,
+    LockMenu = false,
+    AutoFit = true,
+}
+
+Library.DefaultSettings = {}
+
+for k, v in pairs(Library.Settings) do
+    Library.DefaultSettings[k] = v
+end
+
+----------------------------------------------------------------
+-- COLORS
+----------------------------------------------------------------
+
+Library.Theme = {
+    Background = Color3.fromRGB(25, 25, 32),
+    Secondary = Color3.fromRGB(31, 31, 40),
+    Tertiary = Color3.fromRGB(37, 37, 48),
+
+    Border = Color3.fromRGB(55, 55, 70),
+
+    Accent = Color3.fromRGB(145, 85, 255),
+
+    Text = Color3.fromRGB(245, 245, 250),
+    SubText = Color3.fromRGB(160, 160, 175),
+
+    On = Color3.fromRGB(70, 210, 125),
+    Off = Color3.fromRGB(70, 70, 82),
+
+    SliderBackground = Color3.fromRGB(50, 50, 62),
+    Danger = Color3.fromRGB(235, 75, 90),
+}
+
+Library.ThemePresets = {
+
+    Purple = {
+        Background = Color3.fromRGB(25, 25, 32),
+        Secondary = Color3.fromRGB(31, 31, 40),
+        Tertiary = Color3.fromRGB(37, 37, 48),
+        Border = Color3.fromRGB(58, 58, 72),
+        Accent = Color3.fromRGB(145, 85, 255),
+        Text = Color3.fromRGB(245, 245, 250),
+        SubText = Color3.fromRGB(160, 160, 175),
+        On = Color3.fromRGB(70, 210, 125),
+        Off = Color3.fromRGB(70, 70, 82),
+        SliderBackground = Color3.fromRGB(50, 50, 62),
+        Danger = Color3.fromRGB(235, 75, 90),
+    },
+
+    Blue = {
+        Background = Color3.fromRGB(22, 25, 32),
+        Secondary = Color3.fromRGB(27, 31, 41),
+        Tertiary = Color3.fromRGB(34, 39, 50),
+        Border = Color3.fromRGB(55, 65, 82),
+        Accent = Color3.fromRGB(70, 145, 255),
+        Text = Color3.fromRGB(245, 248, 255),
+        SubText = Color3.fromRGB(160, 170, 185),
+        On = Color3.fromRGB(70, 210, 125),
+        Off = Color3.fromRGB(70, 75, 85),
+        SliderBackground = Color3.fromRGB(47, 53, 67),
+        Danger = Color3.fromRGB(235, 75, 90),
+    },
+
+    Red = {
+        Background = Color3.fromRGB(31, 23, 26),
+        Secondary = Color3.fromRGB(39, 27, 31),
+        Tertiary = Color3.fromRGB(48, 31, 35),
+        Border = Color3.fromRGB(80, 50, 56),
+        Accent = Color3.fromRGB(235, 65, 85),
+        Text = Color3.fromRGB(250, 245, 245),
+        SubText = Color3.fromRGB(180, 155, 160),
+        On = Color3.fromRGB(70, 210, 125),
+        Off = Color3.fromRGB(80, 65, 70),
+        SliderBackground = Color3.fromRGB(60, 43, 48),
+        Danger = Color3.fromRGB(255, 75, 75),
+    },
+
+    Green = {
+        Background = Color3.fromRGB(22, 30, 25),
+        Secondary = Color3.fromRGB(27, 38, 31),
+        Tertiary = Color3.fromRGB(34, 46, 38),
+        Border = Color3.fromRGB(53, 75, 61),
+        Accent = Color3.fromRGB(65, 205, 120),
+        Text = Color3.fromRGB(242, 250, 245),
+        SubText = Color3.fromRGB(155, 180, 165),
+        On = Color3.fromRGB(65, 220, 125),
+        Off = Color3.fromRGB(65, 78, 70),
+        SliderBackground = Color3.fromRGB(45, 62, 51),
+        Danger = Color3.fromRGB(235, 75, 90),
+    },
+
+    Dark = {
+        Background = Color3.fromRGB(12, 12, 14),
+        Secondary = Color3.fromRGB(18, 18, 21),
+        Tertiary = Color3.fromRGB(24, 24, 28),
+        Border = Color3.fromRGB(42, 42, 48),
+        Accent = Color3.fromRGB(200, 200, 205),
+        Text = Color3.fromRGB(245, 245, 245),
+        SubText = Color3.fromRGB(145, 145, 150),
+        On = Color3.fromRGB(70, 210, 125),
+        Off = Color3.fromRGB(55, 55, 60),
+        SliderBackground = Color3.fromRGB(38, 38, 43),
+        Danger = Color3.fromRGB(235, 75, 90),
+    },
+
+    Light = {
+        Background = Color3.fromRGB(238, 240, 245),
+        Secondary = Color3.fromRGB(248, 249, 252),
+        Tertiary = Color3.fromRGB(228, 231, 238),
+        Border = Color3.fromRGB(205, 209, 220),
+        Accent = Color3.fromRGB(115, 70, 225),
+        Text = Color3.fromRGB(30, 31, 36),
+        SubText = Color3.fromRGB(100, 103, 112),
+        On = Color3.fromRGB(50, 190, 105),
+        Off = Color3.fromRGB(190, 193, 202),
+        SliderBackground = Color3.fromRGB(210, 213, 222),
+        Danger = Color3.fromRGB(220, 55, 70),
+    },
+}
+
+----------------------------------------------------------------
+-- ACCENT PRESETS
+----------------------------------------------------------------
+
+Library.AccentPresets = {
+    Purple = Color3.fromRGB(145, 85, 255),
+    Blue = Color3.fromRGB(70, 145, 255),
+    Red = Color3.fromRGB(235, 65, 85),
+    Green = Color3.fromRGB(65, 205, 120),
+
+    Black = Color3.fromRGB(25, 25, 28),
+    White = Color3.fromRGB(245, 245, 245),
+
+    Yellow = Color3.fromRGB(245, 190, 55),
+    Cyan = Color3.fromRGB(60, 205, 220),
+    Pink = Color3.fromRGB(255, 85, 170),
+    Orange = Color3.fromRGB(255, 145, 55),
+}
+
+----------------------------------------------------------------
+-- LANGUAGE
+----------------------------------------------------------------
+
+Library.Languages = {
+    English = {
+        Search = "Search tab...",
+        Home = "Home",
+        Players = "Players",
+        Display = "Display",
+        Settings = "Settings",
+        Setting = "Setting",
+
+        Theme = "Theme",
+        ThemePreset = "Theme Preset",
+        AccentColor = "Accent Color",
+        Light = "Light",
+        GlassMode = "Glass Mode",
+        Transparency = "Transparency",
+
+        MenuSize = "Menu Size",
+        MenuWidth = "Menu Width",
+        MenuHeight = "Menu Height",
+        SidebarWidth = "Sidebar Width",
+        UIScale = "UI Scale",
+        CornerRadius = "Corner Radius",
+        AnimationSpeed = "Animation Speed",
+
+        Behavior = "Behavior",
+        TabSearch = "Tab Search",
+        Notifications = "Notifications",
+        FloatingButton = "Floating Open Button",
+        Dragging = "Dragging",
+        CompactMode = "Compact Mode",
+        LockMenu = "Lock Menu",
+        AutoFit = "Auto Fit Screen",
+
+        Performance = "Performance",
+        ShowFPS = "Show FPS",
+        ShowPing = "Show Ping",
+        ShowClock = "Show Clock",
+
+        CustomColors = "Custom Colors",
+        ResetUI = "Reset UI Settings",
+        ResetTheme = "Reset Theme",
+        ResetPosition = "Reset Position",
+        RestoreWindow = "Restore Window",
+        Unload = "Unload Library",
+
+        Enabled = "Enabled",
+        Disabled = "Disabled",
+        On = "ON",
+        Off = "OFF",
+
+        Save = "Save",
+        Cancel = "Cancel",
+        Close = "Close",
+        Minimize = "Minimize",
+
+        Changed = "Changed",
+        ThemeChanged = "Theme changed",
+        LanguageChanged = "Language changed",
+        AccentChanged = "Accent color changed",
+        SettingsReset = "UI settings reset",
+
+        FPS = "FPS",
+        Ping = "Ping",
+    },
+
+    Vietnamese = {
+        Search = "Tìm kiếm tab...",
+        Home = "Chính",
+        Players = "Người chơi",
+        Display = "Hiển thị",
+        Settings = "Cài đặt",
+        Setting = "Setting",
+
+        Theme = "Giao diện",
+        ThemePreset = "Theme",
+        AccentColor = "Màu chức năng",
+        Light = "Sáng",
+        GlassMode = "Chế độ kính",
+        Transparency = "Độ trong suốt",
+
+        MenuSize = "Kích thước Menu",
+        MenuWidth = "Chiều rộng Menu",
+        MenuHeight = "Chiều cao Menu",
+        SidebarWidth = "Chiều rộng Sidebar",
+        UIScale = "Tỉ lệ giao diện",
+        CornerRadius = "Độ bo góc",
+        AnimationSpeed = "Tốc độ hiệu ứng",
+
+        Behavior = "Chức năng",
+        TabSearch = "Tìm kiếm Tab",
+        Notifications = "Thông báo",
+        FloatingButton = "Nút mở nổi",
+        Dragging = "Kéo Menu",
+        CompactMode = "Chế độ thu gọn",
+        LockMenu = "Khóa Menu",
+        AutoFit = "Tự động vừa màn hình",
+
+        Performance = "Hiệu năng",
+        ShowFPS = "Hiện FPS",
+        ShowPing = "Hiện Ping",
+        ShowClock = "Hiện đồng hồ",
+
+        CustomColors = "Màu tùy chỉnh",
+        ResetUI = "Đặt lại giao diện",
+        ResetTheme = "Đặt lại Theme",
+        ResetPosition = "Đặt lại vị trí",
+        RestoreWindow = "Khôi phục Menu",
+        Unload = "Tắt Library",
+
+        Enabled = "Đã bật",
+        Disabled = "Đã tắt",
+        On = "BẬT",
+        Off = "TẮT",
+
+        Save = "Lưu",
+        Cancel = "Hủy",
+        Close = "Đóng",
+        Minimize = "Thu nhỏ",
+
+        Changed = "Đã thay đổi",
+        ThemeChanged = "Đã đổi giao diện",
+        LanguageChanged = "Đã đổi ngôn ngữ",
+        AccentChanged = "Đã đổi màu chức năng",
+        SettingsReset = "Đã đặt lại giao diện",
+
+        FPS = "FPS",
+        Ping = "Ping",
+    },
+
+    ["中文"] = {
+        Search = "搜索标签...",
+        Home = "主页",
+        Players = "玩家",
+        Display = "显示",
+        Settings = "设置",
+        Setting = "Setting",
+
+        Theme = "主题",
+        ThemePreset = "主题预设",
+        AccentColor = "功能颜色",
+        Light = "浅色",
+        GlassMode = "玻璃模式",
+        Transparency = "透明度",
+
+        MenuSize = "菜单大小",
+        MenuWidth = "菜单宽度",
+        MenuHeight = "菜单高度",
+        SidebarWidth = "侧栏宽度",
+        UIScale = "界面缩放",
+        CornerRadius = "圆角",
+        AnimationSpeed = "动画速度",
+
+        Behavior = "行为",
+        TabSearch = "标签搜索",
+        Notifications = "通知",
+        FloatingButton = "浮动按钮",
+        Dragging = "拖动菜单",
+        CompactMode = "紧凑模式",
+        LockMenu = "锁定菜单",
+        AutoFit = "自动适应屏幕",
+
+        Performance = "性能",
+        ShowFPS = "显示 FPS",
+        ShowPing = "显示 Ping",
+        ShowClock = "显示时间",
+
+        CustomColors = "自定义颜色",
+        ResetUI = "重置界面",
+        ResetTheme = "重置主题",
+        ResetPosition = "重置位置",
+        RestoreWindow = "恢复窗口",
+        Unload = "卸载 Library",
+
+        Enabled = "已启用",
+        Disabled = "已禁用",
+        On = "开启",
+        Off = "关闭",
+
+        Save = "保存",
+        Cancel = "取消",
+        Close = "关闭",
+        Minimize = "最小化",
+
+        Changed = "已更改",
+        ThemeChanged = "主题已更改",
+        LanguageChanged = "语言已更改",
+        AccentChanged = "功能颜色已更改",
+        SettingsReset = "界面已重置",
+
+        FPS = "FPS",
+        Ping = "延迟",
+    },
+
+    ["日本語"] = {
+        Search = "タブを検索...",
+        Home = "ホーム",
+        Players = "プレイヤー",
+        Display = "表示",
+        Settings = "設定",
+        Setting = "Setting",
+
+        Theme = "テーマ",
+        ThemePreset = "テーマプリセット",
+        AccentColor = "アクセントカラー",
+        Light = "ライト",
+        GlassMode = "ガラスモード",
+        Transparency = "透明度",
+
+        MenuSize = "メニューサイズ",
+        MenuWidth = "メニュー幅",
+        MenuHeight = "メニュー高さ",
+        SidebarWidth = "サイドバー幅",
+        UIScale = "UIスケール",
+        CornerRadius = "角の丸み",
+        AnimationSpeed = "アニメーション速度",
+
+        Behavior = "動作",
+        TabSearch = "タブ検索",
+        Notifications = "通知",
+        FloatingButton = "フローティングボタン",
+        Dragging = "メニューをドラッグ",
+        CompactMode = "コンパクトモード",
+        LockMenu = "メニューをロック",
+        AutoFit = "画面に自動調整",
+
+        Performance = "パフォーマンス",
+        ShowFPS = "FPSを表示",
+        ShowPing = "Pingを表示",
+        ShowClock = "時計を表示",
+
+        CustomColors = "カスタムカラー",
+        ResetUI = "UIをリセット",
+        ResetTheme = "テーマをリセット",
+        ResetPosition = "位置をリセット",
+        RestoreWindow = "ウィンドウを復元",
+        Unload = "Libraryを終了",
+
+        Enabled = "有効",
+        Disabled = "無効",
+        On = "オン",
+        Off = "オフ",
+
+        Save = "保存",
+        Cancel = "キャンセル",
+        Close = "閉じる",
+        Minimize = "最小化",
+
+        Changed = "変更済み",
+        ThemeChanged = "テーマを変更しました",
+        LanguageChanged = "言語を変更しました",
+        AccentChanged = "アクセントカラーを変更しました",
+        SettingsReset = "UIをリセットしました",
+
+        FPS = "FPS",
+        Ping = "Ping",
+    },
+
+    ["한국어"] = {
+        Search = "탭 검색...",
+        Home = "홈",
+        Players = "플레이어",
+        Display = "화면",
+        Settings = "설정",
+        Setting = "Setting",
+
+        Theme = "테마",
+        ThemePreset = "테마 프리셋",
+        AccentColor = "기능 색상",
+        Light = "라이트",
+        GlassMode = "글래스 모드",
+        Transparency = "투명도",
+
+        MenuSize = "메뉴 크기",
+        MenuWidth = "메뉴 너비",
+        MenuHeight = "메뉴 높이",
+        SidebarWidth = "사이드바 너비",
+        UIScale = "UI 크기",
+        CornerRadius = "모서리 둥글기",
+        AnimationSpeed = "애니메이션 속도",
+
+        Behavior = "동작",
+        TabSearch = "탭 검색",
+        Notifications = "알림",
+        FloatingButton = "플로팅 버튼",
+        Dragging = "메뉴 드래그",
+        CompactMode = "컴팩트 모드",
+        LockMenu = "메뉴 잠금",
+        AutoFit = "화면 자동 맞춤",
+
+        Performance = "성능",
+        ShowFPS = "FPS 표시",
+        ShowPing = "Ping 표시",
+        ShowClock = "시계 표시",
+
+        CustomColors = "사용자 색상",
+        ResetUI = "UI 초기화",
+        ResetTheme = "테마 초기화",
+        ResetPosition = "위치 초기화",
+        RestoreWindow = "창 복구",
+        Unload = "Library 종료",
+
+        Enabled = "활성화",
+        Disabled = "비활성화",
+        On = "켜짐",
+        Off = "꺼짐",
+
+        Save = "저장",
+        Cancel = "취소",
+        Close = "닫기",
+        Minimize = "최소화",
+
+        Changed = "변경됨",
+        ThemeChanged = "테마 변경됨",
+        LanguageChanged = "언어 변경됨",
+        AccentChanged = "기능 색상 변경됨",
+        SettingsReset = "UI 초기화됨",
+
+        FPS = "FPS",
+        Ping = "핑",
+    },
+
+    ["Español"] = {
+        Search = "Buscar pestaña...",
+        Home = "Inicio",
+        Players = "Jugadores",
+        Display = "Pantalla",
+        Settings = "Configuración",
+        Setting = "Setting",
+
+        Theme = "Tema",
+        ThemePreset = "Preajuste de tema",
+        AccentColor = "Color de función",
+        Light = "Claro",
+        GlassMode = "Modo cristal",
+        Transparency = "Transparencia",
+
+        MenuSize = "Tamaño del menú",
+        MenuWidth = "Ancho del menú",
+        MenuHeight = "Alto del menú",
+        SidebarWidth = "Ancho de barra",
+        UIScale = "Escala UI",
+        CornerRadius = "Radio de esquina",
+        AnimationSpeed = "Velocidad de animación",
+
+        Behavior = "Comportamiento",
+        TabSearch = "Buscar pestañas",
+        Notifications = "Notificaciones",
+        FloatingButton = "Botón flotante",
+        Dragging = "Arrastrar menú",
+        CompactMode = "Modo compacto",
+        LockMenu = "Bloquear menú",
+        AutoFit = "Ajuste automático",
+
+        Performance = "Rendimiento",
+        ShowFPS = "Mostrar FPS",
+        ShowPing = "Mostrar Ping",
+        ShowClock = "Mostrar reloj",
+
+        CustomColors = "Colores personalizados",
+        ResetUI = "Restablecer UI",
+        ResetTheme = "Restablecer tema",
+        ResetPosition = "Restablecer posición",
+        RestoreWindow = "Restaurar ventana",
+        Unload = "Descargar Library",
+
+        Enabled = "Activado",
+        Disabled = "Desactivado",
+        On = "ACTIVADO",
+        Off = "DESACTIVADO",
+
+        Save = "Guardar",
+        Cancel = "Cancelar",
+        Close = "Cerrar",
+        Minimize = "Minimizar",
+
+        Changed = "Cambiado",
+        ThemeChanged = "Tema cambiado",
+        LanguageChanged = "Idioma cambiado",
+        AccentChanged = "Color cambiado",
+        SettingsReset = "Interfaz restablecida",
+
+        FPS = "FPS",
+        Ping = "Ping",
+    },
+
+    ["Português"] = {
+        Search = "Pesquisar aba...",
+        Home = "Início",
+        Players = "Jogadores",
+        Display = "Exibição",
+        Settings = "Configurações",
+        Setting = "Setting",
+
+        Theme = "Tema",
+        ThemePreset = "Predefinição do tema",
+        AccentColor = "Cor da função",
+        Light = "Claro",
+        GlassMode = "Modo vidro",
+        Transparency = "Transparência",
+
+        MenuSize = "Tamanho do menu",
+        MenuWidth = "Largura do menu",
+        MenuHeight = "Altura do menu",
+        SidebarWidth = "Largura da barra",
+        UIScale = "Escala da UI",
+        CornerRadius = "Raio dos cantos",
+        AnimationSpeed = "Velocidade da animação",
+
+        Behavior = "Comportamento",
+        TabSearch = "Pesquisar abas",
+        Notifications = "Notificações",
+        FloatingButton = "Botão flutuante",
+        Dragging = "Arrastar menu",
+        CompactMode = "Modo compacto",
+        LockMenu = "Bloquear menu",
+        AutoFit = "Ajuste automático",
+
+        Performance = "Desempenho",
+        ShowFPS = "Mostrar FPS",
+        ShowPing = "Mostrar Ping",
+        ShowClock = "Mostrar relógio",
+
+        CustomColors = "Cores personalizadas",
+        ResetUI = "Redefinir UI",
+        ResetTheme = "Redefinir tema",
+        ResetPosition = "Redefinir posição",
+        RestoreWindow = "Restaurar janela",
+        Unload = "Descarregar Library",
+
+        Enabled = "Ativado",
+        Disabled = "Desativado",
+        On = "ATIVADO",
+        Off = "DESATIVADO",
+
+        Save = "Salvar",
+        Cancel = "Cancelar",
+        Close = "Fechar",
+        Minimize = "Minimizar",
+
+        Changed = "Alterado",
+        ThemeChanged = "Tema alterado",
+        LanguageChanged = "Idioma alterado",
+        AccentChanged = "Cor alterada",
+        SettingsReset = "Interface redefinida",
+
+        FPS = "FPS",
+        Ping = "Ping",
+    },
+}
+
+----------------------------------------------------------------
+-- INTERNAL
+----------------------------------------------------------------
+
+Library.Windows = {}
+Library.Values = {}
+Library._connections = {}
+
+local function clamp(v, min, max)
+    return math.max(min, math.min(max, v))
+end
+
+local function safeNumber(v, fallback)
+    v = tonumber(v)
+    if not v then
+        return fallback
+    end
+    return v
+end
+
+local function safeColor(r, g, b)
+    return Color3.fromRGB(
+        clamp(math.floor(r or 0), 0, 255),
+        clamp(math.floor(g or 0), 0, 255),
+        clamp(math.floor(b or 0), 0, 255)
+    )
+end
+
+local function getText(obj)
+    if obj:IsA("TextLabel")
+        or obj:IsA("TextButton")
+        or obj:IsA("TextBox") then
+        return obj.Text
+    end
+
+    return ""
+end
+
+----------------------------------------------------------------
+-- TRANSLATION
+----------------------------------------------------------------
+
+function Library:Translate(key)
+    local lang = self.Settings.Language
+    local data = self.Languages[lang]
+
+    if data and data[key] then
+        return data[key]
+    end
+
+    if self.Languages.English[key] then
+        return self.Languages.English[key]
+    end
+
+    return key
+end
+
+function Library:SetLanguage(language)
+    if not self.Languages[language] then
+        return false
+    end
+
+    self.Settings.Language = language
+
+    for _, window in ipairs(self.Windows) do
+        if window and not window.Destroyed then
+            window:RefreshLanguage()
+        end
+    end
+
+    return true
+end
+
+----------------------------------------------------------------
+-- THEME
+----------------------------------------------------------------
+
+function Library:SetTheme(themeName)
+    local preset = self.ThemePresets[themeName]
+
+    if not preset then
+        return false
+    end
+
+    self.Settings.ThemePreset = themeName
+
+    for key, value in pairs(preset) do
+        self.Theme[key] = value
+    end
+
+    -- Keep manually selected accent color
+    local accent = self.AccentPresets[self.Settings.AccentPreset]
+
+    if accent then
+        self.Theme.Accent = accent
+    end
+
+    self:RefreshAll()
+
+    return true
+end
+
+function Library:SetAccentColor(colorName)
+    local color = self.AccentPresets[colorName]
+
+    if not color then
+        return false
+    end
+
+    self.Settings.AccentPreset = colorName
+    self.Theme.Accent = color
+
+    self:RefreshAll()
+
+    return true
+end
+
+function Library:SetGlassMode(enabled, transparency)
+    self.Settings.GlassMode = enabled == true
+
+    if transparency then
+        self.Settings.GlassTransparency = clamp(
+            tonumber(transparency) or 0.18,
+            0,
+            0.8
+        )
+    end
+
+    self:RefreshAll()
+end
+
+----------------------------------------------------------------
+-- UI HELPERS
+----------------------------------------------------------------
+
+local function New(className, properties, parent)
+    local object = Instance.new(className)
+
+    for property, value in pairs(properties or {}) do
+        pcall(function()
+            object[property] = value
+        end)
+    end
+
+    if parent then
+        object.Parent = parent
+    end
+
+    return object
+end
+
+local function Corner(object, radius)
+    local corner = object:FindFirstChildOfClass("UICorner")
+
+    if not corner then
+        corner = Instance.new("UICorner")
+        corner.Parent = object
+    end
+
+    corner.CornerRadius = UDim.new(0, radius)
+
+    return corner
+end
+
+local function Stroke(object, color, thickness, transparency)
+    local stroke = object:FindFirstChildOfClass("UIStroke")
+
+    if not stroke then
+        stroke = Instance.new("UIStroke")
+        stroke.Parent = object
+    end
+
+    stroke.Color = color
+    stroke.Thickness = thickness or 1
+    stroke.Transparency = transparency or 0
+
+    return stroke
+end
+
+local function Tween(object, properties, duration)
+    if not object then
+        return
+    end
+
+    duration = duration or Library.Settings.AnimationSpeed
+
+    if duration <= 0 then
+        for property, value in pairs(properties) do
+            pcall(function()
+                object[property] = value
+            end)
+        end
+
+        return
+    end
+
+    local tween = TweenService:Create(
+        object,
+        TweenInfo.new(
+            duration,
+            Enum.EasingStyle.Quart,
+            Enum.EasingDirection.Out
+        ),
+        properties
+    )
+
+    tween:Play()
+
+    return tween
+end
+
+local function getTransparency(role)
+    if not Library.Settings.GlassMode then
+        return 0
+    end
+
+    local value = Library.Settings.GlassTransparency
+
+    if role == "Background" then
+        return value
+    elseif role == "Secondary" then
+        return math.min(value + 0.08, 0.85)
+    elseif role == "Tertiary" then
+        return math.min(value + 0.04, 0.85)
+    end
+
+    return 0
+end
+
+----------------------------------------------------------------
+-- WINDOW OBJECT
+----------------------------------------------------------------
+
+local WindowObject = {}
+WindowObject.__index = WindowObject
+
+function WindowObject:T(key)
+    return Library:Translate(key)
+end
+
+function WindowObject:RegisterTheme(object, role)
+    if not object then
+        return
+    end
+
+    object:SetAttribute("LONGThemeRole", role)
+
+    table.insert(self.ThemeObjects, {
+        Object = object,
+        Role = role,
+    })
+
+    self:ApplyThemeObject(object, role)
+end
+
+function WindowObject:ApplyThemeObject(object, role)
+    if not object or not object.Parent then
+        return
+    end
+
+    local color = Library.Theme[role]
+
+    if not color then
+        return
+    end
+
+    if object:IsA("Frame")
+        or object:IsA("ScrollingFrame")
+        or object:IsA("TextButton")
+        or object:IsA("TextBox") then
+
+        object.BackgroundColor3 = color
+        object.BackgroundTransparency = getTransparency(role)
+    end
+
+    if object:IsA("TextLabel")
+        or object:IsA("TextButton")
+        or object:IsA("TextBox") then
+
+        if role == "Text" then
+            object.TextColor3 = Library.Theme.Text
+        elseif role == "SubText" then
+            object.TextColor3 = Library.Theme.SubText
+        elseif role == "Accent" then
+            object.TextColor3 = Library.Theme.Accent
+        end
+    end
+
+    local stroke = object:FindFirstChildOfClass("UIStroke")
+
+    if stroke then
+        if role == "Border" then
+            stroke.Color = Library.Theme.Border
+        else
+            stroke.Color = Library.Theme.Border
+        end
+    end
+end
+
+function WindowObject:RefreshTheme()
+    for i = #self.ThemeObjects, 1, -1 do
+        local data = self.ThemeObjects[i]
+
+        if data.Object and data.Object.Parent then
+            self:ApplyThemeObject(data.Object, data.Role)
+        else
+            table.remove(self.ThemeObjects, i)
+        end
+    end
+
+    for _, corner in ipairs(self.Main:GetDescendants()) do
+        if corner:IsA("UICorner") then
+            corner.CornerRadius = UDim.new(
+                0,
+                Library.Settings.CornerRadius
+            )
+        end
+    end
+end
+
+function WindowObject:RefreshLanguage()
+    if self.SearchBox then
+        self.SearchBox.PlaceholderText = self:T("Search")
+    end
+
+    if self.SettingTabButton then
+        self.SettingTabButton.Text = "⚙  " .. self:T("Setting")
+    end
+
+    for _, item in ipairs(self.LanguageLabels) do
+        if item.Update then
+            pcall(item.Update)
+        end
+    end
+
+    self:RefreshStats()
+end
+
+function WindowObject:RefreshStats()
+    if not self.StatsLabel then
+        return
+    end
+
+    local pieces = {}
+
+    if Library.Settings.ShowFPS then
+        table.insert(
+            pieces,
+            self:T("FPS") .. ": " .. tostring(self.FPS or 0)
+        )
+    end
+
+    if Library.Settings.ShowPing then
+        local ping = 0
+
+        pcall(function()
+            ping = math.floor(
+                Stats.Network.ServerStatsItem[
+                    "Data Ping"
+                ]:GetValue()
+            )
+        end)
+
+        table.insert(
+            pieces,
+            self:T("Ping") .. ": " .. tostring(ping) .. "ms"
+        )
+    end
+
+    if Library.Settings.ShowClock then
+        table.insert(
+            pieces,
+            os.date("%H:%M:%S")
+        )
+    end
+
+    self.StatsLabel.Text = table.concat(pieces, "   •   ")
+end
+
+function WindowObject:ClampPosition()
+    if not self.Main or not self.Main.Parent then
+        return
+    end
+
+    local camera = workspace.CurrentCamera
+
+    if not camera then
+        return
+    end
+
+    local viewport = camera.ViewportSize
+    local absolute = self.Main.AbsoluteSize
+
+    local x = self.Main.Position.X.Offset
+    local y = self.Main.Position.Y.Offset
+
+    local maxX = math.max(
+        10,
+        viewport.X - absolute.X / math.max(self.UIScale.Scale, 0.01) - 10
+    )
+
+    local maxY = math.max(
+        10,
+        viewport.Y - absolute.Y / math.max(self.UIScale.Scale, 0.01) - 10
+    )
+
+    if self.Main.AnchorPoint == Vector2.new(0.5, 0.5) then
+        self.Main.Position = UDim2.fromScale(0.5, 0.5)
+        return
+    end
+
+    self.Main.Position = UDim2.new(
+        0,
+        clamp(x, 10, maxX),
+        0,
+        clamp(y, 10, maxY)
+    )
+end
+
+function WindowObject:FitToScreen()
+    if not self.Main then
+        return
+    end
+
+    local camera = workspace.CurrentCamera
+
+    if not camera then
+        return
+    end
+
+    local viewport = camera.ViewportSize
+
+    local maxWidth = math.max(
+        300,
+        viewport.X - 30
+    )
+
+    local maxHeight = math.max(
+        260,
+        viewport.Y - 30
+    )
+
+    local width = math.min(
+        Library.Settings.MenuWidth,
+        maxWidth
+    )
+
+    local height = math.min(
+        Library.Settings.MenuHeight,
+        maxHeight
+    )
+
+    local sidebar = math.min(
+        Library.Settings.SidebarWidth,
+        width * 0.35
+    )
+
+    self.Main.Size = UDim2.fromOffset(
+        width,
+        height
+    )
+
+    self.Sidebar.Size = UDim2.new(
+        0,
+        sidebar,
+        1,
+        0
+    )
+
+    self.Content.Position = UDim2.new(
+        0,
+        sidebar,
+        0,
+        44
+    )
+
+    self.Content.Size = UDim2.new(
+        1,
+        -sidebar,
+        1,
+        -44
+    )
+
+    self:ClampPosition()
+end
+
+function WindowObject:SetSize(width, height)
+    width = clamp(
+        safeNumber(width, Library.Settings.MenuWidth),
+        300,
+        1600
+    )
+
+    height = clamp(
+        safeNumber(height, Library.Settings.MenuHeight),
+        260,
+        1000
+    )
+
+    Library.Settings.MenuWidth = width
+    Library.Settings.MenuHeight = height
+
+    self:FitToScreen()
+end
+
+function WindowObject:SetScale(scale)
+    scale = clamp(
+        safeNumber(scale, 100),
+        60,
+        150
+    )
+
+    Library.Settings.UIScale = scale
+    self.UIScale.Scale = scale / 100
+
+    task.defer(function()
+        self:ClampPosition()
+    end)
+end
+
+function WindowObject:SetSidebarWidth(width)
+    width = clamp(
+        safeNumber(width, Library.Settings.SidebarWidth),
+        100,
+        300
+    )
+
+    Library.Settings.SidebarWidth = width
+    self:FitToScreen()
+end
+
+function WindowObject:Show()
+    self.Main.Visible = true
+
+    if self.FloatingButton then
+        self.FloatingButton.Visible = false
+    end
+end
+
+function WindowObject:Hide()
+    self.Main.Visible = false
+
+    if self.FloatingButton
+        and Library.Settings.FloatingButton then
+
+        self.FloatingButton.Visible = true
+    end
+end
+
+function WindowObject:Toggle()
+    if self.Main.Visible then
+        self:Hide()
+    else
+        self:Show()
+    end
+end
+
+function WindowObject:Restore()
+    self.Minimized = false
+    self.Content.Visible = true
+
+    self.Main.Size = UDim2.fromOffset(
+        Library.Settings.MenuWidth,
+        Library.Settings.MenuHeight
+    )
+
+    self:FitToScreen()
+end
+
+function WindowObject:Minimize()
+    if self.Minimized then
+        self:Restore()
+        return
+    end
+
+    self.Minimized = true
+    self.Content.Visible = false
+
+    self.Main.Size = UDim2.fromOffset(
+        Library.Settings.MenuWidth,
+        44
+    )
+end
+
+----------------------------------------------------------------
+-- DRAG
+----------------------------------------------------------------
+
+function WindowObject:BindDrag(handle)
+    if not Library.Settings.Dragging then
+        return
+    end
+
+    local dragging = false
+    local dragStart
+    local startPos
+    local dragInput
+
+    local function update(input)
+        if not dragging then
+            return
+        end
+
+        if Library.Settings.LockMenu then
+            return
+        end
+
+        local delta = input.Position - dragStart
+
+        self.Main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+
+        self:ClampPosition()
+    end
+
+    table.insert(self.Connections,
+        handle.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1
+                or input.UserInputType == Enum.UserInputType.Touch then
+
+                if Library.Settings.LockMenu then
+                    return
+                end
+
+                dragging = true
+                dragStart = input.Position
+                startPos = self.Main.Position
+
+                input.Changed:Connect(function()
+                    if input.UserInputState
+                        == Enum.UserInputState.End then
+
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+    )
+
+    table.insert(self.Connections,
+        handle.InputChanged:Connect(function(input)
+            if input.UserInputType
+                == Enum.UserInputType.MouseMovement
+                or input.UserInputType
+                == Enum.UserInputType.Touch then
+
+                dragInput = input
+            end
+        end)
+    )
+
+    table.insert(self.Connections,
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput then
+                update(input)
+            end
+        end)
+    )
+end
+
+----------------------------------------------------------------
+-- WINDOW
+----------------------------------------------------------------
+
+function Library:CreateWindow(options)
+    options = options or {}
+
+    local window = setmetatable({}, WindowObject)
+
+    window.Title = options.Title or "LONG UI"
+    window.Subtitle = options.Subtitle or "LONG UI LIBRARY"
+    window.Icon = options.Icon
+    window.Destroyed = false
+
+    window.Tabs = {}
+    window.TabButtons = {}
+    window.ThemeObjects = {}
+    window.Connections = {}
+    window.LanguageLabels = {}
+
+    window.FPS = 0
+    window.Minimized = false
+
+    table.insert(self.Windows, window)
+
+    ------------------------------------------------------------
+    -- SCREEN GUI
+    ------------------------------------------------------------
+
+    local ScreenGui = New("ScreenGui", {
+        Name = "LONG_UI_" .. tostring(math.random(10000, 99999)),
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        IgnoreGuiInset = true,
+        DisplayOrder = 999999,
+    })
+
+    if syn and syn.protect_gui then
+        pcall(function()
+            syn.protect_gui(ScreenGui)
+        end)
+    end
+
+    ScreenGui.Parent = game:GetService("CoreGui")
+
+    window.ScreenGui = ScreenGui
+
+    ------------------------------------------------------------
+    -- MAIN
+    ------------------------------------------------------------
+
+    local Main = New("Frame", {
+        Name = "Main",
+        Size = UDim2.fromOffset(
+            self.Settings.MenuWidth,
+            self.Settings.MenuHeight
+        ),
+        Position = UDim2.fromScale(0.5, 0.5),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+
+        BackgroundColor3 = self.Theme.Background,
+        BackgroundTransparency = getTransparency("Background"),
+
+        BorderSizePixel = 0,
+
+        ClipsDescendants = true,
+
+        Active = true,
+    }, ScreenGui)
+
+    window.Main = Main
+
+    Corner(Main, self.Settings.CornerRadius)
+    Stroke(Main, self.Theme.Border, 1, 0)
+
+    window:RegisterTheme(Main, "Background")
+
+    ------------------------------------------------------------
+    -- UI SCALE
+    ------------------------------------------------------------
+
+    local UIScale = New("UIScale", {
+        Scale = self.Settings.UIScale / 100,
+    }, Main)
+
+    window.UIScale = UIScale
+
+    ------------------------------------------------------------
+    -- TOPBAR
+    ------------------------------------------------------------
+
+    local Topbar = New("Frame", {
+        Name = "Topbar",
+
+        Size = UDim2.new(
+            1,
+            0,
+            0,
+            44
+        ),
+
+        Position = UDim2.new(
+            0,
+            0,
+            0,
+            0
+        ),
+
+        BackgroundColor3 = self.Theme.Secondary,
+        BackgroundTransparency = getTransparency("Secondary"),
+
+        BorderSizePixel = 0,
+
+        ClipsDescendants = true,
+
+        Active = true,
+    }, Main)
+
+    window.Topbar = Topbar
+
+    -- Main handles outer rounded corners.
+    -- No extra UICorner here to prevent inner corner artifacts.
+
+    window:RegisterTheme(Topbar, "Secondary")
+
+    ------------------------------------------------------------
+    -- TITLE
+    ------------------------------------------------------------
+
+    local Title = New("TextLabel", {
+        Name = "Title",
+
+        Size = UDim2.new(
+            0,
+            250,
+            1,
+            0
+        ),
+
+        Position = UDim2.fromOffset(15, 0),
+
+        BackgroundTransparency = 1,
+
+        Font = Enum.Font.GothamBold,
+        Text = window.Title,
+
+        TextColor3 = self.Theme.Text,
+        TextSize = 17,
+
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
+    }, Topbar)
+
+    window.TitleLabel = Title
+
+    window:RegisterTheme(Title, "Text")
+
+    ------------------------------------------------------------
+    -- SUBTITLE
+    ------------------------------------------------------------
+
+    local Subtitle = New("TextLabel", {
+        Name = "Subtitle",
+
+        Size = UDim2.new(
+            0,
+            200,
+            1,
+            0
+        ),
+
+        Position = UDim2.fromOffset(270, 0),
+
+        BackgroundTransparency = 1,
+
+        Font = Enum.Font.Gotham,
+        Text = window.Subtitle,
+
+        TextColor3 = self.Theme.SubText,
+        TextSize = 11,
+
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Center,
+    }, Topbar)
+
+    window.SubtitleLabel = Subtitle
+
+    window:RegisterTheme(Subtitle, "SubText")
+
+    ------------------------------------------------------------
+    -- STATS
+    ------------------------------------------------------------
+
+    local StatsLabel = New("TextLabel", {
+        Name = "Stats",
+
+        Size = UDim2.new(
+            0,
+            250,
+            1,
+            0
+        ),
+
+        Position = UDim2.new(
+            0.5,
+            -125,
+            0,
+            0
+        ),
+
+        BackgroundTransparency = 1,
+
+        Font = Enum.Font.GothamMedium,
+        Text = "",
+
+        TextColor3 = self.Theme.SubText,
+        TextSize = 10,
+
+        TextXAlignment = Enum.TextXAlignment.Center,
+        TextYAlignment = Enum.TextYAlignment.Center,
+    }, Topbar)
+
+    window.StatsLabel = StatsLabel
+
+    window:RegisterTheme(StatsLabel, "SubText")
+
+    ------------------------------------------------------------
+    -- MINIMIZE
+    ------------------------------------------------------------
+
+    local MinimizeButton = New("TextButton", {
+        Name = "Minimize",
+
+        Size = UDim2.fromOffset(38, 34),
+        Position = UDim2.new(1, -88, 0, 5),
+
+        BackgroundColor3 = self.Theme.Tertiary,
+
+        BorderSizePixel = 0,
+
+        AutoButtonColor = false,
+
+        Font = Enum.Font.GothamBold,
+        Text = "—",
+
+        TextColor3 = self.Theme.Text,
+        TextSize = 18,
+    }, Topbar)
+
+    Corner(MinimizeButton, self.Settings.CornerRadius)
+
+    window.MinimizeButton = MinimizeButton
+
+    window:RegisterTheme(MinimizeButton, "Tertiary")
+    MinimizeButton.TextColor3 = self.Theme.Text
+
+    ------------------------------------------------------------
+    -- CLOSE
+    ------------------------------------------------------------
+
+    local CloseButton = New("TextButton", {
+        Name = "Close",
+
+        Size = UDim2.fromOffset(38, 34),
+        Position = UDim2.new(1, -45, 0, 5),
+
+        BackgroundColor3 = self.Theme.Danger,
+
+        BorderSizePixel = 0,
+
+        AutoButtonColor = false,
+
+        Font = Enum.Font.GothamBold,
+        Text = "×",
+
+        TextColor3 = Color3.new(1, 1, 1),
+        TextSize = 20,
+    }, Topbar)
+
+    Corner(CloseButton, self.Settings.CornerRadius)
+
+    window.CloseButton = CloseButton
+
+    window:RegisterTheme(CloseButton, "Danger")
+
+    ------------------------------------------------------------
+    -- SIDEBAR
+    ------------------------------------------------------------
+
+    local Sidebar = New("Frame", {
+        Name = "Sidebar",
+
+        Size = UDim2.new(
+            0,
+            self.Settings.SidebarWidth,
+            1,
+            -44
+        ),
+
+        Position = UDim2.new(
+            0,
+            0,
+            0,
+            44
+        ),
+
+        BackgroundColor3 = self.Theme.Secondary,
+        BackgroundTransparency = getTransparency("Secondary"),
+
+        BorderSizePixel = 0,
+
+        ClipsDescendants = true,
+    }, Main)
+
+    window.Sidebar = Sidebar
+
+    window:RegisterTheme(Sidebar, "Secondary")
+
+    ------------------------------------------------------------
+    -- SEARCH
+    ------------------------------------------------------------
+
+    local SearchBox
+
+    if self.Settings.TabSearch then
+        SearchBox = New("TextBox", {
+            Name = "Search",
+
+            Size = UDim2.new(
+                1,
+                -18,
+                0,
+                34
+            ),
+
+            Position = UDim2.fromOffset(9, 9),
+
+            BackgroundColor3 = self.Theme.Tertiary,
+
+            BorderSizePixel = 0,
+
+            ClearTextOnFocus = false,
+
+            Font = Enum.Font.Gotham,
+            Text = "",
+
+            PlaceholderText = self:Translate("Search"),
+
+            PlaceholderColor3 = self.Theme.SubText,
+            TextColor3 = self.Theme.Text,
+            TextSize = 12,
+
+            TextXAlignment = Enum.TextXAlignment.Left,
+        }, Sidebar)
+
+        Corner(SearchBox, self.Settings.CornerRadius)
+
+        window.SearchBox = SearchBox
+
+        window:RegisterTheme(SearchBox, "Tertiary")
+    end
+
+    ------------------------------------------------------------
+    -- TAB LIST
+    ------------------------------------------------------------
+
+    local TabList = New("ScrollingFrame", {
+        Name = "Tabs",
+
+        Size = UDim2.new(
+            1,
+            -12,
+            1,
+            SearchBox and -57 or -12
+        ),
+
+        Position = UDim2.fromOffset(
+            6,
+            SearchBox and 51 or 6
+        ),
+
+        BackgroundTransparency = 1,
+
+        BorderSizePixel = 0,
+
+        ScrollBarThickness = 2,
+
+        ScrollBarImageColor3 = self.Theme.Accent,
+
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+
+        ClipsDescendants = true,
+    }, Sidebar)
+
+    window.TabList = TabList
+
+    local TabLayout = New("UIListLayout", {
+        Padding = UDim.new(0, 7),
+
+        SortOrder = Enum.SortOrder.LayoutOrder,
+
+        HorizontalAlignment = Enum.HorizontalAlignment.Center,
+    }, TabList)
+
+    ------------------------------------------------------------
+    -- CONTENT
+    ------------------------------------------------------------
+
+    local Content = New("Frame", {
+        Name = "Content",
+
+        Size = UDim2.new(
+            1,
+            -self.Settings.SidebarWidth,
+            1,
+            -44
+        ),
+
+        Position = UDim2.new(
+            0,
+            self.Settings.SidebarWidth,
+            0,
+            44
+        ),
+
+        BackgroundColor3 = self.Theme.Background,
+        BackgroundTransparency = getTransparency("Background"),
+
+        BorderSizePixel = 0,
+
+        ClipsDescendants = true,
+    }, Main)
+
+    window.Content = Content
+
+    window:RegisterTheme(Content, "Background")
+
+    ------------------------------------------------------------
+    -- FLOATING BUTTON
+    ------------------------------------------------------------
+
+    local FloatingButton = New("TextButton", {
+        Name = "FloatingButton",
+
+        Size = UDim2.fromOffset(48, 48),
+
+        Position = UDim2.new(
+            1,
+            -70,
+            1,
+            -70
+        ),
+
+        AnchorPoint = Vector2.new(0, 0),
+
+        BackgroundColor3 = self.Theme.Accent,
+
+        BorderSizePixel = 0,
+
+        AutoButtonColor = false,
+
+        Font = Enum.Font.GothamBold,
+        Text = "☰",
+
+        TextColor3 = Color3.new(1, 1, 1),
+        TextSize = 20,
+
+        Visible = false,
+
+        ZIndex = 100,
+    }, ScreenGui)
+
+    Corner(FloatingButton, 24)
+
+    window.FloatingButton = FloatingButton
+
+    window:RegisterTheme(FloatingButton, "Accent")
+
+    ------------------------------------------------------------
+    -- BUTTON EVENTS
+    ------------------------------------------------------------
+
+    MinimizeButton.MouseButton1Click:Connect(function()
+        window:Minimize()
+    end)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        window:Hide()
+    end)
+
+    FloatingButton.MouseButton1Click:Connect(function()
+        window:Show()
+    end)
+
+    window:BindDrag(Topbar)
+
+    ------------------------------------------------------------
+    -- SEARCH EVENT
+    ------------------------------------------------------------
+
+    if SearchBox then
+        table.insert(
+            window.Connections,
+            SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+                local query = string.lower(SearchBox.Text)
+
+                for _, tabData in ipairs(window.Tabs) do
+                    local visible = query == ""
+                        or string.find(
+                            string.lower(tabData.Name),
+                            query,
+                            1,
+                            true
+                        ) ~= nil
+
+                    tabData.Button.Visible = visible
+                end
+            end)
+        )
+    end
+
+    ------------------------------------------------------------
+    -- AUTO FIT
+    ------------------------------------------------------------
+
+    local camera = workspace.CurrentCamera
+
+    if camera then
+        table.insert(
+            window.Connections,
+            camera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+                if Library.Settings.AutoFit then
+                    window:FitToScreen()
+                end
+            end)
+        )
+    end
+
+    ------------------------------------------------------------
+    -- FPS
+    ------------------------------------------------------------
+
+    local fpsConnection = RunService.RenderStepped:Connect(function(dt)
+        if dt > 0 then
+            window.FPS = math.floor(1 / dt)
+        end
+
+        if Library.Settings.ShowFPS
+            or Library.Settings.ShowPing
+            or Library.Settings.ShowClock then
+
+            window:RefreshStats()
+        end
+    end)
+
+    table.insert(window.Connections, fpsConnection)
+
+    ------------------------------------------------------------
+    -- TAB API
+    ------------------------------------------------------------
+
+    function window:CreateTab(tabName, icon)
+        local tab = {}
+
+        tab.Name = tabName or "Tab"
+        tab.Icon = icon or "●"
+        tab.Sections = {}
+        tab.Visible = true
+
+        local normalTabCount = 0
+
+        for _, existing in ipairs(self.Tabs) do
+            if not existing.IsSetting then
+                normalTabCount += 1
+            end
+        end
+
+        tab.LayoutOrder = normalTabCount + 1
+
+        local Button = New("TextButton", {
+            Name = tabName .. "_Button",
+
+            Size = UDim2.new(
+                1,
+                -4,
+                0,
+                52
+            ),
+
+            BackgroundColor3 = Library.Theme.Tertiary,
+
+            BorderSizePixel = 0,
+
+            AutoButtonColor = false,
+
+            Font = Enum.Font.GothamMedium,
+
+            Text = tostring(tab.Icon) .. "   " .. tostring(tab.Name),
+
+            TextColor3 = Library.Theme.Text,
+            TextSize = 14,
+
+            TextXAlignment = Enum.TextXAlignment.Left,
+
+            LayoutOrder = tab.LayoutOrder,
+        }, TabList)
+
+        Corner(
+            Button,
+            Library.Settings.CornerRadius
+        )
+
+        tab.Button = Button
+
+        self:RegisterTheme(Button, "Tertiary")
+
+        local Page = New("ScrollingFrame", {
+            Name = tabName .. "_Page",
+
+            Size = UDim2.new(
+                1,
+                -20,
+                1,
+                -20
+            ),
+
+            Position = UDim2.fromOffset(
+                10,
+                10
+            ),
+
+            BackgroundTransparency = 1,
+
+            BorderSizePixel = 0,
+
+            ScrollBarThickness = 3,
+
+            ScrollBarImageColor3 = Library.Theme.Accent,
+
+            CanvasSize = UDim2.new(0, 0, 0, 0),
+
+            AutomaticCanvasSize = Enum.AutomaticSize.Y,
+
+            Visible = false,
+
+            ClipsDescendants = true,
+        }, Content)
+
+        tab.Page = Page
+
+        local PageLayout = New("UIListLayout", {
+            Padding = UDim.new(0, 10),
+
+            SortOrder = Enum.SortOrder.LayoutOrder,
+        }, Page)
+
+        PageLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(
+            function()
+                Page.CanvasPosition = Vector2.new(
+                    Page.CanvasPosition.X,
+                    Page.CanvasPosition.Y
+                )
+            end
+        )
+
+        --------------------------------------------------------
+        -- SECTION
+        --------------------------------------------------------
+
+        function tab:CreateSection(sectionName)
+            local section = {}
+
+            section.Name = sectionName or "Section"
+            section.LayoutOrder = #self.Sections + 1
+
+            local Frame = New("Frame", {
+                Name = sectionName .. "_Section",
+
+                Size = UDim2.new(
+                    1,
+                    0,
+                    0,
+                    50
+                ),
+
+                BackgroundColor3 = Library.Theme.Secondary,
+
+                BorderSizePixel = 0,
+
+                LayoutOrder = section.LayoutOrder,
+
+                AutomaticSize = Enum.AutomaticSize.Y,
+            }, Page)
+
+            Corner(
+                Frame,
+                Library.Settings.CornerRadius
+            )
+
+            Stroke(
+                Frame,
+                Library.Theme.Border,
+                1
+            )
+
+            selfWindow = window
+
+            window:RegisterTheme(Frame, "Secondary")
+
+            local Padding = New("UIPadding", {
+                PaddingTop = UDim.new(0, 12),
+                PaddingBottom = UDim.new(0, 12),
+                PaddingLeft = UDim.new(0, 14),
+                PaddingRight = UDim.new(0, 14),
+            }, Frame)
+
+            local Layout = New("UIListLayout", {
+                Padding = UDim.new(0, 8),
+
+                SortOrder = Enum.SortOrder.LayoutOrder,
+            }, Frame)
+
+            local SectionTitle = New("TextLabel", {
+                Name = "SectionTitle",
+
+                Size = UDim2.new(
+                    1,
+                    0,
+                    0,
+                    22
+                ),
+
+                BackgroundTransparency = 1,
+
+                Font = Enum.Font.GothamBold,
+
+                Text = section.Name,
+
+                TextColor3 = Library.Theme.Text,
+                TextSize = 14,
+
+                TextXAlignment = Enum.TextXAlignment.Left,
+            }, Frame)
+
+            window:RegisterTheme(
+                SectionTitle,
+                "Text"
+            )
+
+            ----------------------------------------------------
+            -- LABEL
+            ----------------------------------------------------
+
+            function section:CreateLabel(text)
+                local label = New("TextLabel", {
+                    Name = "Label",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        24
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    Font = Enum.Font.Gotham,
+
+                    Text = tostring(text or ""),
+
+                    TextColor3 = Library.Theme.SubText,
+                    TextSize = 13,
+
+                    TextWrapped = true,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    TextYAlignment = Enum.TextYAlignment.Center,
+
+                    LayoutOrder = 10,
+                }, Frame)
+
+                window:RegisterTheme(
+                    label,
+                    "SubText"
+                )
+
+                return label
+            end
+
+            ----------------------------------------------------
+            -- BUTTON
+            ----------------------------------------------------
+
+            function section:CreateButton(text, callback)
+                local button = New("TextButton", {
+                    Name = "Button",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        38
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    AutoButtonColor = false,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text or "Button"),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    LayoutOrder = 20,
+                }, Frame)
+
+                Corner(
+                    button,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    button,
+                    "Tertiary"
+                )
+
+                button.MouseEnter:Connect(function()
+                    Tween(
+                        button,
+                        {
+                            BackgroundColor3 = Library.Theme.Accent
+                        }
+                    )
+                end)
+
+                button.MouseLeave:Connect(function()
+                    Tween(
+                        button,
+                        {
+                            BackgroundColor3 = Library.Theme.Tertiary
+                        }
+                    )
+                end)
+
+                button.MouseButton1Click:Connect(function()
+                    if callback then
+                        task.spawn(function()
+                            pcall(callback)
+                        end)
+                    end
+                end)
+
+                return button
+            end
+
+            ----------------------------------------------------
+            -- TOGGLE
+            ----------------------------------------------------
+
+            function section:CreateToggle(text, default, callback)
+                local state = default == true
+
+                local holder = New("Frame", {
+                    Name = "Toggle",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    LayoutOrder = 30,
+                }, Frame)
+
+                Corner(
+                    holder,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    holder,
+                    "Tertiary"
+                )
+
+                local label = New("TextLabel", {
+                    Size = UDim2.new(
+                        1,
+                        -65,
+                        1,
+                        0
+                    ),
+
+                    Position = UDim2.fromOffset(12, 0),
+
+                    BackgroundTransparency = 1,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text or "Toggle"),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                }, holder)
+
+                window:RegisterTheme(
+                    label,
+                    "Text"
+                )
+
+                local switch = New("TextButton", {
+                    Size = UDim2.fromOffset(44, 22),
+
+                    Position = UDim2.new(
+                        1,
+                        -54,
+                        0.5,
+                        -11
+                    ),
+
+                    BackgroundColor3 = state
+                        and Library.Theme.On
+                        or Library.Theme.Off,
+
+                    BorderSizePixel = 0,
+
+                    AutoButtonColor = false,
+
+                    Text = "",
+                }, holder)
+
+                Corner(switch, 20)
+
+                window:RegisterTheme(
+                    switch,
+                    state and "On" or "Off"
+                )
+
+                local circle = New("Frame", {
+                    Size = UDim2.fromOffset(16, 16),
+
+                    Position = state
+                        and UDim2.new(1, -19, 0.5, -8)
+                        or UDim2.new(0, 3, 0.5, -8),
+
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+
+                    BorderSizePixel = 0,
+                }, switch)
+
+                Corner(circle, 20)
+
+                local function update()
+                    switch.BackgroundColor3 = state
+                        and Library.Theme.On
+                        or Library.Theme.Off
+
+                    Tween(
+                        circle,
+                        {
+                            Position = state
+                                and UDim2.new(1, -19, 0.5, -8)
+                                or UDim2.new(0, 3, 0.5, -8)
+                        }
+                    )
+
+                    if callback then
+                        task.spawn(function()
+                            pcall(callback, state)
+                        end)
+                    end
+                end
+
+                switch.MouseButton1Click:Connect(function()
+                    state = not state
+                    update()
+                end)
+
+                return {
+                    Set = function(_, value)
+                        state = value == true
+                        update()
+                    end,
+
+                    Get = function()
+                        return state
+                    end,
+                }
+            end
+
+            ----------------------------------------------------
+            -- SLIDER
+            ----------------------------------------------------
+
+            function section:CreateSlider(text, min, max, default, callback)
+                min = safeNumber(min, 0)
+                max = safeNumber(max, 100)
+
+                if max <= min then
+                    max = min + 1
+                end
+
+                local value = clamp(
+                    safeNumber(default, min),
+                    min,
+                    max
+                )
+
+                local holder = New("Frame", {
+                    Name = "Slider",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        62
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    LayoutOrder = 40,
+                }, Frame)
+
+                Corner(
+                    holder,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    holder,
+                    "Tertiary"
+                )
+
+                local label = New("TextLabel", {
+                    Size = UDim2.new(
+                        1,
+                        -80,
+                        0,
+                        25
+                    ),
+
+                    Position = UDim2.fromOffset(12, 4),
+
+                    BackgroundTransparency = 1,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text or "Slider"),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                }, holder)
+
+                window:RegisterTheme(
+                    label,
+                    "Text"
+                )
+
+                local valueLabel = New("TextLabel", {
+                    Size = UDim2.fromOffset(
+                        65,
+                        25
+                    ),
+
+                    Position = UDim2.new(
+                        1,
+                        -70,
+                        0,
+                        4
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    Font = Enum.Font.GothamBold,
+
+                    Text = tostring(value),
+
+                    TextColor3 = Library.Theme.Accent,
+                    TextSize = 13,
+
+                    TextXAlignment = Enum.TextXAlignment.Right,
+                }, holder)
+
+                window:RegisterTheme(
+                    valueLabel,
+                    "Accent"
+                )
+
+                local bar = New("Frame", {
+                    Size = UDim2.new(
+                        1,
+                        -24,
+                        0,
+                        6
+                    ),
+
+                    Position = UDim2.new(
+                        0,
+                        12,
+                        0,
+                        43
+                    ),
+
+                    BackgroundColor3 = Library.Theme.SliderBackground,
+
+                    BorderSizePixel = 0,
+                }, holder)
+
+                Corner(bar, 6)
+
+                window:RegisterTheme(
+                    bar,
+                    "SliderBackground"
+                )
+
+                local fill = New("Frame", {
+                    Size = UDim2.new(
+                        (value - min) / (max - min),
+                        0,
+                        1,
+                        0
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Accent,
+
+                    BorderSizePixel = 0,
+                }, bar)
+
+                Corner(fill, 6)
+
+                window:RegisterTheme(
+                    fill,
+                    "Accent"
+                )
+
+                local hitbox = New("TextButton", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        25
+                    ),
+
+                    Position = UDim2.new(
+                        0,
+                        0,
+                        0,
+                        33
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    Text = "",
+                }, holder)
+
+                local dragging = false
+
+                local function setValue(inputX)
+                    local relative = clamp(
+                        inputX - bar.AbsolutePosition.X,
+                        0,
+                        bar.AbsoluteSize.X
+                    )
+
+                    local percent = 0
+
+                    if bar.AbsoluteSize.X > 0 then
+                        percent = relative / bar.AbsoluteSize.X
+                    end
+
+                    value = min + (max - min) * percent
+
+                    if math.abs(max - min) <= 1000 then
+                        value = math.floor(value + 0.5)
+                    else
+                        value = math.floor(value * 100) / 100
+                    end
+
+                    fill.Size = UDim2.new(
+                        percent,
+                        0,
+                        1,
+                        0
+                    )
+
+                    valueLabel.Text = tostring(value)
+
+                    if callback then
+                        task.spawn(function()
+                            pcall(callback, value)
+                        end)
+                    end
+                end
+
+                hitbox.InputBegan:Connect(function(input)
+                    if input.UserInputType
+                        == Enum.UserInputType.MouseButton1
+                        or input.UserInputType
+                        == Enum.UserInputType.Touch then
+
+                        dragging = true
+                        setValue(input.Position.X)
+                    end
+                end)
+
+                hitbox.InputEnded:Connect(function(input)
+                    if input.UserInputType
+                        == Enum.UserInputType.MouseButton1
+                        or input.UserInputType
+                        == Enum.UserInputType.Touch then
+
+                        dragging = false
+                    end
+                end)
+
+                UserInputService.InputChanged:Connect(function(input)
+                    if dragging then
+                        if input.UserInputType
+                            == Enum.UserInputType.MouseMovement
+                            or input.UserInputType
+                            == Enum.UserInputType.Touch then
+
+                            setValue(input.Position.X)
+                        end
+                    end
+                end)
+
+                return {
+                    Set = function(_, newValue)
+                        value = clamp(
+                            safeNumber(newValue, min),
+                            min,
+                            max
+                        )
+
+                        local percent =
+                            (value - min) / (max - min)
+
+                        fill.Size = UDim2.new(
+                            percent,
+                            0,
+                            1,
+                            0
+                        )
+
+                        valueLabel.Text = tostring(value)
+
+                        if callback then
+                            task.spawn(function()
+                                pcall(callback, value)
+                            end)
+                        end
+                    end,
+
+                    Get = function()
+                        return value
+                    end,
+                }
+            end
+
+            ----------------------------------------------------
+            -- DROPDOWN
+            ----------------------------------------------------
+
+            function section:CreateDropdown(text, options, default, callback)
+                options = options or {}
+
+                local current = default
+                    or options[1]
+                    or "None"
+
+                local holder = New("Frame", {
+                    Name = "Dropdown",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    ClipsDescendants = false,
+
+                    LayoutOrder = 50,
+                }, Frame)
+
+                Corner(
+                    holder,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    holder,
+                    "Tertiary"
+                )
+
+                local button = New("TextButton", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    AutoButtonColor = false,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text)
+                        .. ": "
+                        .. tostring(current),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                }, holder)
+
+                button.TextXAlignment = Enum.TextXAlignment.Left
+
+                window:RegisterTheme(
+                    button,
+                    "Text"
+                )
+
+                local pad = New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 12),
+                    PaddingRight = UDim.new(0, 12),
+                }, button)
+
+                local list = New("Frame", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        0
+                    ),
+
+                    Position = UDim2.new(
+                        0,
+                        0,
+                        0,
+                        42
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Background,
+
+                    BorderSizePixel = 0,
+
+                    Visible = false,
+
+                    ZIndex = 50,
+
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                }, holder)
+
+                Corner(
+                    list,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    list,
+                    "Background"
+                )
+
+                local listLayout = New("UIListLayout", {
+                    Padding = UDim.new(0, 3),
+                    SortOrder = Enum.SortOrder.LayoutOrder,
+                }, list)
+
+                local listPadding = New("UIPadding", {
+                    PaddingTop = UDim.new(0, 5),
+                    PaddingBottom = UDim.new(0, 5),
+                    PaddingLeft = UDim.new(0, 5),
+                    PaddingRight = UDim.new(0, 5),
+                }, list)
+
+                local function rebuild()
+                    for _, child in ipairs(list:GetChildren()) do
+                        if child:IsA("TextButton") then
+                            child:Destroy()
+                        end
+                    end
+
+                    for index, option in ipairs(options) do
+                        local optionButton = New("TextButton", {
+                            Size = UDim2.new(
+                                1,
+                                0,
+                                0,
+                                32
+                            ),
+
+                            BackgroundColor3 = Library.Theme.Tertiary,
+
+                            BorderSizePixel = 0,
+
+                            AutoButtonColor = false,
+
+                            Font = Enum.Font.Gotham,
+
+                            Text = tostring(option),
+
+                            TextColor3 = Library.Theme.Text,
+                            TextSize = 12,
+
+                            LayoutOrder = index,
+
+                            ZIndex = 51,
+                        }, list)
+
+                        Corner(
+                            optionButton,
+                            Library.Settings.CornerRadius
+                        )
+
+                        window:RegisterTheme(
+                            optionButton,
+                            "Tertiary"
+                        )
+
+                        optionButton.MouseButton1Click:Connect(function()
+                            current = option
+
+                            button.Text =
+                                tostring(text)
+                                .. ": "
+                                .. tostring(current)
+
+                            list.Visible = false
+
+                            holder.Size = UDim2.new(
+                                1,
+                                0,
+                                0,
+                                40
+                            )
+
+                            if callback then
+                                task.spawn(function()
+                                    pcall(
+                                        callback,
+                                        current
+                                    )
+                                end)
+                            end
+                        end)
+                    end
+                end
+
+                rebuild()
+
+                button.MouseButton1Click:Connect(function()
+                    list.Visible = not list.Visible
+
+                    if list.Visible then
+                        local count = #options
+
+                        holder.Size = UDim2.new(
+                            1,
+                            0,
+                            0,
+                            45 + math.min(count, 7) * 35
+                        )
+                    else
+                        holder.Size = UDim2.new(
+                            1,
+                            0,
+                            0,
+                            40
+                        )
+                    end
+                end)
+
+                return {
+                    Set = function(_, newValue)
+                        current = newValue
+
+                        button.Text =
+                            tostring(text)
+                            .. ": "
+                            .. tostring(current)
+                    end,
+
+                    Get = function()
+                        return current
+                    end,
+
+                    Refresh = rebuild,
+                }
+            end
+
+            ----------------------------------------------------
+            -- MULTI DROPDOWN
+            ----------------------------------------------------
+
+            function section:CreateMultiDropdown(text, options, defaults, callback)
+                options = options or {}
+                defaults = defaults or {}
+
+                local selected = {}
+
+                for _, option in ipairs(defaults) do
+                    selected[option] = true
+                end
+
+                local holder = New("Frame", {
+                    Name = "MultiDropdown",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    ClipsDescendants = false,
+
+                    LayoutOrder = 60,
+                }, Frame)
+
+                Corner(
+                    holder,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    holder,
+                    "Tertiary"
+                )
+
+                local button = New("TextButton", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    AutoButtonColor = false,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                }, holder)
+
+                New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 12),
+                    PaddingRight = UDim.new(0, 12),
+                }, button)
+
+                window:RegisterTheme(
+                    button,
+                    "Text"
+                )
+
+                local list = New("Frame", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        0
+                    ),
+
+                    Position = UDim2.new(
+                        0,
+                        0,
+                        0,
+                        42
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Background,
+
+                    BorderSizePixel = 0,
+
+                    Visible = false,
+
+                    ZIndex = 50,
+
+                    AutomaticSize = Enum.AutomaticSize.Y,
+                }, holder)
+
+                Corner(
+                    list,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    list,
+                    "Background"
+                )
+
+                local function refreshText()
+                    local names = {}
+
+                    for _, option in ipairs(options) do
+                        if selected[option] then
+                            table.insert(names, tostring(option))
+                        end
+                    end
+
+                    if #names == 0 then
+                        button.Text = tostring(text) .. ": -"
+                    else
+                        button.Text =
+                            tostring(text)
+                            .. ": "
+                            .. table.concat(names, ", ")
+                    end
+                end
+
+                for index, option in ipairs(options) do
+                    local optionButton = New("TextButton", {
+                        Size = UDim2.new(
+                            1,
+                            -10,
+                            0,
+                            32
+                        ),
+
+                        Position = UDim2.fromOffset(
+                            5,
+                            5 + (index - 1) * 35
+                        ),
+
+                        BackgroundColor3 =
+                            selected[option]
+                            and Library.Theme.Accent
+                            or Library.Theme.Tertiary,
+
+                        BorderSizePixel = 0,
+
+                        AutoButtonColor = false,
+
+                        Font = Enum.Font.Gotham,
+
+                        Text = tostring(option),
+
+                        TextColor3 = Library.Theme.Text,
+                        TextSize = 12,
+
+                        ZIndex = 51,
+                    }, list)
+
+                    Corner(
+                        optionButton,
+                        Library.Settings.CornerRadius
+                    )
+
+                    optionButton.MouseButton1Click:Connect(function()
+                        selected[option] = not selected[option]
+
+                        optionButton.BackgroundColor3 =
+                            selected[option]
+                            and Library.Theme.Accent
+                            or Library.Theme.Tertiary
+
+                        refreshText()
+
+                        if callback then
+                            task.spawn(function()
+                                pcall(
+                                    callback,
+                                    selected
+                                )
+                            end)
+                        end
+                    end)
+                end
+
+                refreshText()
+
+                button.MouseButton1Click:Connect(function()
+                    list.Visible = not list.Visible
+
+                    if list.Visible then
+                        holder.Size = UDim2.new(
+                            1,
+                            0,
+                            0,
+                            45 + math.min(#options, 7) * 35
+                        )
+                    else
+                        holder.Size = UDim2.new(
+                            1,
+                            0,
+                            0,
+                            40
+                        )
+                    end
+                end)
+
+                return {
+                    Get = function()
+                        return selected
+                    end,
+
+                    Set = function(_, newValues)
+                        selected = {}
+
+                        for _, option in ipairs(newValues or {}) do
+                            selected[option] = true
+                        end
+
+                        refreshText()
+                    end,
+                }
+            end
+
+            ----------------------------------------------------
+            -- TEXTBOX
+            ----------------------------------------------------
+
+            function section:CreateTextbox(text, placeholder, callback)
+                local holder = New("Frame", {
+                    Name = "Textbox",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        72
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    LayoutOrder = 70,
+                }, Frame)
+
+                Corner(
+                    holder,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    holder,
+                    "Tertiary"
+                )
+
+                local label = New("TextLabel", {
+                    Size = UDim2.new(
+                        1,
+                        -24,
+                        0,
+                        22
+                    ),
+
+                    Position = UDim2.fromOffset(
+                        12,
+                        5
+                    ),
+
+                    BackgroundTransparency = 1,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text = tostring(text),
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 12,
+
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                }, holder)
+
+                window:RegisterTheme(
+                    label,
+                    "Text"
+                )
+
+                local box = New("TextBox", {
+                    Size = UDim2.new(
+                        1,
+                        -24,
+                        0,
+                        34
+                    ),
+
+                    Position = UDim2.fromOffset(
+                        12,
+                        31
+                    ),
+
+                    BackgroundColor3 = Library.Theme.Background,
+
+                    BorderSizePixel = 0,
+
+                    ClearTextOnFocus = false,
+
+                    Font = Enum.Font.Gotham,
+
+                    PlaceholderText =
+                        placeholder or "",
+
+                    PlaceholderColor3 =
+                        Library.Theme.SubText,
+
+                    Text = "",
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 12,
+
+                    TextXAlignment =
+                        Enum.TextXAlignment.Left,
+                }, holder)
+
+                Corner(
+                    box,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    box,
+                    "Background"
+                )
+
+                New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 10),
+                    PaddingRight = UDim.new(0, 10),
+                }, box)
+
+                box.FocusLost:Connect(function()
+                    if callback then
+                        task.spawn(function()
+                            pcall(
+                                callback,
+                                box.Text
+                            )
+                        end)
+                    end
+                end)
+
+                return box
+            end
+
+            ----------------------------------------------------
+            -- KEYBIND
+            ----------------------------------------------------
+
+            function section:CreateKeybind(text, defaultKey, callback)
+                local currentKey =
+                    defaultKey
+                    or Enum.KeyCode.RightShift
+
+                local button = New("TextButton", {
+                    Name = "Keybind",
+
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        40
+                    ),
+
+                    BackgroundColor3 =
+                        Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    AutoButtonColor = false,
+
+                    Font = Enum.Font.GothamMedium,
+
+                    Text =
+                        tostring(text)
+                        .. ": "
+                        .. currentKey.Name,
+
+                    TextColor3 = Library.Theme.Text,
+                    TextSize = 13,
+
+                    TextXAlignment =
+                        Enum.TextXAlignment.Left,
+
+                    LayoutOrder = 80,
+                }, Frame)
+
+                Corner(
+                    button,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    button,
+                    "Tertiary"
+                )
+
+                New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 12),
+                    PaddingRight = UDim.new(0, 12),
+                }, button)
+
+                local listening = false
+
+                button.MouseButton1Click:Connect(function()
+                    listening = true
+
+                    button.Text =
+                        tostring(text)
+                        .. ": ..."
+                end)
+
+                local connection = UserInputService.InputBegan:Connect(
+                    function(input, processed)
+                        if processed then
+                            return
+                        end
+
+                        if listening then
+                            if input.UserInputType
+                                == Enum.UserInputType.Keyboard then
+
+                                currentKey = input.KeyCode
+                                listening = false
+
+                                button.Text =
+                                    tostring(text)
+                                    .. ": "
+                                    .. currentKey.Name
+
+                                if callback then
+                                    task.spawn(function()
+                                        pcall(
+                                            callback,
+                                            currentKey
+                                        )
+                                    end)
+                                end
+                            end
+
+                            return
+                        end
+
+                        if input.UserInputType
+                            == Enum.UserInputType.Keyboard
+                            and input.KeyCode == currentKey then
+
+                            if callback then
+                                task.spawn(function()
+                                    pcall(
+                                        callback,
+                                        currentKey
+                                    )
+                                end)
+                            end
+                        end
+                    end
+                )
+
+                table.insert(
+                    window.Connections,
+                    connection
+                )
+
+                return {
+                    Set = function(_, key)
+                        if typeof(key) == "EnumItem" then
+                            currentKey = key
+
+                            button.Text =
+                                tostring(text)
+                                .. ": "
+                                .. currentKey.Name
+                        end
+                    end,
+
+                    Get = function()
+                        return currentKey
+                    end,
+                }
+            end
+
+            ----------------------------------------------------
+            -- INFO
+            ----------------------------------------------------
+
+            function section:CreateInfo(text)
+                local info = New("TextLabel", {
+                    Size = UDim2.new(
+                        1,
+                        0,
+                        0,
+                        42
+                    ),
+
+                    BackgroundColor3 =
+                        Library.Theme.Tertiary,
+
+                    BorderSizePixel = 0,
+
+                    Font = Enum.Font.Gotham,
+
+                    Text = tostring(text),
+
+                    TextColor3 =
+                        Library.Theme.SubText,
+
+                    TextSize = 12,
+
+                    TextWrapped = true,
+
+                    TextXAlignment =
+                        Enum.TextXAlignment.Left,
+
+                    LayoutOrder = 90,
+                }, Frame)
+
+                Corner(
+                    info,
+                    Library.Settings.CornerRadius
+                )
+
+                window:RegisterTheme(
+                    info,
+                    "Tertiary"
+                )
+
+                New("UIPadding", {
+                    PaddingLeft = UDim.new(0, 12),
+                    PaddingRight = UDim.new(0, 12),
+                }, info)
+
+                return info
+            end
+
+            table.insert(
+                self.Sections,
+                section
+            )
+
+            return section
+        end
+
+        --------------------------------------------------------
+        -- TAB CLICK
+        --------------------------------------------------------
+
+        Button.MouseButton1Click:Connect(function()
+            self:SelectTab(tab)
+        end)
+
+        table.insert(
+            self.Tabs,
+            tab
+        )
+
+        table.insert(
+            self.TabButtons,
+            Button
+        )
+
+        return tab
+    end
+
+    ------------------------------------------------------------
+    -- SELECT TAB
+    ------------------------------------------------------------
+
+    function window:SelectTab(tab)
+        for _, item in ipairs(self.Tabs) do
+            local active = item == tab
+
+            item.Page.Visible = active
+
+            if active then
+                item.Button.BackgroundColor3 =
+                    Library.Theme.Accent
+
+                item.Button.TextColor3 =
+                    Color3.new(1, 1, 1)
+            else
+                item.Button.BackgroundColor3 =
+                    Library.Theme.Tertiary
+
+                item.Button.TextColor3 =
+                    Library.Theme.Text
+            end
+        end
+
+        self.ActiveTab = tab
+    end
+
+    ------------------------------------------------------------
+    -- SETTING TAB
+    ------------------------------------------------------------
+
+    local settingTab = window:CreateTab(
+        self:Translate("Setting"),
+        "⚙"
+    )
+
+    settingTab.IsSetting = true
+    settingTab.LayoutOrder = 1000000
+
+    settingTab.Button.LayoutOrder = 1000000
+
+    window.SettingTab = settingTab
+    window.SettingTabButton = settingTab.Button
+
+    local themeSection = settingTab:CreateSection(
+        self:Translate("Theme")
+    )
+
+    ------------------------------------------------------------
+    -- THEME PRESET
+    ------------------------------------------------------------
+
+    themeSection:CreateDropdown(
+        self:Translate("ThemePreset"),
+        {
+            "Purple",
+            "Blue",
+            "Red",
+            "Green",
+            "Dark",
+            "Light",
+        },
+        self.Settings.ThemePreset,
+        function(value)
+            self:SetTheme(value)
+
+            if self.Settings.Notifications then
+                window:Notify(
+                    self:Translate("ThemeChanged"),
+                    value
+                )
+            end
+        end
+    )
+
+    ------------------------------------------------------------
+    -- ACCENT COLOR
+    ------------------------------------------------------------
+
+    themeSection:CreateDropdown(
+        self:Translate("AccentColor"),
+        {
+            "Purple",
+            "Blue",
+            "Red",
+            "Green",
+            "Black",
+            "White",
+            "Yellow",
+            "Cyan",
+            "Pink",
+            "Orange",
+        },
+        self.Settings.AccentPreset,
+        function(value)
+            self:SetAccentColor(value)
+
+            if self.Settings.Notifications then
+                window:Notify(
+                    self:Translate("AccentChanged"),
+                    value
+                )
+            end
+        end
+    )
+
+    ------------------------------------------------------------
+    -- GLASS
+    ------------------------------------------------------------
+
+    themeSection:CreateToggle(
+        self:Translate("GlassMode"),
+        self.Settings.GlassMode,
+        function(value)
+            self:SetGlassMode(
+                value,
+                self.Settings.GlassTransparency
+            )
+        end
+    )
+
+    themeSection:CreateSlider(
+        self:Translate("Transparency"),
+        0,
+        60,
+        math.floor(
+            self.Settings.GlassTransparency * 100
+        ),
+        function(value)
+            self.Settings.GlassTransparency =
+                value / 100
+
+            if self.Settings.GlassMode then
+                self:SetGlassMode(
+                    true,
+                    self.Settings.GlassTransparency
+                )
+            end
+        end
+    )
+
+    ------------------------------------------------------------
+    -- MENU SIZE
+    ------------------------------------------------------------
+
+    local sizeSection = settingTab:CreateSection(
+        self:Translate("MenuSize")
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("MenuWidth"),
+        300,
+        1000,
+        self.Settings.MenuWidth,
+        function(value)
+            self.Settings.MenuWidth = value
+            window:FitToScreen()
+        end
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("MenuHeight"),
+        260,
+        800,
+        self.Settings.MenuHeight,
+        function(value)
+            self.Settings.MenuHeight = value
+            window:FitToScreen()
+        end
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("SidebarWidth"),
+        100,
+        260,
+        self.Settings.SidebarWidth,
+        function(value)
+            window:SetSidebarWidth(value)
+        end
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("UIScale"),
+        60,
+        130,
+        self.Settings.UIScale,
+        function(value)
+            window:SetScale(value)
+        end
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("CornerRadius"),
+        0,
+        25,
+        self.Settings.CornerRadius,
+        function(value)
+            self.Settings.CornerRadius = value
+
+            for _, corner in ipairs(
+                window.Main:GetDescendants()
+            ) do
+                if corner:IsA("UICorner") then
+                    corner.CornerRadius =
+                        UDim.new(0, value)
+                end
+            end
+        end
+    )
+
+    sizeSection:CreateSlider(
+        self:Translate("AnimationSpeed"),
+        0,
+        100,
+        math.floor(
+            self.Settings.AnimationSpeed * 100
+        ),
+        function(value)
+            self.Settings.AnimationSpeed =
+                value / 100
+        end
+    )
+
+    ------------------------------------------------------------
+    -- BEHAVIOR
+    ------------------------------------------------------------
+
+    local behaviorSection = settingTab:CreateSection(
+        self:Translate("Behavior")
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("TabSearch"),
+        self.Settings.TabSearch,
+        function(value)
+            self.Settings.TabSearch = value
+
+            if window.SearchBox then
+                window.SearchBox.Visible = value
+                window.TabList.Position = UDim2.fromOffset(
+                    6,
+                    value and 51 or 6
+                )
+                window.TabList.Size = UDim2.new(
+                    1,
+                    -12,
+                    1,
+                    value and -57 or -12
+                )
+            end
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("Notifications"),
+        self.Settings.Notifications,
+        function(value)
+            self.Settings.Notifications = value
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("FloatingButton"),
+        self.Settings.FloatingButton,
+        function(value)
+            self.Settings.FloatingButton = value
+
+            if not value then
+                window.FloatingButton.Visible = false
+            end
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("Dragging"),
+        self.Settings.Dragging,
+        function(value)
+            self.Settings.Dragging = value
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("CompactMode"),
+        self.Settings.CompactMode,
+        function(value)
+            self.Settings.CompactMode = value
+
+            if value then
+                window.Main.Size = UDim2.fromOffset(
+                    math.min(
+                        self.Settings.MenuWidth,
+                        500
+                    ),
+                    math.min(
+                        self.Settings.MenuHeight,
+                        350
+                    )
+                )
+            else
+                window:FitToScreen()
+            end
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("LockMenu"),
+        self.Settings.LockMenu,
+        function(value)
+            self.Settings.LockMenu = value
+        end
+    )
+
+    behaviorSection:CreateToggle(
+        self:Translate("AutoFit"),
+        self.Settings.AutoFit,
+        function(value)
+            self.Settings.AutoFit = value
+
+            if value then
+                window:FitToScreen()
+            end
+        end
+    )
+
+    ------------------------------------------------------------
+    -- PERFORMANCE
+    ------------------------------------------------------------
+
+    local performanceSection = settingTab:CreateSection(
+        self:Translate("Performance")
+    )
+
+    performanceSection:CreateToggle(
+        self:Translate("ShowFPS"),
+        self.Settings.ShowFPS,
+        function(value)
+            self.Settings.ShowFPS = value
+            window:RefreshStats()
+        end
+    )
+
+    performanceSection:CreateToggle(
+        self:Translate("ShowPing"),
+        self.Settings.ShowPing,
+        function(value)
+            self.Settings.ShowPing = value
+            window:RefreshStats()
+        end
+    )
+
+    performanceSection:CreateToggle(
+        self:Translate("ShowClock"),
+        self.Settings.ShowClock,
+        function(value)
+            self.Settings.ShowClock = value
+            window:RefreshStats()
+        end
+    )
+
+    ------------------------------------------------------------
+    -- LANGUAGE
+    ------------------------------------------------------------
+
+    local languageSection = settingTab:CreateSection(
+        self:Translate("Settings")
+    )
+
+    local languageDropdown = languageSection:CreateDropdown(
+        "Language",
+        {
+            "English",
+            "Vietnamese",
+            "中文",
+            "日本語",
+            "한국어",
+            "Español",
+            "Português",
+        },
+        self.Settings.Language,
+        function(value)
+            self:SetLanguage(value)
+        end
+    )
+
+    ------------------------------------------------------------
+    -- RESET
+    ------------------------------------------------------------
+
+    local resetSection = settingTab:CreateSection(
+        self:Translate("CustomColors")
+    )
+
+    resetSection:CreateButton(
+        self:Translate("ResetUI"),
+        function()
+            for key, value in pairs(
+                self.DefaultSettings
+            ) do
+                self.Settings[key] = value
+            end
+
+            self:SetTheme(
+                self.Settings.ThemePreset
+            )
+
+            self:SetAccentColor(
+                self.Settings.AccentPreset
+            )
+
+            window:SetScale(
+                self.Settings.UIScale
+            )
+
+            window:FitToScreen()
+            window:RefreshLanguage()
+
+            window:Notify(
+                self:Translate("SettingsReset"),
+                ""
+            )
+        end
+    )
+
+    resetSection:CreateButton(
+        self:Translate("ResetTheme"),
+        function()
+            self.Settings.ThemePreset = "Purple"
+            self.Settings.AccentPreset = "Purple"
+
+            self:SetTheme("Purple")
+            self:SetAccentColor("Purple")
+        end
+    )
+
+    resetSection:CreateButton(
+        self:Translate("ResetPosition"),
+        function()
+            window.Main.Position =
+                UDim2.fromScale(0.5, 0.5)
+
+            window.Main.AnchorPoint =
+                Vector2.new(0.5, 0.5)
+        end
+    )
+
+    resetSection:CreateButton(
+        self:Translate("RestoreWindow"),
+        function()
+            window:Restore()
+        end
+    )
+
+    resetSection:CreateButton(
+        self:Translate("Unload"),
+        function()
+            self:Destroy()
+        end
+    )
+
+    ------------------------------------------------------------
+    -- NOTIFICATION SYSTEM
+    ------------------------------------------------------------
+
+    function window:Notify(title, message, duration)
+        if not Library.Settings.Notifications then
+            return
+        end
+
+        duration = duration or 3
+
+        local holder = New("Frame", {
+            Name = "Notification",
+
+            Size = UDim2.fromOffset(
+                280,
+                70
+            ),
+
+            Position = UDim2.new(
+                1,
+                20,
+                1,
+                -90
+            ),
+
+            AnchorPoint = Vector2.new(
+                0,
+                1
+            ),
+
+            BackgroundColor3 =
+                Library.Theme.Secondary,
+
+            BackgroundTransparency =
+                getTransparency("Secondary"),
+
+            BorderSizePixel = 0,
+
+            ZIndex = 200,
+        }, ScreenGui)
+
+        Corner(
+            holder,
+            Library.Settings.CornerRadius
+        )
+
+        Stroke(
+            holder,
+            Library.Theme.Border,
+            1
+        )
+
+        window:RegisterTheme(
+            holder,
+            "Secondary"
+        )
+
+        local accentBar = New("Frame", {
+            Size = UDim2.new(
+                0,
+                4,
+                1,
+                0
+            ),
+
+            BackgroundColor3 =
+                Library.Theme.Accent,
+
+            BorderSizePixel = 0,
+
+            ZIndex = 201,
+        }, holder)
+
+        Corner(
+            accentBar,
+            Library.Settings.CornerRadius
+        )
+
+        window:RegisterTheme(
+            accentBar,
+            "Accent"
+        )
+
+        local titleLabel = New("TextLabel", {
+            Size = UDim2.new(
+                1,
+                -30,
+                0,
+                25
+            ),
+
+            Position = UDim2.fromOffset(
+                16,
+                8
+            ),
+
+            BackgroundTransparency = 1,
+
+            Font = Enum.Font.GothamBold,
+
+            Text = tostring(title),
+
+            TextColor3 =
+                Library.Theme.Text,
+
+            TextSize = 13,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex = 202,
+        }, holder)
+
+        window:RegisterTheme(
+            titleLabel,
+            "Text"
+        )
+
+        local messageLabel = New("TextLabel", {
+            Size = UDim2.new(
+                1,
+                -30,
+                0,
+                25
+            ),
+
+            Position = UDim2.fromOffset(
+                16,
+                34
+            ),
+
+            BackgroundTransparency = 1,
+
+            Font = Enum.Font.Gotham,
+
+            Text = tostring(message or ""),
+
+            TextColor3 =
+                Library.Theme.SubText,
+
+            TextSize = 11,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            TextTruncate =
+                Enum.TextTruncate.AtEnd,
+
+            ZIndex = 202,
+        }, holder)
+
+        window:RegisterTheme(
+            messageLabel,
+            "SubText"
+        )
+
+        Tween(
+            holder,
+            {
+                Position = UDim2.new(
+                    1,
+                    -15,
+                    1,
+                    -90
+                ),
+            },
+            0.25
+        )
+
+        task.delay(
+            duration,
+            function()
+                if holder and holder.Parent then
+                    Tween(
+                        holder,
+                        {
+                            Position =
+                                UDim2.new(
+                                    1,
+                                    20,
+                                    1,
+                                    -90
+                                )
+                        },
+                        0.2
+                    )
+
+                    task.wait(0.25)
+
+                    if holder then
+                        holder:Destroy()
+                    end
+                end
+            end
+        )
+    end
+
+    ------------------------------------------------------------
+    -- LANGUAGE UPDATE SUPPORT
+    ------------------------------------------------------------
+
+    local originalRefreshLanguage =
+        window.RefreshLanguage
+
+    function window:RefreshLanguage()
+        if self.SearchBox then
+            self.SearchBox.PlaceholderText =
+                self:T("Search")
+        end
+
+        -- Update built-in setting tab.
+        if self.SettingTab then
+            self.SettingTab.Button.Text =
+                "⚙   "
+                .. self:T("Setting")
+        end
+
+        -- Update Setting section titles.
+        if self.SettingTab then
+            for _, section in ipairs(
+                self.SettingTab.Sections
+            ) do
+                local page = section
+
+                for _, child in ipairs(
+                    self.SettingTab.Page:GetChildren()
+                ) do
+                    if child:IsA("Frame") then
+                        local title =
+                            child:FindFirstChild(
+                                "SectionTitle"
+                            )
+
+                        if title then
+                            local name =
+                                child.Name
+
+                            if string.find(
+                                name,
+                                "Theme"
+                            ) then
+                                title.Text =
+                                    self:T("Theme")
+                            elseif string.find(
+                                name,
+                                "Menu"
+                            ) then
+                                title.Text =
+                                    self:T("MenuSize")
+                            elseif string.find(
+                                name,
+                                "Behavior"
+                            ) then
+                                title.Text =
+                                    self:T("Behavior")
+                            elseif string.find(
+                                name,
+                                "Performance"
+                            ) then
+                                title.Text =
+                                    self:T("Performance")
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        self:RefreshStats()
+    end
+
+    ------------------------------------------------------------
+    -- INITIAL TAB SELECTION
+    ------------------------------------------------------------
+
+    local hasNormalTab = false
+
+    for _, tab in ipairs(window.Tabs) do
+        if not tab.IsSetting then
+            hasNormalTab = true
+            break
+        end
+    end
+
+    if not hasNormalTab then
+        window:SelectTab(settingTab)
+    end
+
+    ------------------------------------------------------------
+    -- DEFAULT FIRST USER TAB
+    ------------------------------------------------------------
+
+    function window:_AutoSelectFirstUserTab()
+        for _, tab in ipairs(self.Tabs) do
+            if not tab.IsSetting then
+                self:SelectTab(tab)
+                return
+            end
+        end
+
+        self:SelectTab(self.SettingTab)
+    end
+
+    ------------------------------------------------------------
+    -- REORDER SETTING
+    ------------------------------------------------------------
+
+    function window:KeepSettingLast()
+        if self.SettingTab then
+            self.SettingTab.Button.LayoutOrder =
+                1000000
+
+            self.SettingTab.LayoutOrder =
+                1000000
+        end
+
+        local order = 1
+
+        for _, tab in ipairs(self.Tabs) do
+            if not tab.IsSetting then
+                tab.LayoutOrder = order
+                tab.Button.LayoutOrder = order
+                order += 1
+            end
+        end
+    end
+
+    ------------------------------------------------------------
+    -- OVERRIDE CREATE TAB TO KEEP SETTING LAST
+    ------------------------------------------------------------
+
+    local originalCreateTab = window.CreateTab
+
+    window.CreateTab = function(selfWindow, ...)
+        local tab = originalCreateTab(
+            selfWindow,
+            ...
+        )
+
+        selfWindow:KeepSettingLast()
+
+        if not tab.IsSetting
+            and not selfWindow.ActiveTab then
+
+            selfWindow:SelectTab(tab)
+        end
+
+        return tab
+    end
+
+    window:KeepSettingLast()
+
+    ------------------------------------------------------------
+    -- FIX SETTING TAB LABEL AFTER LANGUAGE
+    ------------------------------------------------------------
+
+    function window:SetLanguage(language)
+        Library:SetLanguage(language)
+    end
+
+    ------------------------------------------------------------
+    -- REFRESH
+    ------------------------------------------------------------
+
+    function window:Refresh()
+        self:FitToScreen()
+        self:RefreshTheme()
+        self:RefreshLanguage()
+    end
+
+    ------------------------------------------------------------
+    -- DESTROY
+    ------------------------------------------------------------
+
+    function window:Destroy()
+        if self.Destroyed then
+            return
+        end
+
+        self.Destroyed = true
+
+        for _, connection in ipairs(
+            self.Connections
+        ) do
+            pcall(function()
+                connection:Disconnect()
+            end)
+        end
+
+        self.Connections = {}
+
+        if self.ScreenGui then
+            self.ScreenGui:Destroy()
+        end
+
+        for index, item in ipairs(
+            Library.Windows
+        ) do
+            if item == self then
+                table.remove(
+                    Library.Windows,
+                    index
+                )
+
+                break
+            end
+        end
+    end
+
+    ------------------------------------------------------------
+    -- INITIAL FIT
+    ------------------------------------------------------------
+
+    window:FitToScreen()
+
+    -- Main centered exactly like reference layout.
+    Main.Position = UDim2.fromScale(
+        0.5,
+        0.5
+    )
+
+    Main.AnchorPoint =
+        Vector2.new(0.5, 0.5)
+
+    ------------------------------------------------------------
+    -- INITIAL TAB
+    ------------------------------------------------------------
+
+    -- Setting is last.
+    -- If user creates a normal tab later, it automatically
+    -- becomes the first active tab.
+    window:SelectTab(settingTab)
+
+    return window
+end
+
+----------------------------------------------------------------
+-- GLOBAL REFRESH
+----------------------------------------------------------------
+
+function Library:RefreshAll()
+    for _, window in ipairs(self.Windows) do
+        if window and not window.Destroyed then
+            window:Refresh()
+        end
+    end
+end
+
+----------------------------------------------------------------
+-- VALUE SYSTEM
+----------------------------------------------------------------
+
+function Library:SetValue(key, value)
+    self.Values[key] = value
+end
+
+function Library:GetValue(key, default)
+    if self.Values[key] == nil then
+        return default
+    end
+
+    return self.Values[key]
+end
+
+----------------------------------------------------------------
+-- WINDOW CONTROL
+----------------------------------------------------------------
+
+function Library:GetWindow()
+    for _, window in ipairs(self.Windows) do
+        if window and not window.Destroyed then
+            return window
+        end
+    end
+
+    return nil
+end
+
+function Library:Toggle()
+    local window = self:GetWindow()
+
+    if window then
+        window:Toggle()
+    end
+end
+
+function Library:Show()
+    local window = self:GetWindow()
+
+    if window then
+        window:Show()
+    end
+end
+
+function Library:Hide()
+    local window = self:GetWindow()
+
+    if window then
+        window:Hide()
+    end
+end
+
+----------------------------------------------------------------
+-- GLOBAL KEYBIND
+-- Default: RightShift
+----------------------------------------------------------------
+
+Library.ToggleKey = Enum.KeyCode.RightShift
+
+local globalKeyConnection
+
+globalKeyConnection = UserInputService.InputBegan:Connect(
+    function(input, processed)
+        if processed then
+            return
+        end
+
+        if input.UserInputType
+            == Enum.UserInputType.Keyboard
+            and input.KeyCode == Library.ToggleKey then
+
+            Library:Toggle()
+        end
+    end
+)
+
+table.insert(
+    Library._connections,
+    globalKeyConnection
+)
+
+----------------------------------------------------------------
+-- DESTROY / UNLOAD
+----------------------------------------------------------------
+
+function Library:Destroy()
+    for _, window in ipairs(
+        table.clone(self.Windows)
+    ) do
+        if window then
+            window:Destroy()
+        end
+    end
+
+    self.Windows = {}
+
+    for _, connection in ipairs(
+        self._connections
+    ) do
+        pcall(function()
+            connection:Disconnect()
+        end)
+    end
+
+    self._connections = {}
+end
+
+function Library:Unload()
+    self:Destroy()
+end
+
+----------------------------------------------------------------
+-- OPTIONAL QUICK CONFIG API
+----------------------------------------------------------------
+
+function Library:SetMenuSize(width, height)
+    self.Settings.MenuWidth =
+        clamp(
+            safeNumber(width, self.Settings.MenuWidth),
+            300,
+            1600
+        )
+
+    self.Settings.MenuHeight =
+        clamp(
+            safeNumber(height, self.Settings.MenuHeight),
+            260,
+            1000
+        )
+
+    self:RefreshAll()
+end
+
+function Library:SetCornerRadius(radius)
+    self.Settings.CornerRadius =
+        clamp(
+            safeNumber(radius, 10),
+            0,
+            30
+        )
+
+    self:RefreshAll()
+end
+
+function Library:SetScale(scale)
+    self.Settings.UIScale =
+        clamp(
+            safeNumber(scale, 100),
+            60,
+            150
+        )
+
+    for _, window in ipairs(self.Windows) do
+        if window and not window.Destroyed then
+            window:SetScale(
+                self.Settings.UIScale
+            )
+        end
+    end
+end
+
+function Library:SetToggleKey(key)
+    if typeof(key) == "EnumItem"
+        and key.EnumType == Enum.KeyCode then
+
+        self.ToggleKey = key
+    end
+end
+
+----------------------------------------------------------------
+-- RETURN
+----------------------------------------------------------------
+
+return Library
